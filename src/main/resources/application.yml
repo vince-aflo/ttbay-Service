@@ -1,0 +1,29 @@
+server:
+  port: 8080
+
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/postgres
+    username: postgres
+    password: postgres
+  jpa:
+    properties:
+      show-sql: true
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+    hibernate:
+      ddl-auto: create-drop
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: 1044100402409-hr7g2l2gofdpujale00iralq2k6ql02f.apps.googleusercontent.com
+            client-secret: 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
+
+
+  server:
+     error:
+       include-message: true
+
