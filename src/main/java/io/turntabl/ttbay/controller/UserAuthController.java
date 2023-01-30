@@ -20,31 +20,7 @@ public class AuthController {
     @Autowired
     private  UserRepository userRepository;
 
-
     @GetMapping("/authenticate")
     public AuthenticationResponse authenticateUser(@AuthenticationPrincipal OAuth2User principle){
-      Map<String, Object> response = principle.getAttributes();
-
-        boolean alreadyExists = userRepository
-                .findByEmail((String) response.get("email"))
-                .isPresent();
-
-        if(alreadyExists)
-            return AuthenticationResponse.builder()
-                    .message("ALready authenticated")
-                    .build();
-
-      var user = User.builder()
-              .name((String) response.get("given_name") +" "+ (String) response.get("family_name"))
-              .email((String) response.get("email"))
-              .picture((String) response.get("picture"))
-              .role(Role.USER).build();
-
-      userRepository.save(user);
-
-      return AuthenticationResponse.builder()
-              .message("Successfully Authenticated")
-              .token("Set up jwt we token to generate token")
-              .build();
-    }
+    
 }
