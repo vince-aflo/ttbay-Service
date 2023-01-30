@@ -1,5 +1,5 @@
 server:
-  port: 8080
+  port: ${PORT}
 
 spring:
   datasource:
@@ -19,8 +19,8 @@ spring:
       client:
         registration:
           google:
-            client-id: 1044100402409-hr7g2l2gofdpujale00iralq2k6ql02f.apps.googleusercontent.com
-            client-secret: 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
+            client-id: ${GOOGLE_CLIENT_ID}
+            client-secret: ${GOOGLE_CLIENT_SECRET}
 
 
   server:
