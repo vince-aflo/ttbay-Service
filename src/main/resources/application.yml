@@ -24,6 +24,7 @@ spring:
 
 
   server:
-     error:
-       include-message: true
+    error:
+      include-message: true
 
+jwt-set-url: https://www.googleapis.com/oauth2/v1/certs

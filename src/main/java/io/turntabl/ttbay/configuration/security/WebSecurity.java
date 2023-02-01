@@ -1,35 +1,29 @@
 package io.turntabl.ttbay.configuration.security;
 
-
-import io.turntabl.ttbay.configuration.ApplicationConfig;
-import io.turntabl.ttbay.configuration.Jwt.JwtAuthFilter;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.web.SecurityFilterChain;
 
 
-
 @Configuration
-@EnableWebSecurity
 @RequiredArgsConstructor
 public class WebSecurity  {
 
-    public final ApplicationConfig applicationConfig;
-    public final JwtAuthFilter jwtAuthFilter;
-        @Bean
-        public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception{
-            http
-                    .csrf()
-                    .and()
-                    .cors()
-                    .disable()
-                    .authorizeHttpRequests()
-                    .requestMatchers("/api/v1/auth/authenticate").authenticated().and().oauth2Login();
+    @Value("${jwt-set-url}")
+    private String jwtSetUrl;
 
-            return http.build();
-        }
 
+    @Bean
+    protected SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        http
+                .authorizeHttpRequests(auth -> auth.anyRequest().authenticated())
+         .oauth2ResourceServer(oauth2 ->oauth2.jwt( jwt -> jwt.jwkSetUri(jwtSetUrl)));
+
+
+        return http.build();
     }
+
+}
