@@ -1,5 +1,6 @@
 package io.turntabl.ttbay.configuration.security;
 
+import io.turntabl.ttbay.configuration.security.Jwt.CustomAuthenticationConverter;
 import io.turntabl.ttbay.service.Impl.UserRegisterImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -21,9 +22,8 @@ public class WebSecurity  {
     protected SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .authorizeHttpRequests(auth -> auth.anyRequest().authenticated())
-            .oauth2ResourceServer(oauth2 ->oauth2.jwt( jwt -> jwt.jwkSetUri(jwtSetUrl)));
-              //      .jwtAuthenticationConverter(new CustomAuthenticationConverter(userRegister))));
-
+                .oauth2ResourceServer(oauth2 ->oauth2.jwt( jwt -> jwt.jwkSetUri(jwtSetUrl)
+                        .jwtAuthenticationConverter(new CustomAuthenticationConverter(userRegister))));
         return http.build();
     }
 
