@@ -16,5 +16,4 @@ public class RegistrationResponse {
     private String fullName;
     private String email;
     private String picture;
-    private Role role;
 }

@@ -7,6 +7,7 @@ import io.turntabl.ttbay.model.enums.Role;
 import io.turntabl.ttbay.repository.UserRepository;
 import io.turntabl.ttbay.service.UserRegisterService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.stereotype.Service;
@@ -32,7 +33,7 @@ public class UserRegisterImpl implements UserRegisterService {
 
         String name = (String) claims.get("name");
         String profilePhoto = (String) claims.get("picture");
-        Role role = Role.USER;
+        Role role = Role.valueOf("USER");
         User user = User.builder().fullName(name).email(email).role(role).build();
 
         userRepository.save(user);
