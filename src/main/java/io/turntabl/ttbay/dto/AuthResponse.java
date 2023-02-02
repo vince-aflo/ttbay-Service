@@ -1,7 +1,6 @@
 package io.turntabl.ttbay.dto;
 
 
-import io.turntabl.ttbay.model.enums.Role;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -11,9 +10,10 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class RegistrationResponse {
+public class AuthResponse {
     private String message;
     private String fullName;
     private String email;
     private String picture;
+    private boolean hasFilledUserProfile;
 }

@@ -1,13 +1,12 @@
 package io.turntabl.ttbay.service.Impl;
 
-import io.turntabl.ttbay.dto.RegistrationResponse;
+import io.turntabl.ttbay.dto.AuthResponse;
 import io.turntabl.ttbay.exceptions.UserAlreadyExistException;
 import io.turntabl.ttbay.model.User;
 import io.turntabl.ttbay.model.enums.Role;
 import io.turntabl.ttbay.repository.UserRepository;
-import io.turntabl.ttbay.service.UserRegisterService;
+import io.turntabl.ttbay.service.UserAuthService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.stereotype.Service;
@@ -17,32 +16,44 @@ import java.text.ParseException;
 import java.util.Map;
 
 @Service
-public class UserRegisterImpl implements UserRegisterService {
+public class UserAuthImpl implements UserAuthService {
     @Autowired
     UserRepository userRepository;
 
     @Override
-    public RegistrationResponse register(Authentication authentication) throws ParseException, UserAlreadyExistException {
+    public AuthResponse register(Authentication authentication) throws ParseException, UserAlreadyExistException {
         JwtAuthenticationToken auth = (JwtAuthenticationToken) authentication;
         Map<String, Object> claims = auth.getTokenAttributes();
         String email = (String) claims.get("email");
 
-        boolean alreadyExists = userRepository.findByEmail(email).isPresent();
-
-        if(alreadyExists) throw new UserAlreadyExistException("A user with "+email+ "already exist");
-
         String name = (String) claims.get("name");
         String profilePhoto = (String) claims.get("picture");
-        Role role = Role.valueOf("USER");
+        Role role = Role.USER;
         User user = User.builder().fullName(name).email(email).role(role).build();
 
-        userRepository.save(user);
+        boolean alreadyExists = userRepository.findByEmail(email).isPresent();
 
-        return RegistrationResponse.builder()
-                .message("Registered Successfully")
+        if(!alreadyExists) {
+            userRepository.save(user);
+
+            AuthResponse newUSerResponse =  AuthResponse.builder()
+                    .message("Registered Successfully")
+                    .email(email)
+                    .fullName(name)
+                    .picture(profilePhoto)
+                    .hasFilledUserProfile(false)
+                    .build();
+            return newUSerResponse;
+        }
+        //TODO check if the other fields apart from name, email and picture are empty
+        // then in your newUserResponse we set hasFilledUserProfile to true in this else block
+
+        return AuthResponse.builder()
+                .message("Already registered")
                 .email(email)
                 .fullName(name)
                 .picture(profilePhoto)
+                .hasFilledUserProfile(true)
                 .build();
     }
 
@@ -50,7 +61,7 @@ public class UserRegisterImpl implements UserRegisterService {
         var user = userRepository.findByEmail(email);
         if(user.isPresent()){
             return user.get();
-        }
+        };
         return null;
     }
 }

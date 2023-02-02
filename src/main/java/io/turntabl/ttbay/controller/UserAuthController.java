@@ -1,8 +1,8 @@
 package io.turntabl.ttbay.controller;
 
-import io.turntabl.ttbay.dto.RegistrationResponse;
+import io.turntabl.ttbay.dto.AuthResponse;
 import io.turntabl.ttbay.exceptions.UserAlreadyExistException;
-import io.turntabl.ttbay.service.UserRegisterService;
+import io.turntabl.ttbay.service.UserAuthService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -14,14 +14,14 @@ import java.text.ParseException;
 
 @RestController
 @RequestMapping("api/v1")
-public class UserRegisterController {
+public class UserAuthController {
 
     @Autowired
-    private UserRegisterService userRegisterService;
+    private UserAuthService userAuthService;
 
     @GetMapping("/register")
-    public RegistrationResponse register(Authentication authentication) throws ParseException, UserAlreadyExistException {
-        return userRegisterService.register(authentication);
+    public AuthResponse authenticate(Authentication authentication) throws ParseException, UserAlreadyExistException {
+        return userAuthService.register(authentication);
     }
 }
 

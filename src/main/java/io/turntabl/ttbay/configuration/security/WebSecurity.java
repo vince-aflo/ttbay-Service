@@ -1,7 +1,7 @@
 package io.turntabl.ttbay.configuration.security;
 
 import io.turntabl.ttbay.configuration.security.Jwt.CustomAuthenticationConverter;
-import io.turntabl.ttbay.service.Impl.UserRegisterImpl;
+import io.turntabl.ttbay.service.Impl.UserAuthImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -13,7 +13,7 @@ import org.springframework.security.web.SecurityFilterChain;
 @Configuration
 public class WebSecurity  {
     @Autowired
-    private UserRegisterImpl userRegister;
+    private UserAuthImpl userRegister;
     @Value("${jwt-set-url}")
     private String jwtSetUrl;
 

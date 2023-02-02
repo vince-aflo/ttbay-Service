@@ -1,7 +1,7 @@
 package io.turntabl.ttbay.configuration.security.Jwt;
 
 import io.turntabl.ttbay.model.User;
-import io.turntabl.ttbay.service.Impl.UserRegisterImpl;
+import io.turntabl.ttbay.service.Impl.UserAuthImpl;
 import lombok.AllArgsConstructor;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -12,7 +12,7 @@ import org.springframework.security.oauth2.server.resource.authentication.JwtAut
 import java.util.List;
 @AllArgsConstructor
 public class CustomAuthenticationConverter implements Converter<Jwt, JwtAuthenticationToken> {
-    private final UserRegisterImpl userRegister;
+    private final UserAuthImpl userRegister;
 
     @Override
     public JwtAuthenticationToken convert(Jwt sourceToken) {
