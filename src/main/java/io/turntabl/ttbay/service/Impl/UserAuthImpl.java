@@ -28,7 +28,8 @@ public class UserAuthImpl implements UserAuthService {
 
         String name = (String) claims.get("name");
         String profilePhoto = (String) claims.get("picture");
-        Role role = Role.USER;
+        Role role = Role.USER; //TODO we are going to get this role from the claims when we add an admin role
+                               //TODO (CustomAuthenticationConverter) customise the token before it gets here
         User user = User.builder().fullName(name).email(email).role(role).build();
 
         boolean alreadyExists = userRepository.findByEmail(email).isPresent();
