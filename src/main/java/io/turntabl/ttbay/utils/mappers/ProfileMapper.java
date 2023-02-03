@@ -2,7 +2,7 @@ package io.turntabl.ttbay.utils.mappers;
 
 import io.turntabl.ttbay.dto.ProfileDTO;
 import io.turntabl.ttbay.model.OfficeDay;
-import io.turntabl.ttbay.model.Profile;
+import io.turntabl.ttbay.model.User;
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
 
@@ -10,22 +10,22 @@ import org.mapstruct.factory.Mappers;
 public interface ProfileMapper {
 
     ProfileMapper INSTANCE = Mappers.getMapper(ProfileMapper.class);
-    default Profile profileDTOtoProfile(ProfileDTO profileDTO){
-        Profile profile =  new Profile(
-                profileDTO.profileId(),
+    default User profileDTOtoProfile(ProfileDTO profileDTO){
+        User user =  new User(
+                profileDTO.userId(),
                 profileDTO.email(),
                 profileDTO.fullName(),
                 profileDTO.profileUrl(),
-                profileDTO.office()
+                profileDTO.officeLocation()
         );
 
-        profile.setOfficeDays(
+        user.setOfficeDays(
                 profileDTO.officeDays()
                         .stream()
-                        .map(weekday -> new OfficeDay(profile, weekday))
+                        .map(weekday -> new OfficeDay(user, weekday))
                         .toList()
         );
 
-        return profile;
+        return user;
     }
 }

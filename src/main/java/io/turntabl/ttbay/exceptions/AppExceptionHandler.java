@@ -8,8 +8,8 @@ import org.springframework.web.context.request.WebRequest;
 
 @ControllerAdvice
 public class AppExceptionHandler {
-    @ExceptionHandler(ProfileCreationException.class)
-    public ResponseEntity<String> handleInvalidOrder(ProfileCreationException exception, WebRequest request){
+    @ExceptionHandler(ProfileUpdateException.class)
+    public ResponseEntity<String> handleInvalidOrder(ProfileUpdateException exception, WebRequest request){
         return new ResponseEntity<>(exception.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }

@@ -1,6 +1,6 @@
 package io.turntabl.ttbay.enums;
 
-public enum Office {
+public enum OfficeLocation {
     SONNIDOM_HOUSE,
     ADVANTAGE_PLACE
 }

@@ -1,10 +1,10 @@
 package io.turntabl.ttbay.service.impl;
 
 import io.turntabl.ttbay.dto.ProfileDTO;
-import io.turntabl.ttbay.exceptions.ProfileCreationException;
-import io.turntabl.ttbay.model.Profile;
+import io.turntabl.ttbay.exceptions.ProfileUpdateException;
+import io.turntabl.ttbay.model.User;
 import io.turntabl.ttbay.repository.OfficeDayRepository;
-import io.turntabl.ttbay.repository.ProfileRepository;
+import io.turntabl.ttbay.repository.UserRepository;
 import io.turntabl.ttbay.service.ProfileService;
 import io.turntabl.ttbay.utils.mappers.ProfileMapper;
 import jakarta.transaction.Transactional;
@@ -14,20 +14,19 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 public class ProfileServiceImpl implements ProfileService {
-    private final ProfileRepository profileRepository;
+    private final UserRepository userRepository;
 
     private final OfficeDayRepository officeDayRepository;
 
-    @Transactional
     @Override
+    @Transactional
     public void updateProfile(ProfileDTO profileDTO) {
         try{
-            Profile profile = ProfileMapper.INSTANCE.profileDTOtoProfile(profileDTO);
-            officeDayRepository.deleteByProfileId(profile);
-            profileRepository.save(profile);
+            User user = ProfileMapper.INSTANCE.profileDTOtoProfile(profileDTO);
+            officeDayRepository.deleteByUser(user);
+            userRepository.save(user);
         }catch (Exception exception) {
-            System.err.println(exception.getMessage());
-            throw new ProfileCreationException("Unable to create/update the profile");
+            throw new ProfileUpdateException("Unable to create/update the profile");
         }
     }
 }
