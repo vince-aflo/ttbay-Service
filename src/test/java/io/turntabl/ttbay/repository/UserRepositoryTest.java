@@ -4,6 +4,7 @@ import io.turntabl.ttbay.model.User;
 import io.turntabl.ttbay.model.enums.Role;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
@@ -18,6 +19,16 @@ class UserRepositoryTest {
     @Autowired
     private UserRepository userRepository;
 
+    @BeforeEach
+    void beforeEach(){
+        userRepository.save(new User(1L,
+                "Tkayy",
+                "Emmanuel Tweneboah",
+                "emma@gmail.com",
+                "picture",
+                Role.USER,
+                "AP"));
+    }
     @AfterEach
     void tearDown(){
         userRepository.deleteAll();
@@ -26,10 +37,8 @@ class UserRepositoryTest {
 
     @Test
     void testToCheckThatUserSavedWIthAParticularEmailIsPresent() {
-
-        String email = "emma@gmail.com";
         //given
-        userRepository.save(new User(1L,"Tkayy","Emmanuel Tweneboah","emma@gmail.com","picture", Role.USER,"AP"));
+        String email = "emma@gmail.com";
 
         //when
         boolean expected = userRepository.findByEmail(email).isPresent();
@@ -42,16 +51,9 @@ class UserRepositoryTest {
         //given
         Role expectedRole = Role.USER;
         //when
-        User user = new User(1L,"Tkayy","Emmanuel Tweneboah","emma@gmail.com","picture", Role.USER,"AP");
+        User user = userRepository.findByEmail("emma@gmail.com").orElseThrow();
         //then
         Assertions.assertEquals(user.getRole(), expectedRole);
-    }
-
-    @Test
-    void TestToFindAParticularUserWithEmailInTheDB(){
-        User user = new User(1L,"Tkayy","Emmanuel Tweneboah","emma@gmail.com","picture", Role.USER,"AP");
-        userRepository.save(user);
-        Assertions.assertNotNull(userRepository.findByEmail("emma@gmail.com"));
     }
 
 }
