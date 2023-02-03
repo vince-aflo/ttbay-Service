@@ -25,5 +25,4 @@ public class OfficeDay {
     private User user;
    @NotNull(message = "weekday has to be set")
     private Weekday weekday;
-
 }

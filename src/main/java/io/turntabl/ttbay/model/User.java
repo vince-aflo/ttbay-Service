@@ -5,6 +5,7 @@ import io.turntabl.ttbay.enums.Role;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
 import lombok.*;
+import org.hibernate.validator.constraints.UniqueElements;
 
 import java.util.List;
 
@@ -13,7 +14,6 @@ import java.util.List;
 @Table(name = "users")
 @NoArgsConstructor
 @AllArgsConstructor
-@ToString
 @Getter
 @Setter
 @Builder
@@ -30,7 +30,7 @@ public class User   {
     private String profileUrl;
     private Office office;
     @Size(max = 5)
-
+    @UniqueElements
     @OneToMany(mappedBy = "user", fetch= FetchType.LAZY, cascade = CascadeType.ALL)
     private List<OfficeDay> officeDays;
 
