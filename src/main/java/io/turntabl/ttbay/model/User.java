@@ -1,15 +1,19 @@
 package io.turntabl.ttbay.model;
 
-import io.turntabl.ttbay.model.enums.Role;
+import io.turntabl.ttbay.enums.Office;
+import io.turntabl.ttbay.enums.Role;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Size;
 import lombok.*;
 
+import java.util.List;
 
 
 @Entity
 @Table(name = "users")
 @NoArgsConstructor
 @AllArgsConstructor
+@ToString
 @Getter
 @Setter
 @Builder
@@ -22,9 +26,13 @@ public class User   {
     private String fullName;
     @Column(name = "email", nullable = false, unique = true)
     private String email;
-    private String picture;
     private Role role;
-    private String location;
+    private String profileUrl;
+    private Office office;
+    @Size(max = 5)
+
+    @OneToMany(mappedBy = "user", fetch= FetchType.LAZY, cascade = CascadeType.ALL)
+    private List<OfficeDay> officeDays;
 
 }
 
