@@ -21,6 +21,10 @@ public class WebSecurity  {
     @Bean
     protected SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
+                .cors()
+                .disable()
+                .csrf()
+                .disable()
                 .authorizeHttpRequests(auth -> auth.anyRequest().authenticated())
                 .oauth2ResourceServer(oauth2 ->oauth2.jwt( jwt -> jwt.jwkSetUri(jwtSetUrl)
                         .jwtAuthenticationConverter(new CustomAuthenticationConverter(userRegister))));
