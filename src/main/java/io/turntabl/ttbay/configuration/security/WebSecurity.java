@@ -22,7 +22,7 @@ public class WebSecurity  {
     protected SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .cors()
-                .disable()
+                .and()
                 .csrf()
                 .disable()
                 .authorizeHttpRequests(auth -> auth.anyRequest().authenticated())
