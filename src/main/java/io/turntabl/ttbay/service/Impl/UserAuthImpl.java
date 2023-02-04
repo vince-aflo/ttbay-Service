@@ -1,9 +1,8 @@
 package io.turntabl.ttbay.service.Impl;
 
 import io.turntabl.ttbay.dto.AuthResponse;
-import io.turntabl.ttbay.exceptions.UserAlreadyExistException;
+import io.turntabl.ttbay.enums.Role;
 import io.turntabl.ttbay.model.User;
-import io.turntabl.ttbay.model.enums.Role;
 import io.turntabl.ttbay.repository.UserRepository;
 import io.turntabl.ttbay.service.UserAuthService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,7 +11,6 @@ import org.springframework.security.oauth2.server.resource.authentication.JwtAut
 import org.springframework.stereotype.Service;
 
 
-import java.text.ParseException;
 import java.util.Map;
 
 @Service
@@ -21,7 +19,7 @@ public class UserAuthImpl implements UserAuthService {
     UserRepository userRepository;
 
     @Override
-    public AuthResponse register(Authentication authentication) throws ParseException, UserAlreadyExistException {
+    public AuthResponse register(Authentication authentication){
         JwtAuthenticationToken auth = (JwtAuthenticationToken) authentication;
         Map<String, Object> claims = auth.getTokenAttributes();
         String email = (String) claims.get("email");
@@ -30,21 +28,20 @@ public class UserAuthImpl implements UserAuthService {
         String profilePhoto = (String) claims.get("picture");
         Role role = Role.USER; //TODO we are going to get this role from the claims when we add an admin role
                                //TODO (CustomAuthenticationConverter) customise the token before it gets here
-        User user = User.builder().fullName(name).email(email).role(role).build();
+        User user = User.builder().fullName(name).profileUrl(profilePhoto).email(email).role(role).build();
 
         boolean alreadyExists = userRepository.findByEmail(email).isPresent();
 
         if(!alreadyExists) {
             userRepository.save(user);
 
-            AuthResponse newUSerResponse =  AuthResponse.builder()
+            return   AuthResponse.builder()
                     .message("Registered Successfully")
                     .email(email)
                     .fullName(name)
                     .picture(profilePhoto)
                     .hasFilledUserProfile(false)
                     .build();
-            return newUSerResponse;
         }
         //TODO check if the other fields apart from name, email and picture are empty
         // then in your newUserResponse we set hasFilledUserProfile to true in this else block
@@ -60,9 +57,6 @@ public class UserAuthImpl implements UserAuthService {
 
     public User findByEmail(String email) {
         var user = userRepository.findByEmail(email);
-        if(user.isPresent()){
-            return user.get();
-        };
-        return null;
+        return user.orElse(null);
     }
 }

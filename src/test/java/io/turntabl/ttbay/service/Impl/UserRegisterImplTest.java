@@ -1,13 +1,16 @@
 package io.turntabl.ttbay.service.Impl;
 
+import io.turntabl.ttbay.enums.Office;
+import io.turntabl.ttbay.enums.Role;
 import io.turntabl.ttbay.model.User;
-import io.turntabl.ttbay.model.enums.Role;
 import io.turntabl.ttbay.repository.UserRepository;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+
+import java.util.ArrayList;
 
 
 @DataJpaTest
@@ -24,13 +27,13 @@ class UserRegisterImplTest {
     void testThatUSerIsRetrievedFromTHeUsingHisEmail() {
 
         User savedUser = userRepository
-                .save( new User(1L,
-                        "Tkayy",
-                        "Emmanuel Tweneboah",
-                        "emma@gmail.com",
-                        "picture",
-                        Role.USER,
-                        "AP"));
+                .save(new User(1L,
+                                "Tkayy",
+                                "Emmanuel Tweneboah",
+                                "emma@gmail.com",
+                                Role.USER,
+                                "picture",
+                                Office.ADVANTAGE_PLACE,new ArrayList<>(){}));
 
         User retrievedUserByEmail = serviceUnderTest.findByEmail("emma@gmail.com");
 

@@ -1,7 +1,8 @@
 package io.turntabl.ttbay.repository;
 
+import io.turntabl.ttbay.enums.Office;
+import io.turntabl.ttbay.enums.Role;
 import io.turntabl.ttbay.model.User;
-import io.turntabl.ttbay.model.enums.Role;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -9,6 +10,9 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+
+import java.util.ArrayList;
+
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 
@@ -25,9 +29,9 @@ class UserRepositoryTest {
                 "Tkayy",
                 "Emmanuel Tweneboah",
                 "emma@gmail.com",
-                "picture",
                 Role.USER,
-                "AP"));
+                "picture",
+                Office.ADVANTAGE_PLACE,new ArrayList<>(){}));
     }
     @AfterEach
     void tearDown(){

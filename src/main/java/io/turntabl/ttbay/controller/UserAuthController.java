@@ -24,7 +24,7 @@ public class UserAuthController {
     private UserAuthService userAuthService;
 
     @GetMapping("/register")
-    public ResponseEntity<AuthResponse>  authenticate(Authentication authentication) throws ParseException, UserAlreadyExistException {
+    public ResponseEntity<AuthResponse>  authenticate(Authentication authentication) throws ParseException {
         return ResponseEntity.status(HttpStatus.OK).body(userAuthService.register(authentication));
     }
 }
