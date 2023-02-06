@@ -2,6 +2,7 @@ package io.turntabl.ttbay.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.turntabl.ttbay.dto.ProfileDTO;
+import io.turntabl.ttbay.model.User;
 import io.turntabl.ttbay.service.ProfileService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -21,6 +22,7 @@ import java.util.List;
 import static io.turntabl.ttbay.enums.OfficeLocation.SONNIDOM_HOUSE;
 import static io.turntabl.ttbay.enums.Weekday.MONDAY;
 import static io.turntabl.ttbay.enums.Weekday.TUESDAY;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 
 @WebMvcTest(ProfileController.class)
@@ -41,6 +43,9 @@ class ProfileControllerTest {
 
     private ProfileDTO invalidProfileDTO;
 
+    private User validUSer;
+
+
     @BeforeEach
     void setup(){
         validProfileDTO = new ProfileDTO(
@@ -60,7 +65,39 @@ class ProfileControllerTest {
                 SONNIDOM_HOUSE,
                 List.of(MONDAY, TUESDAY)
         );
+
+        validUSer = new User(
+                "testingProfileID",
+                "testing@testing.com",
+                "Michael Jackson",
+                "testingImage.com/image.png",
+                SONNIDOM_HOUSE,
+                List.of()
+        );
+
     }
+
+    @Test
+    void givenValidExistingEmail_whenGettingUserWithThatEmail_shouldRespondStatus200 () throws Exception {
+        String validEmail = "testing@testing.com";
+
+        ResultActions response = mockMvc.perform(get("/api/v1/profile/"+validEmail)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(validUSer)));
+
+        response.andExpect(MockMvcResultMatchers.status().isOk());
+    }
+
+    @Test
+    void findAllUsers_shouldRespondStatus200 () throws Exception {
+        List<User> validUsers = List.of(validUSer);
+        ResultActions response = mockMvc.perform(get("/api/v1/profile/all")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(validUsers)));
+
+        response.andExpect(MockMvcResultMatchers.status().isOk());
+    }
+
 
     @Test
     void givenValidProfileDTO_whenUpdatingProfile_thenResponseStatus200() throws Exception {

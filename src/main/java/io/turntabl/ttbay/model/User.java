@@ -2,6 +2,7 @@ package io.turntabl.ttbay.model;
 
 import io.turntabl.ttbay.enums.OfficeLocation;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -16,6 +17,7 @@ import java.util.List;
 public class User {
     @Id
     private String userId;
+    @Email(message = "A valid email has to be set")
     private String email;
     private String fullName;
     private String profileUrl;

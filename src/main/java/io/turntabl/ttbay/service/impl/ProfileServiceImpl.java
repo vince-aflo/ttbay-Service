@@ -9,7 +9,10 @@ import io.turntabl.ttbay.service.ProfileService;
 import io.turntabl.ttbay.utils.mappers.ProfileMapper;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -28,5 +31,19 @@ public class ProfileServiceImpl implements ProfileService {
         }catch (Exception exception) {
             throw new ProfileUpdateException("Unable to create/update the profile");
         }
+    }
+
+    @Override
+    public User getUser(String email) {
+      User user = userRepository.findByEmail(email);
+      if(user == null){
+          throw new UsernameNotFoundException(email);
+      }
+      return user;
+    }
+
+    @Override
+    public List<User> findAllUsers() {
+        return userRepository.findAll();
     }
 }
