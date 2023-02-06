@@ -2,12 +2,11 @@ package io.turntabl.ttbay.model;
 
 import io.turntabl.ttbay.enums.Weekday;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Entity
-@Data
+@Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 public class OfficeDay {

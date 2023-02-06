@@ -43,13 +43,12 @@ class ProfileControllerTest {
 
     private ProfileDTO invalidProfileDTO;
 
-    private User validUSer;
+    private User validUser;
 
 
     @BeforeEach
     void setup(){
         validProfileDTO = new ProfileDTO(
-                "testingProfileID",
                 "testing@testing.com",
                 "Michael Jackson",
                 "testingImage.com/image.png",
@@ -58,7 +57,6 @@ class ProfileControllerTest {
         );
 
         invalidProfileDTO = new ProfileDTO(
-                "testingProfileID",
                 "testing.com",
                 "Michael Jackson",
                 "testingImage.com/image.png",
@@ -66,8 +64,8 @@ class ProfileControllerTest {
                 List.of(MONDAY, TUESDAY)
         );
 
-        validUSer = new User(
-                "testingProfileID",
+        validUser = new User(
+                1L,
                 "testing@testing.com",
                 "Michael Jackson",
                 "testingImage.com/image.png",
@@ -83,14 +81,14 @@ class ProfileControllerTest {
 
         ResultActions response = mockMvc.perform(get("/api/v1/profile/"+validEmail)
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(validUSer)));
+                .content(objectMapper.writeValueAsString(validUser)));
 
         response.andExpect(MockMvcResultMatchers.status().isOk());
     }
 
     @Test
     void findAllUsers_shouldRespondStatus200 () throws Exception {
-        List<User> validUsers = List.of(validUSer);
+        List<User> validUsers = List.of(validUser);
         ResultActions response = mockMvc.perform(get("/api/v1/profile/all")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(validUsers)));

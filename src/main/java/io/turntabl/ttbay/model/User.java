@@ -2,22 +2,23 @@ package io.turntabl.ttbay.model;
 
 import io.turntabl.ttbay.enums.OfficeLocation;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Email;
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.util.List;
 
 @Entity
-@Data
 @AllArgsConstructor
 @NoArgsConstructor
+@Getter
+@Setter
 @Table(name="users")
 public class User {
     @Id
-    private String userId;
-    @Email(message = "A valid email has to be set")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private long userId;
     private String email;
     private String fullName;
     private String profileUrl;
@@ -26,27 +27,15 @@ public class User {
     private List<OfficeDay> officeDays;
 
     public User(
-            String userId,
             String email,
             String fullName,
             String profileUrl,
             OfficeLocation officeLocation){
-        this.userId = userId;
         this.email = email;
         this.fullName = fullName;
         this.profileUrl = profileUrl;
         this.officeLocation = officeLocation;
     }
 
-    @Override
-    public String toString() {
-        return "Profile{" +
-                "profileId='" + userId + '\'' +
-                ", email='" + email + '\'' +
-                ", fullName='" + fullName + '\'' +
-                ", profileUrl='" + profileUrl + '\'' +
-                ", office=" + officeLocation +
-                ", officeDays=" + officeDays +
-                '}';
-    }
+
 }

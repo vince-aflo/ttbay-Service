@@ -39,7 +39,6 @@ class ProfileServiceImplTest {
     @BeforeEach
     void setup(){
         validProfileDTO = new ProfileDTO(
-                "testingProfileID",
                 "testing@testing.com",
                 "Michael Jackson",
                 "testingImage.com/image.png",

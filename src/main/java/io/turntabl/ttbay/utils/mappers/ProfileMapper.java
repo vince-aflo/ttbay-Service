@@ -12,7 +12,6 @@ public interface ProfileMapper {
     ProfileMapper INSTANCE = Mappers.getMapper(ProfileMapper.class);
     default User profileDTOtoProfile(ProfileDTO profileDTO){
         User user =  new User(
-                profileDTO.userId(),
                 profileDTO.email(),
                 profileDTO.fullName(),
                 profileDTO.profileUrl(),
