@@ -2,6 +2,8 @@ package io.turntabl.ttbay.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.turntabl.ttbay.dto.ProfileDTO;
+import io.turntabl.ttbay.enums.OfficeLocation;
+import io.turntabl.ttbay.enums.Role;
 import io.turntabl.ttbay.model.User;
 import io.turntabl.ttbay.service.ProfileService;
 import org.junit.jupiter.api.BeforeEach;
@@ -17,6 +19,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static io.turntabl.ttbay.enums.OfficeLocation.SONNIDOM_HOUSE;
@@ -64,11 +67,14 @@ class ProfileControllerTest {
                 List.of(MONDAY, TUESDAY)
         );
 
+
+
         validUser = new User(
                 1L,
                 "testing@testing.com",
                 "Michael Jackson",
                 "testingImage.com/image.png",
+                Role.USER,
                 SONNIDOM_HOUSE,
                 List.of()
         );

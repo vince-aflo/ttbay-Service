@@ -1,11 +1,9 @@
 package io.turntabl.ttbay.model;
 
 import io.turntabl.ttbay.enums.OfficeLocation;
+import io.turntabl.ttbay.enums.Role;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.util.List;
 
@@ -15,6 +13,7 @@ import java.util.List;
 @Getter
 @Setter
 @Table(name="users")
+@Builder
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -22,6 +21,8 @@ public class User {
     private String email;
     private String fullName;
     private String profileUrl;
+
+    private Role role;
     private OfficeLocation officeLocation;
     @OneToMany(mappedBy = "user", fetch= FetchType.LAZY, cascade = CascadeType.ALL)
     private List<OfficeDay> officeDays;
