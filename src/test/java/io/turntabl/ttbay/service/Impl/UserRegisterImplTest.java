@@ -1,4 +1,4 @@
-package io.turntabl.ttbay.service.impl;
+package io.turntabl.ttbay.service.Impl;
 
 import io.turntabl.ttbay.enums.OfficeLocation;
 import io.turntabl.ttbay.enums.Role;
@@ -20,7 +20,7 @@ class UserRegisterImplTest {
     @Mock
     private UserRepository userRepository;
     @Mock
-    private io.turntabl.ttbay.service.impl.UserAuthImpl serviceUnderTest;
+    private UserAuthImpl serviceUnderTest;
 
 
     @Test
