@@ -13,7 +13,7 @@ spring:
         dialect: org.hibernate.dialect.PostgreSQLDialect
         format_sql: true
     hibernate:
-      ddl-auto: update
+      ddl-auto: create-drop
   security:
     oauth2:
       client:
@@ -28,3 +28,4 @@ spring:
       include-message: true
 
 jwt-set-url: https://www.googleapis.com/oauth2/v2/certs
+

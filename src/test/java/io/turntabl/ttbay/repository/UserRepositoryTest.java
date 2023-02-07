@@ -1,6 +1,5 @@
 package io.turntabl.ttbay.repository;
 
-import io.turntabl.ttbay.enums.Office;
 import io.turntabl.ttbay.enums.Role;
 import io.turntabl.ttbay.model.User;
 import org.junit.jupiter.api.AfterEach;
@@ -11,8 +10,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
-import java.util.ArrayList;
+import java.util.List;
 
+import static io.turntabl.ttbay.enums.OfficeLocation.SONNIDOM_HOUSE;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 
@@ -25,13 +25,15 @@ class UserRepositoryTest {
 
     @BeforeEach
     void beforeEach(){
-        userRepository.save(new User(1L,
-                "Tkayy",
-                "Emmanuel Tweneboah",
+        userRepository.save(new User(
+                1L,
                 "emma@gmail.com",
+                "Michael Jackson",
+                "testingImage.com/image.png",
                 Role.USER,
-                "picture",
-                Office.ADVANTAGE_PLACE,new ArrayList<>(){}));
+                SONNIDOM_HOUSE,
+                List.of()
+        ));
     }
     @AfterEach
     void tearDown(){

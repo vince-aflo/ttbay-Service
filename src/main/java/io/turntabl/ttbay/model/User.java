@@ -1,38 +1,42 @@
 package io.turntabl.ttbay.model;
 
-import io.turntabl.ttbay.enums.Office;
+import io.turntabl.ttbay.enums.OfficeLocation;
 import io.turntabl.ttbay.enums.Role;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Size;
 import lombok.*;
-import org.hibernate.validator.constraints.UniqueElements;
 
 import java.util.List;
 
-
 @Entity
-@Table(name = "users")
-@NoArgsConstructor
 @AllArgsConstructor
+@NoArgsConstructor
 @Getter
 @Setter
+@Table(name="users")
 @Builder
-public class User   {
+public class User {
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
-    @Column(name = "id", nullable = false, unique = true)
-    private Long id;
-    private String username;
-    private String fullName;
-    @Column(name = "email", nullable = false, unique = true)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private long userId;
     private String email;
-    private Role role;
+    private String fullName;
     private String profileUrl;
-    private Office office;
-    @Size(max = 5)
-    @UniqueElements
+
+    private Role role;
+    private OfficeLocation officeLocation;
     @OneToMany(mappedBy = "user", fetch= FetchType.LAZY, cascade = CascadeType.ALL)
     private List<OfficeDay> officeDays;
 
-}
+    public User(
+            String email,
+            String fullName,
+            String profileUrl,
+            OfficeLocation officeLocation){
+        this.email = email;
+        this.fullName = fullName;
+        this.profileUrl = profileUrl;
+        this.officeLocation = officeLocation;
+    }
 
+
+}

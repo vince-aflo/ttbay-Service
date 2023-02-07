@@ -1,6 +1,6 @@
-package io.turntabl.ttbay.service.Impl;
+package io.turntabl.ttbay.service.impl;
 
-import io.turntabl.ttbay.enums.Office;
+import io.turntabl.ttbay.enums.OfficeLocation;
 import io.turntabl.ttbay.enums.Role;
 import io.turntabl.ttbay.model.User;
 import io.turntabl.ttbay.repository.UserRepository;
@@ -20,7 +20,7 @@ class UserRegisterImplTest {
     @Mock
     private UserRepository userRepository;
     @Mock
-    private UserAuthImpl serviceUnderTest;
+    private io.turntabl.ttbay.service.impl.UserAuthImpl serviceUnderTest;
 
 
     @Test
@@ -32,8 +32,7 @@ class UserRegisterImplTest {
                                 "Emmanuel Tweneboah",
                                 "emma@gmail.com",
                                 Role.USER,
-                                "picture",
-                                Office.ADVANTAGE_PLACE,new ArrayList<>(){}));
+                                OfficeLocation.ADVANTAGE_PLACE,new ArrayList<>()));
 
         User retrievedUserByEmail = serviceUnderTest.findByEmail("emma@gmail.com");
 

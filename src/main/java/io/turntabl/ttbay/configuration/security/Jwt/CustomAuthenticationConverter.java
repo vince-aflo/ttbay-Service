@@ -1,7 +1,7 @@
 package io.turntabl.ttbay.configuration.security.Jwt;
 
 import io.turntabl.ttbay.model.User;
-import io.turntabl.ttbay.service.Impl.UserAuthImpl;
+import io.turntabl.ttbay.service.impl.UserAuthImpl;
 import lombok.AllArgsConstructor;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;

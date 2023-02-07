@@ -1,7 +1,6 @@
 package io.turntabl.ttbay.controller;
 
 import io.turntabl.ttbay.dto.AuthResponse;
-import io.turntabl.ttbay.exceptions.UserAlreadyExistException;
 import io.turntabl.ttbay.service.UserAuthService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -24,7 +23,7 @@ public class UserAuthController {
     private UserAuthService userAuthService;
 
     @GetMapping("/register")
-    public ResponseEntity<AuthResponse>  authenticate(Authentication authentication) throws ParseException {
+    public ResponseEntity<AuthResponse> authenticate(Authentication authentication) throws ParseException {
         return ResponseEntity.status(HttpStatus.OK).body(userAuthService.register(authentication));
     }
 }
