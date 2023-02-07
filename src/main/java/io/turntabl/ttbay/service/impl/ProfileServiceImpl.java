@@ -1,4 +1,4 @@
-package io.turntabl.ttbay.service.impl;
+package io.turntabl.ttbay.service.Impl;
 
 import io.turntabl.ttbay.dto.ProfileDTO;
 import io.turntabl.ttbay.exceptions.ProfileUpdateException;
