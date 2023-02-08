@@ -44,8 +44,7 @@ public class UserAuthImpl implements UserAuthService {
                     .hasFilledUserProfile(false)
                     .build();
         }
-        //TODO check if the other fields apart from name, email and picture are empty
-        // then in your newUserResponse we set hasFilledUserProfile to true in this else block
+        //TODO check if username is empty, that means the profile has not been filled
 
         return AuthResponse.builder()
                 .message("Already registered")

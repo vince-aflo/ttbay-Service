@@ -15,6 +15,7 @@ public class OfficeDay {
     private long id;
     @ManyToOne(cascade = CascadeType.ALL)
     private User user;
+    @Enumerated(EnumType.STRING)
     private Weekday weekday;
 
     public OfficeDay(User userId, Weekday weekday) {

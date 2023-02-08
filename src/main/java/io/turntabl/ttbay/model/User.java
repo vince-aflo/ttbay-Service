@@ -16,22 +16,25 @@ import java.util.List;
 @Builder
 public class User {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long userId;
     private String email;
+    private String username;
     private String fullName;
     private String profileUrl;
-
+    @Enumerated(EnumType.STRING)
     private Role role;
+    @Enumerated(EnumType.STRING)
     private OfficeLocation officeLocation;
+
     @OneToMany(mappedBy = "user", fetch= FetchType.LAZY, cascade = CascadeType.ALL)
     private List<OfficeDay> officeDays;
 
     public User(
+            String username,
             String email,
             String fullName,
             String profileUrl,
             OfficeLocation officeLocation){
+        this.username= username;
         this.email = email;
         this.fullName = fullName;
         this.profileUrl = profileUrl;

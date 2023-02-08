@@ -50,6 +50,7 @@ class ProfileControllerTest {
     @BeforeEach
     void setup(){
         validProfileDTO = new ProfileDTO(
+                "Mick",
                 "testing@testing.com",
                 "Michael Jackson",
                 "testingImage.com/image.png",
@@ -58,6 +59,7 @@ class ProfileControllerTest {
         );
 
         invalidProfileDTO = new ProfileDTO(
+                "Mick",
                 "testing.com",
                 "Michael Jackson",
                 "testingImage.com/image.png",
@@ -68,15 +70,14 @@ class ProfileControllerTest {
 
 
         validUser = new User(
-                1L,
                 "testing@testing.com",
+                "Mick",
                 "Michael Jackson",
                 "testingImage.com/image.png",
                 Role.USER,
                 SONNIDOM_HOUSE,
                 List.of()
         );
-
     }
 
     @Test

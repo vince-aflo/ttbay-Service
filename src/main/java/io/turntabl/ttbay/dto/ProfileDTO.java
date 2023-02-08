@@ -11,6 +11,8 @@ import org.hibernate.validator.constraints.UniqueElements;
 import java.util.List;
 
 public record ProfileDTO(
+        @NotBlank(message = "username has to be set")
+        String username,
         @Email(message = "A valid email has to be set")
         String email,
         @NotBlank(message = "fullName has to be set")
