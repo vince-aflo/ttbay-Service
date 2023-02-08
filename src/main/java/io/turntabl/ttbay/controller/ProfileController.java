@@ -12,6 +12,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/v1/profile")
 @RequiredArgsConstructor
+@CrossOrigin(origins = "*")
 public class ProfileController {
 
     private final ProfileService profileService;
@@ -24,7 +25,7 @@ public class ProfileController {
     @GetMapping("/{email}")
     public User getUser(@PathVariable("email") String email){
        return profileService.getUser(email);
-    };
+    }
 
     @GetMapping("/all")
     public List<User> getAllUsers(){
