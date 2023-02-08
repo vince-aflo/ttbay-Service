@@ -31,8 +31,8 @@ class UserRegisterImplTest {
 
         User savedUser = userRepository
                 .save(new User(
-                        "tkayy",
                         "emma@gmail.com",
+                        "tkayy",
                         "Michael Jackson",
                         "testingImage.com/image.png",
                         Role.USER,

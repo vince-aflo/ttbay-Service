@@ -26,8 +26,8 @@ class UserRepositoryTest {
     @BeforeEach
     void beforeEach(){
         userRepository.save(new User(
-                "tkayy",
                 "emma@gmail.com",
+                "tkayy",
                 "Michael Jackson",
                 "testingImage.com/image.png",
                 Role.USER,
