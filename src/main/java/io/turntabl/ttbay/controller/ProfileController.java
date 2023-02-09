@@ -5,6 +5,7 @@ import io.turntabl.ttbay.model.User;
 import io.turntabl.ttbay.service.ProfileService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -18,17 +19,18 @@ public class ProfileController {
     private final ProfileService profileService;
 
     @PutMapping
-    public void updateProfile(@Valid @RequestBody ProfileDTO profileDTO) {
+    public ResponseEntity<Object> updateProfile(@Valid @RequestBody ProfileDTO profileDTO) {
         profileService.updateProfile(profileDTO);
+        return ResponseEntity.ok(null);
     }
 
     @GetMapping("/{email}")
-    public User getUser(@PathVariable("email") String email){
-       return profileService.getUser(email);
+    public ResponseEntity<User> getUser(@PathVariable("email") String email){
+        return ResponseEntity.ok(profileService.getUser(email));
     }
 
     @GetMapping("/all")
-    public List<User> getAllUsers(){
-        return profileService.findAllUsers();
+    public ResponseEntity<List<User>> getAllUsers(){
+        return ResponseEntity.ok(profileService.findAllUsers());
     }
 }
