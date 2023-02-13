@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/v1/profile")
@@ -25,7 +26,7 @@ public class ProfileController {
     }
 
     @GetMapping("/{email}")
-    public ResponseEntity<User> getUser(@PathVariable("email") String email){
+    public ResponseEntity<Optional<User>> getUser(@PathVariable("email") String email){
         return ResponseEntity.ok(profileService.getUser(email));
     }
 

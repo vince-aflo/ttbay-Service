@@ -1,5 +1,6 @@
 package io.turntabl.ttbay.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import io.turntabl.ttbay.enums.Weekday;
 import jakarta.persistence.*;
 import lombok.*;
@@ -14,6 +15,8 @@ public class OfficeDay {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
     @ManyToOne(cascade = CascadeType.ALL)
+    @JsonBackReference
+    @JoinColumn(name = "user_id")
     private User user;
     @Enumerated(EnumType.STRING)
     private Weekday weekday;
