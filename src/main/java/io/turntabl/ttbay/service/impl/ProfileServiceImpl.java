@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -33,8 +34,8 @@ public class ProfileServiceImpl implements ProfileService {
     }
 
     @Override
-    public User getUser(String email) {
-      User user = userRepository.findByEmail(email).get();
+    public Optional<User> getUser(String email) {
+        Optional<User> user = userRepository.findByEmail(email);
         return user;
     }
 

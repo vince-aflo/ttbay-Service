@@ -1,5 +1,6 @@
 package io.turntabl.ttbay.model;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import io.turntabl.ttbay.enums.OfficeLocation;
 import io.turntabl.ttbay.enums.Role;
 import jakarta.persistence.*;
@@ -26,6 +27,7 @@ public class User {
     private OfficeLocation officeLocation;
 
     @OneToMany(mappedBy = "user", fetch= FetchType.LAZY, cascade = CascadeType.ALL)
+    @JsonManagedReference
     private List<OfficeDay> officeDays;
 
     public User(
