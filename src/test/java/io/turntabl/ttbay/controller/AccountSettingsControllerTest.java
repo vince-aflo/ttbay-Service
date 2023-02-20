@@ -33,7 +33,7 @@ class AccountSettingsControllerTest {
     void deleteUser_givenjwtAuthTokenAndValidUserEnteredUserEmail_shouldReturnStatus200() throws Exception {
         String validEmail = "aikins.dwamena@turntabl.io";
 
-        ResultActions response = mockMvc.perform(delete("/api/v1/account/delete-user/" + validEmail)
+        ResultActions response = mockMvc.perform(delete("/api/v1/account/user/" + validEmail)
                 .with(jwt())
                 .contentType(MediaType.APPLICATION_JSON));
 
@@ -46,7 +46,7 @@ class AccountSettingsControllerTest {
     void deleteUser_givenjwtAuthTokenAndInValidUserEnteredUserEmail_shouldReturnStatus403() throws Exception {
         String validEmail = "aikinsakenten@gmail.com";
         Mockito.when(accountSettingsService.deleteAccount(any(), any())).thenThrow(new MismatchedEmailException("You're unauthorized"));
-        ResultActions response = mockMvc.perform(delete("/api/v1/account/delete-user/" + validEmail)
+        ResultActions response = mockMvc.perform(delete("/api/v1/account/user/" + validEmail)
                 .with(jwt())
         );
 
@@ -60,7 +60,7 @@ class AccountSettingsControllerTest {
     void deleteUser_givenjwtAuthTokenAndValidUserEnteredUserEmail_shouldReturnStatus404() throws Exception {
         String validEmail = "aikins.dwamena@turntabl.io";
         Mockito.when(accountSettingsService.deleteAccount(any(), any())).thenThrow(new ResourceNotFoundException("User couldn't be found"));
-        ResultActions response = mockMvc.perform(delete("/api/v1/account/delete-user/" + validEmail)
+        ResultActions response = mockMvc.perform(delete("/api/v1/account/user/" + validEmail)
                 .with(jwt())
         );
 
