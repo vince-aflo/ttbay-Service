@@ -1,5 +1,8 @@
 package io.turntabl.ttbay.configuration.security.Jwt;
 
+import io.turntabl.ttbay.model.User;
+import io.turntabl.ttbay.service.UserAuthService;
+import lombok.AllArgsConstructor;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.jwt.Jwt;
@@ -7,17 +10,29 @@ import org.springframework.security.oauth2.server.resource.InvalidBearerTokenExc
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 
 import java.util.List;
+import java.util.Optional;
 
+@AllArgsConstructor
 public class CustomAuthenticationConverter implements Converter<Jwt, JwtAuthenticationToken> {
+    private final UserAuthService userAuthService;
 
     @Override
-    public JwtAuthenticationToken convert(Jwt sourceToken) {
-        String email = (String) sourceToken.getClaims().get("email");
+    public JwtAuthenticationToken convert(Jwt source) {
+        String email = (String) source.getClaims().get("email");
 
-        if(email == null) throw new InvalidBearerTokenException("Invalid Bearer Token");
+        if (email == null) {
+            throw new InvalidBearerTokenException("Invalid bearer token");
+        }
+        Optional<User> optionalUser = Optional.ofNullable(userAuthService.findByEmail(email));
+
+        if (optionalUser.isPresent()) {
+            User user = optionalUser.get();
+            SimpleGrantedAuthority authority = new SimpleGrantedAuthority(user.getRole().toString());
+            return new JwtAuthenticationToken(source, List.of(authority));
+        }
 
         SimpleGrantedAuthority authority = new SimpleGrantedAuthority("USER");
-        return new JwtAuthenticationToken(sourceToken, List.of(authority));
 
+        return new JwtAuthenticationToken(source, List.of(authority));
     }
 }

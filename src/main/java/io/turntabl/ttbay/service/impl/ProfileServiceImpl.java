@@ -11,7 +11,6 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -39,8 +38,4 @@ public class ProfileServiceImpl implements ProfileService {
         return user;
     }
 
-    @Override
-    public List<User> findAllUsers() {
-        return userRepository.findAll();
-    }
 }

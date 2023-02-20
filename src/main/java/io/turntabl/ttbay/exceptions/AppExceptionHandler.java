@@ -12,4 +12,9 @@ public class AppExceptionHandler {
     public ResponseEntity<String> handleInvalidOrder(ProfileUpdateException exception, WebRequest request){
         return new ResponseEntity<>(exception.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
     }
+
+    @ExceptionHandler(UsernameAlreadyExistException.class)
+    public ResponseEntity<String> handleUsernameDuplicationValidation(UsernameAlreadyExistException exception, WebRequest request){
+        return new ResponseEntity<>(exception.getMessage(), HttpStatus.CONFLICT);
+    }
 }

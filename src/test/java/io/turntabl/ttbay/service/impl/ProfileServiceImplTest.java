@@ -24,16 +24,12 @@ import static org.mockito.Mockito.when;
 
 @SpringBootTest
 class ProfileServiceImplTest {
-
     @Autowired
     private ProfileServiceImpl profileService;
-
     @MockBean
     private UserRepository userRepository;
-
     @MockBean
     private OfficeDayRepository officeDayRepository;
-
     private ProfileDTO validProfileDTO;
 
     @BeforeEach

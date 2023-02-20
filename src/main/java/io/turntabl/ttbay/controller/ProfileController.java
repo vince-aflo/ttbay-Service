@@ -26,12 +26,9 @@ public class ProfileController {
     }
 
     @GetMapping("/{email}")
-    public ResponseEntity<Optional<User>> getUser(@PathVariable("email") String email){
+    public ResponseEntity< Optional<User>> getUser(@PathVariable("email") String email){
         return ResponseEntity.ok(profileService.getUser(email));
     }
 
-    @GetMapping("/all")
-    public ResponseEntity<List<User>> getAllUsers(){
-        return ResponseEntity.ok(profileService.findAllUsers());
-    }
+
 }
