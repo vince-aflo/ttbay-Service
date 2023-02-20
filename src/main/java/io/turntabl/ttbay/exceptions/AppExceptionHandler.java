@@ -13,6 +13,16 @@ public class AppExceptionHandler {
         return new ResponseEntity<>(exception.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
+    @ExceptionHandler(MismatchedEmailException.class)
+    public ResponseEntity<String> handleMismatchEmails(MismatchedEmailException exception){
+        return new ResponseEntity<>(exception.getMessage(), HttpStatus.FORBIDDEN);
+    }
+
+    @ExceptionHandler(ResourceNotFoundException.class)
+    public ResponseEntity<String> handleResourceNotFound(ResourceNotFoundException exception){
+        return new ResponseEntity<>(exception.getMessage(), HttpStatus.NOT_FOUND);
+    }
+
     @ExceptionHandler(UsernameAlreadyExistException.class)
     public ResponseEntity<String> handleUsernameDuplicationValidation(UsernameAlreadyExistException exception, WebRequest request){
         return new ResponseEntity<>(exception.getMessage(), HttpStatus.CONFLICT);
