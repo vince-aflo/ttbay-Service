@@ -11,10 +11,12 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 
 import java.time.Instant;
+import java.util.List;
 import java.util.Map;
 
 @SpringBootTest
@@ -24,13 +26,11 @@ class UserAuthImplTest {
     private UserRepository userRepository;
     @MockBean
     private UserAuthImpl serviceUnderTest;
-
     private User user;
 
     private JwtAuthenticationToken jwtAuthenticationToken;
 
     private AuthResponse authResponse;
-    private Jwt jwt;
 
     @BeforeEach
     void setUp() {
@@ -43,12 +43,13 @@ class UserAuthImplTest {
         Instant issuedAt = Instant.now();
         Instant expiredAt = Instant.now().plusSeconds(100000);
         Map<String, Object> headers = Map.of("aud", "aud");
-        Map<String, Object> claims = Map.of("email", email, "picture", picture, "given_name",
-                given_name, "family_name", family_name);
+        Map<String, Object> claims = Map.of("email", email, "picture", picture, "given_name", given_name, "family_name", family_name);
 
-        jwt = new Jwt(tokenValue, issuedAt, expiredAt, headers, claims);
-
-        user = User.builder().fullName(given_name + family_name).profileUrl(picture).email(email).role(Role.USER).build();
+        Jwt jwt = new Jwt(tokenValue, issuedAt, expiredAt, headers, claims);
+        SimpleGrantedAuthority authority = new SimpleGrantedAuthority(Role.USER.toString());
+        jwtAuthenticationToken = new JwtAuthenticationToken(jwt, List.of(authority));
+        Role role = Role.valueOf((jwtAuthenticationToken.getAuthorities().toArray())[0].toString());
+        user = User.builder().fullName(given_name + family_name).profileUrl(picture).email(email).role(role).build();
 
     }
 
@@ -60,24 +61,16 @@ class UserAuthImplTest {
     @Test
     void testThat_UserIsRetrievedFromTheDb_UsingHisEmail() {
         User expectedUser = userRepository.save(user);
-        System.out.println(expectedUser.getEmail());
         User retrievedUserByEmail = serviceUnderTest.findByEmail(user.getEmail());
-        System.out.println(retrievedUserByEmail.getEmail());
         Assertions.assertEquals(retrievedUserByEmail.getEmail(), expectedUser.getEmail());
     }
 
     @Test
     void testThat_WhenFreshUserRegisters_ReturnHasFilledUerProfileToFalse() {
-        authResponse = AuthResponse.builder()
-                .message("Registered Successfully")
-                .email(user.getEmail())
-                .fullName(user.getFullName())
-                .picture(user.getProfileUrl())
-                .hasFilledUserProfile(false)
-                .build();
+        authResponse = AuthResponse.builder().message("Registered Successfully").email(user.getEmail()).fullName(user.getFullName()).picture(user.getProfileUrl()).hasFilledUserProfile(false).build();
         AuthResponse expectedResponse = authResponse;
 
-        AuthResponse actualResponse = serviceUnderTest.register(new JwtAuthenticationToken(jwt));
+        AuthResponse actualResponse = serviceUnderTest.register(jwtAuthenticationToken);
 
         Assertions.assertEquals(expectedResponse.isHasFilledUserProfile(), actualResponse.isHasFilledUserProfile());
 
@@ -87,16 +80,10 @@ class UserAuthImplTest {
     void testThat_WhenAnExistingUserRegisters_ReturnHasFilledUerProfileToTrue() {
         userRepository.save(user);
 
-        authResponse = AuthResponse.builder()
-                .message("Registered Successfully")
-                .email(user.getEmail())
-                .fullName(user.getFullName())
-                .picture(user.getProfileUrl())
-                .hasFilledUserProfile(true)
-                .build();
+        authResponse = AuthResponse.builder().message("Registered Successfully").email(user.getEmail()).fullName(user.getFullName()).picture(user.getProfileUrl()).hasFilledUserProfile(true).build();
 
         AuthResponse expectedResponse = authResponse;
-        AuthResponse actualResponse = serviceUnderTest.register(new JwtAuthenticationToken(jwt));
+        AuthResponse actualResponse = serviceUnderTest.register(jwtAuthenticationToken);
         Assertions.assertEquals(expectedResponse.isHasFilledUserProfile(), actualResponse.isHasFilledUserProfile());
 
     }

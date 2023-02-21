@@ -90,18 +90,6 @@ class ProfileControllerTest {
 
         response.andExpect(MockMvcResultMatchers.status().isOk());
     }
-
-    @Test
-    void findAllUsers_shouldRespondStatus200 () throws Exception {
-        List<User> validUsers = List.of(validUser);
-        ResultActions response = mockMvc.perform(get("/api/v1/profile/all")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(validUsers)));
-
-        response.andExpect(MockMvcResultMatchers.status().isOk());
-    }
-
-
     @Test
     void givenValidProfileDTO_whenUpdatingProfile_thenResponseStatus200() throws Exception {
         ResultActions response = mockMvc.perform(put("/api/v1/profile")

@@ -1,5 +1,6 @@
 package io.turntabl.ttbay.configuration.security.Jwt;
 
+import io.turntabl.ttbay.enums.Role;
 import io.turntabl.ttbay.model.User;
 import io.turntabl.ttbay.service.UserAuthService;
 import lombok.AllArgsConstructor;
@@ -24,14 +25,13 @@ public class CustomAuthenticationConverter implements Converter<Jwt, JwtAuthenti
             throw new InvalidBearerTokenException("Invalid bearer token");
         }
         Optional<User> optionalUser = Optional.ofNullable(userAuthService.findByEmail(email));
-
+        SimpleGrantedAuthority authority;
         if (optionalUser.isPresent()) {
             User user = optionalUser.get();
-            SimpleGrantedAuthority authority = new SimpleGrantedAuthority(user.getRole().toString());
+            authority = new SimpleGrantedAuthority(user.getRole().toString());
             return new JwtAuthenticationToken(source, List.of(authority));
-        }
+        } else authority = new SimpleGrantedAuthority(Role.USER.toString());
 
-        SimpleGrantedAuthority authority = new SimpleGrantedAuthority("USER");
 
         return new JwtAuthenticationToken(source, List.of(authority));
     }

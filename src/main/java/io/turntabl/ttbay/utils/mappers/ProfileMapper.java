@@ -20,7 +20,7 @@ public interface ProfileMapper {
                 profileDTO.officeLocation()
         );
 
-        user.setRole(Role.valueOf("USER"));
+        user.setRole(Role.valueOf("USER")); //Todo set role dynamically
 
         user.setOfficeDays(
                 profileDTO.officeDays()

@@ -20,23 +20,22 @@ public class UserAuthImpl implements UserAuthService {
     UserRepository userRepository;
 
     @Override
-    public AuthResponse register(Authentication authentication){
+    public AuthResponse register(Authentication authentication) {
         JwtAuthenticationToken auth = (JwtAuthenticationToken) authentication;
         Map<String, Object> claims = auth.getTokenAttributes();
         String email = (String) claims.get("email");
 
         String name = (String) claims.get("name");
         String profilePhoto = (String) claims.get("picture");
-        Role role = Role.USER; //TODO we are going to get this role from the claims when we add an admin role
-                               //TODO (CustomAuthenticationConverter) customise the token before it gets here
+        Role role = Role.valueOf((auth.getAuthorities().toArray())[0].toString());
         User user = User.builder().fullName(name).profileUrl(profilePhoto).email(email).role(role).build();
 
         boolean alreadyExists = userRepository.findByEmail(email).isPresent();
 
-        if(!alreadyExists) {
+        if (!alreadyExists) {
             userRepository.save(user);
 
-            return   AuthResponse.builder()
+            return AuthResponse.builder()
                     .message("Registered Successfully")
                     .email(email)
                     .fullName(name)
