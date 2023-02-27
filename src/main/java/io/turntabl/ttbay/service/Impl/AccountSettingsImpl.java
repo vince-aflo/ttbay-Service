@@ -23,7 +23,7 @@ public class AccountSettingsImpl implements AccountSettingsService {
     public String deleteAccount(Authentication authentication, String userEnteredEmail) throws MismatchedEmailException, ResourceNotFoundException {
 
 
-        // extract username from token
+        // extract email from token
         JwtAuthenticationToken auth = (JwtAuthenticationToken) authentication;
         Map<String, Object> claims = auth.getTokenAttributes();
         String email = (String) claims.get("email");

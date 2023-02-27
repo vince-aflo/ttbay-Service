@@ -30,6 +30,10 @@ public class User {
     @JsonManagedReference
     private List<OfficeDay> officeDays;
 
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
+    @JsonManagedReference
+    private List<Item> items;
+
     public User(
             String username,
             String email,
@@ -43,5 +47,13 @@ public class User {
         this.officeLocation = officeLocation;
     }
 
-
+    public User(String email, String username, String fullName, String profileUrl, Role role, OfficeLocation officeLocation, List<OfficeDay> officeDays) {
+        this.email = email;
+        this.username = username;
+        this.fullName = fullName;
+        this.profileUrl = profileUrl;
+        this.role = role;
+        this.officeLocation = officeLocation;
+        this.officeDays = officeDays;
+    }
 }
