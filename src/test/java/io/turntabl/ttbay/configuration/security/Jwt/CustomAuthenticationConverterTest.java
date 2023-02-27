@@ -2,6 +2,7 @@ package io.turntabl.ttbay.configuration.security.Jwt;
 
 import io.turntabl.ttbay.enums.Role;
 import io.turntabl.ttbay.model.User;
+import io.turntabl.ttbay.repository.UserRepository;
 import io.turntabl.ttbay.service.UserAuthService;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -16,6 +17,7 @@ import org.springframework.security.oauth2.server.resource.InvalidBearerTokenExc
 
 import java.time.Instant;
 import java.util.Map;
+import java.util.Optional;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.mockito.Mockito.when;
@@ -23,7 +25,7 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 class CustomAuthenticationConverterTest {
     @Mock
-    private UserAuthService userAuthService;
+    private UserRepository userRepository;
     @Autowired
     private CustomAuthenticationConverter classUnderTest;
 
@@ -32,7 +34,7 @@ class CustomAuthenticationConverterTest {
 
     @BeforeEach
     void setUp() {
-        classUnderTest = new CustomAuthenticationConverter(userAuthService);
+        classUnderTest = new CustomAuthenticationConverter(userRepository);
 
         String tokenValue = "token";
         String email = "test@gmail";
@@ -52,7 +54,7 @@ class CustomAuthenticationConverterTest {
     @Test
     void TestThatAuthenticatedUserHasADefaultRoleUser() {
         String email = "test@gmail";
-        when(userAuthService.findByEmail(email)).thenReturn(user);
+        when(userRepository.findByEmail(email)).thenReturn(Optional.ofNullable(user));
         var auth = classUnderTest.convert(jwt);
         assert auth != null;
         String role = auth.getAuthorities().stream().map(GrantedAuthority::getAuthority).findFirst().get();

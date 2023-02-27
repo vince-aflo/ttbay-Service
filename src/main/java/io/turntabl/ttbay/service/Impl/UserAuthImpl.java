@@ -54,8 +54,4 @@ public class UserAuthImpl implements UserAuthService {
                 .build();
     }
 
-    public User findByEmail(String email) {
-        var user = userRepository.findByEmail(email);
-        return user.orElse(null);
-    }
 }

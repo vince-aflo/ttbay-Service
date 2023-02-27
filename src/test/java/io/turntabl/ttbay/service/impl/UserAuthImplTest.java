@@ -61,7 +61,8 @@ class UserAuthImplTest {
     @Test
     void testThat_UserIsRetrievedFromTheDb_UsingHisEmail() {
         User expectedUser = userRepository.save(user);
-        User retrievedUserByEmail = serviceUnderTest.findByEmail(user.getEmail());
+        User retrievedUserByEmail = userRepository.findByEmail(user.getEmail()).orElse(null);
+        assert retrievedUserByEmail != null;
         Assertions.assertEquals(retrievedUserByEmail.getEmail(), expectedUser.getEmail());
     }
 
@@ -90,7 +91,7 @@ class UserAuthImplTest {
 
     @Test
     void testThat_FindByEmail_ShouldReturnNUllWhenEmailIsNotFoundInDb() {
-        var retrievedUserByEmail = serviceUnderTest.findByEmail("albert@gmail.com");
+        var retrievedUserByEmail = userRepository.findByEmail("albert@gmail.com").orElse(null);
         Assertions.assertNull(retrievedUserByEmail);
     }
 

@@ -2,6 +2,8 @@ server:
   port: 8080
 
 spring:
+  cors:
+    origin: "http://localhost:4200"
   datasource:
     url: jdbc:postgresql://localhost:5432/ttbay
     username: postgres
@@ -13,7 +15,7 @@ spring:
         dialect: org.hibernate.dialect.PostgreSQLDialect
         format_sql: true
     hibernate:
-      ddl-auto: update
+      ddl-auto: create-drop
 
 
   server:
