@@ -3,7 +3,6 @@ package io.turntabl.ttbay.configuration.security.Jwt;
 import io.turntabl.ttbay.enums.Role;
 import io.turntabl.ttbay.model.User;
 import io.turntabl.ttbay.repository.UserRepository;
-import io.turntabl.ttbay.service.UserAuthService;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

@@ -68,7 +68,7 @@ class UserAuthImplTest {
 
     @Test
     void testThat_WhenFreshUserRegisters_ReturnHasFilledUerProfileToFalse() {
-        authResponse = AuthResponse.builder().message("Registered Successfully").email(user.getEmail()).fullName(user.getFullName()).picture(user.getProfileUrl()).hasFilledUserProfile(false).build();
+        authResponse = AuthResponse.builder().hasFilledUserProfile(false).build();
         AuthResponse expectedResponse = authResponse;
 
         AuthResponse actualResponse = serviceUnderTest.register(jwtAuthenticationToken);
@@ -78,10 +78,23 @@ class UserAuthImplTest {
     }
 
     @Test
-    void testThat_WhenAnExistingUserRegisters_ReturnHasFilledUerProfileToTrue() {
+    void testThat_WhenAnExistingUserWithoutUsernameRegisters_ReturnHasFilledUerProfileToFalse() {
         userRepository.save(user);
 
-        authResponse = AuthResponse.builder().message("Registered Successfully").email(user.getEmail()).fullName(user.getFullName()).picture(user.getProfileUrl()).hasFilledUserProfile(true).build();
+        authResponse = AuthResponse.builder().hasFilledUserProfile(false).build();
+
+        AuthResponse expectedResponse = authResponse;
+        AuthResponse actualResponse = serviceUnderTest.register(jwtAuthenticationToken);
+        Assertions.assertEquals(expectedResponse.isHasFilledUserProfile(), actualResponse.isHasFilledUserProfile());
+
+    }
+
+    @Test
+    void testThat_WhenAnExistingUserWithUsernameRegisters_ReturnHasFilledUerProfileToTrue() {
+        user.setUsername("emmanuel");
+        userRepository.save(user);
+
+        authResponse = AuthResponse.builder().hasFilledUserProfile(true).build();
 
         AuthResponse expectedResponse = authResponse;
         AuthResponse actualResponse = serviceUnderTest.register(jwtAuthenticationToken);

@@ -2,7 +2,6 @@ package io.turntabl.ttbay.configuration.security;
 
 import io.turntabl.ttbay.configuration.security.Jwt.CustomAuthenticationConverter;
 import io.turntabl.ttbay.repository.UserRepository;
-import io.turntabl.ttbay.service.UserAuthService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;

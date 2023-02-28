@@ -34,8 +34,7 @@ public class ProfileServiceImpl implements ProfileService {
 
     @Override
     public Optional<User> getUser(String email) {
-        Optional<User> user = userRepository.findByEmail(email);
-        return user;
+        return userRepository.findByEmail(email);
     }
 
 }

@@ -12,6 +12,7 @@ import org.springframework.security.oauth2.server.resource.authentication.JwtAut
 import org.springframework.stereotype.Service;
 
 import java.util.Map;
+import java.util.Optional;
 
 @Service
 @AllArgsConstructor
@@ -30,28 +31,16 @@ public class UserAuthImpl implements UserAuthService {
         Role role = Role.valueOf((auth.getAuthorities().toArray())[0].toString());
         User user = User.builder().fullName(name).profileUrl(profilePhoto).email(email).role(role).build();
 
-        boolean alreadyExists = userRepository.findByEmail(email).isPresent();
+        Optional<User> targetUser = userRepository.findByEmail(email);
 
-        if (!alreadyExists) {
+        if (targetUser.isPresent() && targetUser.get().getUsername() != null)
+            return AuthResponse.builder().message("Already registered").email(email).fullName(name).picture(profilePhoto).hasFilledUserProfile(true).build();
+        else if (targetUser.isPresent() && targetUser.get().getUsername() == null) {
+            return AuthResponse.builder().message("Already registered").email(email).fullName(name).picture(profilePhoto).hasFilledUserProfile(false).build();
+        } else {
             userRepository.save(user);
-
-            return AuthResponse.builder()
-                    .message("Registered Successfully")
-                    .email(email)
-                    .fullName(name)
-                    .picture(profilePhoto)
-                    .hasFilledUserProfile(false)
-                    .build();
+            return AuthResponse.builder().message("Registered Successfully").email(email).fullName(name).picture(profilePhoto).hasFilledUserProfile(false).build();
         }
-        //TODO check if username is empty, that means the profile has not been filled
-
-        return AuthResponse.builder()
-                .message("Already registered")
-                .email(email)
-                .fullName(name)
-                .picture(profilePhoto)
-                .hasFilledUserProfile(true)
-                .build();
     }
-
 }
+

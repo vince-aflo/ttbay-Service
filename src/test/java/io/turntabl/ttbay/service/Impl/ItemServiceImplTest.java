@@ -1,4 +1,4 @@
-package io.turntabl.ttbay.service.impl;
+package io.turntabl.ttbay.service.Impl;
 
 import io.turntabl.ttbay.enums.OfficeLocation;
 import io.turntabl.ttbay.exceptions.ResourceNotFoundException;
@@ -71,7 +71,7 @@ class ItemServiceImplTest {
     //check for 404 exception when finding user :
 
     @Test
-    void returnAllAuctionItemsByUser_givenJwtAuthTokenAndNoUserInDb_shouldThrowError() throws ResourceNotFoundException {
+    void returnAllAuctionItemsByUser_givenJwtAuthTokenAndNoUserInDb_shouldThrowError(){
         doReturn(Optional.empty())
                 .when(userRepository).findByEmail(any());
 
@@ -83,7 +83,7 @@ class ItemServiceImplTest {
 
 
     @Test
-    void returnAllAuctionItemsByUser_givenJwtAuthTokenAndUserHasNoItems_shouldThrowError() throws ResourceNotFoundException {
+    void returnAllAuctionItemsByUser_givenJwtAuthTokenAndUserHasNoItems_shouldThrowError() {
         doReturn(Optional.of(testUser))
                 .when(userRepository).findByEmail(any());
         doReturn(Optional.empty())
@@ -97,7 +97,7 @@ class ItemServiceImplTest {
 
 
     @Test
-    void returnAllAuctionItemsByUser_givenJwtAuthTokenAndUserHasNoAuctionItems_shouldThrowError() throws ResourceNotFoundException {
+    void returnAllAuctionItemsByUser_givenJwtAuthTokenAndUserHasNoAuctionItems_shouldThrowError() {
         doReturn(Optional.of(testUser))
                 .when(userRepository).findByEmail(any());
         doReturn(Optional.of(testAuctionList2))

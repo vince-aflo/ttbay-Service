@@ -2,13 +2,11 @@ package io.turntabl.ttbay.controller;
 
 import io.turntabl.ttbay.exceptions.ResourceNotFoundException;
 import io.turntabl.ttbay.model.Item;
-import io.turntabl.ttbay.repository.ItemRepository;
 import io.turntabl.ttbay.service.ItemService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
