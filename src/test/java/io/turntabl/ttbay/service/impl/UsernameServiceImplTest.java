@@ -40,6 +40,7 @@ class UsernameServiceImplTest {
 
     @BeforeEach
     void setUp() {
+        userRepository.deleteAll();
         classUnderTest = new UsernameServiceImpl(userRepository);
         String tokenValue = "token";
         String email = "test@gmail.com";

@@ -2,6 +2,7 @@ package io.turntabl.ttbay.controller;
 
 import io.turntabl.ttbay.service.UsernameService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.web.bind.annotation.*;
@@ -9,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("api/v1/profile/username")
+@CrossOrigin(origins = "*")
 public class UsernameController {
     private final UsernameService usernameService;
 

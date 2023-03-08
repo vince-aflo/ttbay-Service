@@ -4,7 +4,6 @@ import io.turntabl.ttbay.dto.AuthResponse;
 import io.turntabl.ttbay.enums.Role;
 import io.turntabl.ttbay.model.User;
 import io.turntabl.ttbay.repository.UserRepository;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -51,11 +50,6 @@ class UserAuthImplTest {
         Role role = Role.valueOf((jwtAuthenticationToken.getAuthorities().toArray())[0].toString());
         user = User.builder().fullName(given_name + family_name).profileUrl(picture).email(email).role(role).build();
 
-    }
-
-    @AfterEach
-    void tearDown() {
-        userRepository.deleteAll();
     }
 
     @Test

@@ -38,7 +38,7 @@ class UsernameControllerTest {
     }
 
     @Test
-    void testThat_UpdatingUsernameWithUnavailableName_shouldReturnAStatus200() throws Exception {
+    void testThat_UpdatingUsernameWithUnavailableName_shouldReturnAStatus409() throws Exception {
         String unavailable_username = "unavailable";
         when(usernameService.updateUsername(any(), any())).thenThrow(new UsernameAlreadyExistException("unavailable"));
         ResultActions response = mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/profile/username/" + unavailable_username)

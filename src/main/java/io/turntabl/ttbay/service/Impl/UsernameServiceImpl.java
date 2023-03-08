@@ -20,6 +20,7 @@ public class UsernameServiceImpl implements UsernameService {
 
     @Override
     public String updateUsername(JwtAuthenticationToken auth, String username) {
+        System.out.println(auth);
         Map<String, String> allUsernames = findAllUnavailableUsernames();
 
         Map<String, String> unavailableUsernames = removeActiveUsersUsername(auth, allUsernames);
