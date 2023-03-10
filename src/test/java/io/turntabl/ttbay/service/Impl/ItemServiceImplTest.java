@@ -4,6 +4,7 @@ import io.turntabl.ttbay.dto.ItemRequest;
 import io.turntabl.ttbay.enums.Category;
 import io.turntabl.ttbay.enums.ItemCondition;
 import io.turntabl.ttbay.enums.OfficeLocation;
+import io.turntabl.ttbay.exceptions.ItemAlreadyOnAuctionException;
 import io.turntabl.ttbay.exceptions.MismatchedEmailException;
 import io.turntabl.ttbay.exceptions.ResourceNotFoundException;
 import io.turntabl.ttbay.model.Item;
@@ -35,7 +36,9 @@ class ItemServiceImplTest {
     private final User testUser = new User("aikscode", "aikins.dwamena@turntabl.io", "Aikins Akenten Dwamena", "", OfficeLocation.SONNIDOM_HOUSE);
     private final List<Item> testAuctionList = List.of(new Item("Book", "Harry Potter", testUser, null, true, false), new Item("Book1", "Harry Potter2", testUser, null, true, true), new Item("Book2", "Harry Potter3", testUser, null, false, false), new Item("Book3", "Harry Potter4", testUser, null, false, true));
     private final List<Item> testItemsList = List.of(new Item("Book", "Harry Potter", testUser, null, false, false), new Item("Book1", "Harry Potter2", testUser, null, true, true), new Item("Book2", "Harry Potter3", testUser, null, false, false), new Item("Book3", "Harry Potter4", testUser, null, false, true));
-    private final Item testItem = new Item("Book1", "Harry Potter2", testUser, null, true, true);
+    private final Item testItem = new Item("Book1", "Harry Potter2", testUser, null, false, false);
+    private final Item testItemOnAuction = new Item("Book1", "Harry Potter2", testUser, null, true, false);
+
     private final List<Item> testAuctionList2 = List.of(
 
             new Item("Book1", "Harry Potter2", testUser, null, true, true), new Item("Book2", "Harry Potter3", testUser, null, false, false), new Item("Book3", "Harry Potter4", testUser, null, false, true));
@@ -59,7 +62,6 @@ class ItemServiceImplTest {
 
     @BeforeEach
     void setUp() {
-        itemService = new ItemServiceImpl(itemRepository, tokenAttributesExtractor, userRepository);
         //create jwt
         String tokenValue = "token";
         String email = "aikins.dwamena@turntabl.io";
@@ -141,6 +143,24 @@ class ItemServiceImplTest {
     }
 
     @Test
+    void testThat_givenAValidToken_activeUserShouldBeAbleToDeleteOneOfItsDraftItems() throws ResourceNotFoundException, MismatchedEmailException, ItemAlreadyOnAuctionException {
+        doReturn(Optional.of(testItem)).when(itemRepository).findById(any());
+        String expected = "item deleted successfully";
+        String actualResponse = itemService.deleteItem(any(), jwtAuthenticationToken);
+        verify(itemRepository, times(1)).delete(any());
+        Assertions.assertEquals(expected, actualResponse);
+    }
+
+    @Test
+    void testThat_givenAValidToken_activeUserShouldNotBeAbleToDeleteOneOfItsDraftItemsOnAuction()  {
+        doReturn(Optional.of(testItemOnAuction)).when(itemRepository).findById(any());
+
+        Assertions.assertThrows(ItemAlreadyOnAuctionException.class, () -> itemService.deleteItem(any(), jwtAuthenticationToken));
+
+
+    }
+
+    @Test
     void testThat_givenAValidToken_activeUserShouldBeAbleToReturnOneOfItsItems() throws ResourceNotFoundException, MismatchedEmailException {
         doReturn(Optional.of(testUser)).when(userRepository).findByEmail("aikins.dwamena@turntabl.io");
         doReturn(Optional.of(testItem)).when(itemRepository).findById(any());
@@ -159,7 +179,7 @@ class ItemServiceImplTest {
     }
 
     @Test
-    void testThat_givenAValidToken_activeUserShouldNotBeAbleAccessDifferentUserItem()  {
+    void testThat_givenAValidToken_activeUserShouldNotBeAbleAccessDifferentUserItem() {
         Item testItem1 = new Item("test1", "test1", testUser1, null, true, true);
 
         doReturn(Optional.of(testItem1)).when(itemRepository).findById(any());
