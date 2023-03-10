@@ -1,6 +1,7 @@
 package io.turntabl.ttbay.service.Impl;
 
 import io.turntabl.ttbay.dto.ItemRequest;
+import io.turntabl.ttbay.exceptions.ItemAlreadyOnAuctionException;
 import io.turntabl.ttbay.exceptions.MismatchedEmailException;
 import io.turntabl.ttbay.exceptions.ModelCreateException;
 import io.turntabl.ttbay.exceptions.ResourceNotFoundException;
@@ -39,6 +40,7 @@ public class ItemServiceImpl implements ItemService {
         return onAuctionItems;
     }
 
+
     @Override
     public String addItem(ItemRequest itemRequest, Authentication authentication) throws ResourceNotFoundException {
         String email = tokenAttributesExtractor.extractEmailFromToken(authentication);
@@ -67,6 +69,15 @@ public class ItemServiceImpl implements ItemService {
         }
 
         return item.get();
+    }
+
+    @Override
+    public String deleteItem(Long itemId, Authentication authentication) throws ResourceNotFoundException, MismatchedEmailException, ItemAlreadyOnAuctionException {
+        Item item = returnOneItemOfUser(itemId, authentication);
+        if (item.getOnAuction()) throw new ItemAlreadyOnAuctionException("cannot remove item(draft) on auction");
+        itemRepository.delete(item);
+
+        return "item deleted successfully";
     }
 
     @Override

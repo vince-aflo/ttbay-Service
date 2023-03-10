@@ -8,5 +8,4 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface ItemImageRepository extends JpaRepository<ItemImage, Long> {
-
 }

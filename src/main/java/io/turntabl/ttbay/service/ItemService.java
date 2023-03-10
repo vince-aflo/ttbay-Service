@@ -1,6 +1,7 @@
 package io.turntabl.ttbay.service;
 
 import io.turntabl.ttbay.dto.ItemRequest;
+import io.turntabl.ttbay.exceptions.ItemAlreadyOnAuctionException;
 import io.turntabl.ttbay.exceptions.MismatchedEmailException;
 import io.turntabl.ttbay.exceptions.ResourceNotFoundException;
 import io.turntabl.ttbay.model.Item;
@@ -18,4 +19,5 @@ public interface ItemService {
 
     Item returnOneItemOfUser(Long itemId, Authentication authentication) throws ResourceNotFoundException, MismatchedEmailException;
 
+    String deleteItem(Long itemId, Authentication authentication) throws ResourceNotFoundException, MismatchedEmailException, ItemAlreadyOnAuctionException;
 }

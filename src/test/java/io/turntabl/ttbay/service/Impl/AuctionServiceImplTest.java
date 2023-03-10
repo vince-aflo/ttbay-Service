@@ -4,7 +4,6 @@ import io.turntabl.ttbay.enums.OfficeLocation;
 import io.turntabl.ttbay.enums.Role;
 import io.turntabl.ttbay.exceptions.ResourceNotFoundException;
 import io.turntabl.ttbay.model.Auction;
-import io.turntabl.ttbay.model.Item;
 import io.turntabl.ttbay.model.User;
 import io.turntabl.ttbay.repository.AuctionRepository;
 import io.turntabl.ttbay.repository.ItemRepository;
@@ -55,7 +54,6 @@ class AuctionServiceImplTest {
 
     @BeforeEach
     void setUp() {
-        serviceUnderTest = new AuctionServiceImpl(auctionRepository, userRepository, itemService, tokenAttributesExtractor, itemRepository);
         String tokenValue = "token";
         String email = "test@gmail.com";
         String picture = "xxxxxx";
