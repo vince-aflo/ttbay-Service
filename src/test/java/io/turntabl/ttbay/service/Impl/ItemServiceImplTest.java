@@ -5,8 +5,8 @@ import io.turntabl.ttbay.enums.AuctionStatus;
 import io.turntabl.ttbay.enums.Category;
 import io.turntabl.ttbay.enums.ItemCondition;
 import io.turntabl.ttbay.enums.OfficeLocation;
-import io.turntabl.ttbay.exceptions.ItemAlreadyOnAuctionException;
 import io.turntabl.ttbay.exceptions.ForbiddenActionException;
+import io.turntabl.ttbay.exceptions.ItemAlreadyOnAuctionException;
 import io.turntabl.ttbay.exceptions.MismatchedEmailException;
 import io.turntabl.ttbay.exceptions.ResourceNotFoundException;
 import io.turntabl.ttbay.model.Auction;
@@ -282,12 +282,13 @@ class ItemServiceImplTest {
     @Test
     void deleteItemOnAuction_givenAppropriateIdAndNoBidAvailable_shouldDeleteItem() throws MismatchedEmailException, ForbiddenActionException, ResourceNotFoundException {
         doReturn(Optional.of(testAuctionList)).when(auctionRepository).findAllByItemId(any());
-        doReturn(Optional.empty()).when(bidRepository).findAllByAuctionId(any());
+        doReturn(Optional.empty()).when(bidRepository).findByAuction(any());
 
         itemService.deleteItemOnAuction(1L,jwtAuthenticationToken);
 
         verify(auctionRepository,times(1)).findAllByItemId(any());
-        verify(bidRepository,times(1)).findAllByAuctionId(any());
+        verify(bidRepository,times(1)).findByAuction(any());
+        verify(itemRepository,times(1)).deleteById(any());
         Assertions.assertEquals("Item successfully deleted",itemService.deleteItemOnAuction(1L,jwtAuthenticationToken));
     }
 
@@ -305,7 +306,7 @@ class ItemServiceImplTest {
         doReturn(Optional.of(testAuctionList)).when(auctionRepository)
                 .findAllByItemId(any());
         doReturn(Optional.of(testBidList)).when(bidRepository)
-                .findAllByAuctionId(any());
+                .findByAuction(any());
 
         Assertions.assertThrows(ForbiddenActionException.class, ()-> itemService.deleteItemOnAuction(1L,jwtAuthenticationToken));
     }
@@ -318,14 +319,14 @@ class ItemServiceImplTest {
         itemService.deleteItemOnAuction(1L,jwtAuthenticationToken);
 
         verify(auctionRepository,times(1)).findAllByItemId(any());
-        verify(bidRepository,times(0)).findAllByAuctionId(any());
+        verify(bidRepository,times(0)).findByAuction(any());
         Assertions.assertEquals("Item successfully deleted",itemService.deleteItemOnAuction(1L,jwtAuthenticationToken));
     }
 
     @Test
     void deleteItemOnAuction_givenAppropriateIdAndButFalseToken_shouldThrowEmailMismatchException() throws MismatchedEmailException, ForbiddenActionException, ResourceNotFoundException {
         doReturn(Optional.of(testAuctionList1)).when(auctionRepository).findAllByItemId(any());
-        doReturn(Optional.empty()).when(bidRepository).findAllByAuctionId(any());
+        doReturn(Optional.empty()).when(bidRepository).findByAuction(any());
 
         Assertions.assertThrows(MismatchedEmailException.class, () -> itemService.deleteItemOnAuction(1L,jwtAuthenticationToken));
     }

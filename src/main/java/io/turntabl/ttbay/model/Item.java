@@ -24,6 +24,10 @@ public class Item {
     @OneToMany(mappedBy = "item", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JsonManagedReference
     private List<ItemImage> imageList;
+
+
+    @OneToMany(mappedBy = "item",cascade = CascadeType.ALL)
+    private List<Auction> auction;
     private String description;
     @ManyToOne
     @JsonBackReference

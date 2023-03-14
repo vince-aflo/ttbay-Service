@@ -23,7 +23,7 @@ public class Auction {
     @JsonBackReference
     private User auctioner;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "item_id")
     private Item item;
     private Date startDate;

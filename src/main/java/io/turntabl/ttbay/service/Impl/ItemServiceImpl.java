@@ -2,11 +2,7 @@ package io.turntabl.ttbay.service.Impl;
 
 import io.turntabl.ttbay.dto.ItemRequest;
 import io.turntabl.ttbay.enums.AuctionStatus;
-import io.turntabl.ttbay.exceptions.ForbiddenActionException;
-import io.turntabl.ttbay.exceptions.ItemAlreadyOnAuctionException;
-import io.turntabl.ttbay.exceptions.MismatchedEmailException;
-import io.turntabl.ttbay.exceptions.ModelCreateException;
-import io.turntabl.ttbay.exceptions.ResourceNotFoundException;
+import io.turntabl.ttbay.exceptions.*;
 import io.turntabl.ttbay.model.*;
 import io.turntabl.ttbay.repository.AuctionRepository;
 import io.turntabl.ttbay.repository.BidRepository;
@@ -44,6 +40,7 @@ public class ItemServiceImpl implements ItemService {
 
         return onAuctionItems;
     }
+
 
     @Override
     public String addItem(ItemRequest itemRequest, Authentication authentication) throws ResourceNotFoundException {
@@ -95,8 +92,8 @@ public class ItemServiceImpl implements ItemService {
 
         if (!targetAuction.get().isEmpty()) {
             //find bid by auction and throw exception if any
-            Optional<List<Bid>> availableBids = bidRepository.findAllByAuctionId(targetAuction.get().get(0).getId());
-            if (availableBids.isPresent()) throw new ForbiddenActionException("Item on auction has bid(s)");
+            Optional<List<Bid>> availableBids = bidRepository.findByAuction(targetAuction.get().get(0));
+            if (availableBids.isPresent() && !availableBids.get().isEmpty()) throw new ForbiddenActionException("Item on auction has bid(s)");
         }
 
         //delete if there's no bid
