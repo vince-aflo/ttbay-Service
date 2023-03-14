@@ -18,7 +18,7 @@ public class AppExceptionHandler {
         return new ResponseEntity<>(exception.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
-    @ExceptionHandler(MismatchedEmailException.class)
+    @ExceptionHandler({MismatchedEmailException.class,ForbiddenActionException.class})
     public ResponseEntity<String> handleMismatchEmails(MismatchedEmailException exception){
         return new ResponseEntity<>(exception.getMessage(), HttpStatus.FORBIDDEN);
     }

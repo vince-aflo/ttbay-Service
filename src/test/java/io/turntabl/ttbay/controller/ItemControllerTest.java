@@ -151,6 +151,41 @@ class ItemControllerTest {
 
     }
 
+    @Test
+    void deleteItemOnAuction_givenId_shouldReturn200() throws Exception {
+        long itemId = 1L;
+        ResultActions response = mockMvc.perform(MockMvcRequestBuilders.delete("/api/v1/items/on-auction/" + itemId)
+                .with(jwt())
+                .contentType(MediaType.APPLICATION_JSON)
+        );
+
+        response.andExpect(MockMvcResultMatchers.status().isOk());
+    }
+
+    @Test
+    void deleteItemOnAuction_givenId_shouldReturn404() throws Exception {
+        when(itemService.deleteItemOnAuction(any(), any())).thenThrow(ResourceNotFoundException.class);
+        long itemId = 1L;
+        ResultActions response = mockMvc.perform(MockMvcRequestBuilders.delete("/api/v1/items/on-auction/" + itemId)
+                .with(jwt())
+                .contentType(MediaType.APPLICATION_JSON)
+        );
+
+        response.andExpect(MockMvcResultMatchers.status().isNotFound());
+    }
+
+    @Test
+    void deleteItemOnAuction_givenId_shouldReturn401() throws Exception {
+        when(itemService.deleteItemOnAuction(any(), any())).thenThrow(MismatchedEmailException.class);
+        long itemId = 1L;
+        ResultActions response = mockMvc.perform(MockMvcRequestBuilders.delete("/api/v1/items/on-auction/" + itemId)
+                .with(jwt())
+                .contentType(MediaType.APPLICATION_JSON)
+        );
+
+        response.andExpect(MockMvcResultMatchers.status().isForbidden());
+    }
+
 
 }
 

@@ -1,6 +1,7 @@
 package io.turntabl.ttbay.controller;
 
 import io.turntabl.ttbay.dto.ItemRequest;
+import io.turntabl.ttbay.exceptions.ForbiddenActionException;
 import io.turntabl.ttbay.exceptions.ItemAlreadyOnAuctionException;
 import io.turntabl.ttbay.exceptions.MismatchedEmailException;
 import io.turntabl.ttbay.exceptions.ResourceNotFoundException;
@@ -40,6 +41,11 @@ public class ItemController {
     @GetMapping("/{itemId}")
     public ResponseEntity<Item> getOneItemOfUser(@PathVariable Long itemId, Authentication authentication) throws ResourceNotFoundException, MismatchedEmailException {
         return ResponseEntity.status(HttpStatus.OK).body(itemService.returnOneItemOfUser(itemId, authentication));
+    }
+
+    @DeleteMapping("/on-auction/{itemId}")
+    public ResponseEntity<String> deleteItem(@PathVariable Long itemId,Authentication authentication) throws ForbiddenActionException, ResourceNotFoundException, MismatchedEmailException {
+        return ResponseEntity.status(HttpStatus.OK).body(itemService.deleteItemOnAuction(itemId,authentication));
     }
 
 }

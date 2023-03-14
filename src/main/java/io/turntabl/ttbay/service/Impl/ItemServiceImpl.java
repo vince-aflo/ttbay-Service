@@ -1,13 +1,15 @@
 package io.turntabl.ttbay.service.Impl;
 
 import io.turntabl.ttbay.dto.ItemRequest;
+import io.turntabl.ttbay.enums.AuctionStatus;
+import io.turntabl.ttbay.exceptions.ForbiddenActionException;
 import io.turntabl.ttbay.exceptions.ItemAlreadyOnAuctionException;
 import io.turntabl.ttbay.exceptions.MismatchedEmailException;
 import io.turntabl.ttbay.exceptions.ModelCreateException;
 import io.turntabl.ttbay.exceptions.ResourceNotFoundException;
-import io.turntabl.ttbay.model.Item;
-import io.turntabl.ttbay.model.ItemImage;
-import io.turntabl.ttbay.model.User;
+import io.turntabl.ttbay.model.*;
+import io.turntabl.ttbay.repository.AuctionRepository;
+import io.turntabl.ttbay.repository.BidRepository;
 import io.turntabl.ttbay.repository.ItemRepository;
 import io.turntabl.ttbay.repository.UserRepository;
 import io.turntabl.ttbay.service.ItemService;
@@ -24,6 +26,9 @@ import java.util.Optional;
 @Service
 public class ItemServiceImpl implements ItemService {
     private final ItemRepository itemRepository;
+    private final AuctionRepository auctionRepository;
+
+    private final BidRepository bidRepository;
     private final TokenAttributesExtractor tokenAttributesExtractor;
     private final UserRepository userRepository;
 
@@ -39,7 +44,6 @@ public class ItemServiceImpl implements ItemService {
 
         return onAuctionItems;
     }
-
 
     @Override
     public String addItem(ItemRequest itemRequest, Authentication authentication) throws ResourceNotFoundException {
@@ -69,6 +73,36 @@ public class ItemServiceImpl implements ItemService {
         }
 
         return item.get();
+    }
+
+    @Override
+    public String deleteItemOnAuction(Long itemId, Authentication authentication) throws ResourceNotFoundException, ForbiddenActionException, MismatchedEmailException {
+        String tokenEmail = tokenAttributesExtractor.extractEmailFromToken(authentication);
+
+
+        //find live auction by item id
+        Optional<List<Auction>> listAuction = auctionRepository.findAllByItemId(itemId);
+
+        if (listAuction.isEmpty()) throw new ResourceNotFoundException("Item isn't on auction");
+        if (!listAuction.get().get(0).getAuctioner().getEmail().equalsIgnoreCase(tokenEmail))
+            throw new MismatchedEmailException("You don't have access to this action");
+
+        Optional<List<Auction>> targetAuction = Optional.of(listAuction.get()
+                .stream()
+                .filter(auction -> auction.getStatus() == AuctionStatus.LIVE)
+                .toList()
+        );
+
+        if (!targetAuction.get().isEmpty()) {
+            //find bid by auction and throw exception if any
+            Optional<List<Bid>> availableBids = bidRepository.findAllByAuctionId(targetAuction.get().get(0).getId());
+            if (availableBids.isPresent()) throw new ForbiddenActionException("Item on auction has bid(s)");
+        }
+
+        //delete if there's no bid
+        itemRepository.deleteById(itemId);
+
+        return "Item successfully deleted";
     }
 
     @Override
