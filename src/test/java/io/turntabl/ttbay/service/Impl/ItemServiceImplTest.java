@@ -7,6 +7,7 @@ import io.turntabl.ttbay.enums.ItemCondition;
 import io.turntabl.ttbay.enums.OfficeLocation;
 import io.turntabl.ttbay.exceptions.ForbiddenActionException;
 import io.turntabl.ttbay.exceptions.ItemAlreadyOnAuctionException;
+import io.turntabl.ttbay.exceptions.ItemAlreadyOnAuctionException;
 import io.turntabl.ttbay.exceptions.MismatchedEmailException;
 import io.turntabl.ttbay.exceptions.ResourceNotFoundException;
 import io.turntabl.ttbay.model.Auction;
@@ -16,6 +17,7 @@ import io.turntabl.ttbay.model.User;
 import io.turntabl.ttbay.repository.*;
 import io.turntabl.ttbay.service.ItemService;
 import io.turntabl.ttbay.service.TokenAttributesExtractor;
+import io.turntabl.ttbay.utils.mappers.ItemMapper;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -59,7 +61,10 @@ class ItemServiceImplTest {
 
     @Autowired
     private ItemService itemService;
-    @Autowired
+    @MockBean
+    private ItemMapper itemMapper;
+
+    @MockBean
     private ItemImageRepository itemImageRepository;
 
     @MockBean
@@ -92,7 +97,7 @@ class ItemServiceImplTest {
 
             new Item("Book1", "Harry Potter2", testUser, null, true, true), new Item("Book2", "Harry Potter3", testUser, null, false, false), new Item("Book3", "Harry Potter4", testUser, null, false, true));
     private final List<Auction> testAuctionList =List.of(
-    new Auction(1L,testUser, testItem1,new Date(),new Date(),5000.0,6000.0,null, AuctionStatus.LIVE)
+            new Auction(1L,testUser, testItem1,new Date(),new Date(),5000.0,6000.0,null, AuctionStatus.LIVE)
     );
 
     private final List<Auction> testAuctionList1 =List.of(
@@ -111,11 +116,8 @@ class ItemServiceImplTest {
     );
     private final Item testItemOnAuction = new Item("Book1", "Harry Potter2", testUser, null, true, false);
 
-
-
     @BeforeEach
     void setUp() {
-//        itemService = new ItemServiceImpl(itemRepository, tokenAttributesExtractor, userRepository);
         //create jwt
         String tokenValue = "token";
         String email = "aikins.dwamena@turntabl.io";
@@ -190,7 +192,19 @@ class ItemServiceImplTest {
     }
 
     @Test
-    void testThat_givenAValidToken_addingAnItem_shouldReturnAStatus404() {
+    void testThat_givenAValidToken_activeUserShouldBeAbleToUpdateOneOfItsItems() throws ResourceNotFoundException, MismatchedEmailException{
+        doReturn(Optional.of(testItem)).when(itemRepository).findById(any());
+        doNothing().when(itemImageRepository).deleteByItem(testItem);
+        doReturn(new Item()).when(itemMapper).itemDTOtoProfile(any(), any());
+        String expected = "item updated successfully";
+        String actualResponse = itemService.updateItem(any(), new ItemRequest("aiks", "ss", ItemCondition.USED, Category.BOOKS, List.of()), jwtAuthenticationToken);
+        verify(itemImageRepository, times(1)).deleteByItem(any());
+        verify(itemRepository, times(1)).save(any());
+        Assertions.assertEquals(expected, actualResponse);
+    }
+
+    @Test
+    void testThat_givenAValidToken_addDraftItem_shouldReturnAStatus404() {
         doReturn(Optional.empty()).when(userRepository).findByEmail(any());
 
         Assertions.assertThrows(ResourceNotFoundException.class, () -> itemService.addItem(any(), jwtAuthenticationToken));
@@ -200,16 +214,16 @@ class ItemServiceImplTest {
     void testThat_givenAValidToken_activeUserShouldBeAbleToDeleteOneOfItsDraftItems() throws ResourceNotFoundException, MismatchedEmailException, ItemAlreadyOnAuctionException {
         doReturn(Optional.of(testItem)).when(itemRepository).findById(any());
         String expected = "item deleted successfully";
-        String actualResponse = itemService.deleteItem(any(), jwtAuthenticationToken);
+        String actualResponse = itemService.deleteDraftItem(any(), jwtAuthenticationToken);
         verify(itemRepository, times(1)).delete(any());
         Assertions.assertEquals(expected, actualResponse);
     }
 
     @Test
-    void testThat_givenAValidToken_activeUserShouldNotBeAbleToDeleteOneOfItsDraftItemsOnAuction()  {
+    void testThat_givenAValidToken_activeUserShouldNotBeAbleToDeleteOneOfItsDraftItemsOnAuction() {
         doReturn(Optional.of(testItemOnAuction)).when(itemRepository).findById(any());
 
-        Assertions.assertThrows(ItemAlreadyOnAuctionException.class, () -> itemService.deleteItem(any(), jwtAuthenticationToken));
+        Assertions.assertThrows(ItemAlreadyOnAuctionException.class, () -> itemService.deleteDraftItem(any(), jwtAuthenticationToken));
 
 
     }

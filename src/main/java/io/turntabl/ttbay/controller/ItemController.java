@@ -30,8 +30,8 @@ public class ItemController {
         return ResponseEntity.status(HttpStatus.OK).body(itemService.addItem(itemRequest,authentication));
     }
     @DeleteMapping("/{itemId}")
-    public ResponseEntity<String> removeItem(@PathVariable Long itemId, Authentication authentication) throws ResourceNotFoundException, MismatchedEmailException, ItemAlreadyOnAuctionException {
-        return ResponseEntity.status(HttpStatus.OK).body(itemService.deleteItem(itemId,authentication));
+    public ResponseEntity<String> removeDraftItem(@PathVariable Long itemId, Authentication authentication) throws ResourceNotFoundException, MismatchedEmailException, ItemAlreadyOnAuctionException {
+        return ResponseEntity.status(HttpStatus.OK).body(itemService.deleteDraftItem(itemId,authentication));
     }
     @GetMapping("/all-by-user")
     public ResponseEntity<List<Item>> getAllUserItems(Authentication authentication) throws ResourceNotFoundException {
@@ -43,8 +43,12 @@ public class ItemController {
         return ResponseEntity.status(HttpStatus.OK).body(itemService.returnOneItemOfUser(itemId, authentication));
     }
 
+    @PutMapping("/{itemId}")
+    public ResponseEntity<String> editDraftItem(@PathVariable Long itemId,@RequestBody ItemRequest itemRequest, Authentication authentication) throws ResourceNotFoundException, MismatchedEmailException {
+        return ResponseEntity.status(HttpStatus.OK).body(itemService.updateItem(itemId,itemRequest,authentication));
+    }
     @DeleteMapping("/on-auction/{itemId}")
-    public ResponseEntity<String> deleteItem(@PathVariable Long itemId,Authentication authentication) throws ForbiddenActionException, ResourceNotFoundException, MismatchedEmailException {
+    public ResponseEntity<String> deleteItem(@PathVariable Long itemId,Authentication authentication) throws  ResourceNotFoundException, MismatchedEmailException, ForbiddenActionException {
         return ResponseEntity.status(HttpStatus.OK).body(itemService.deleteItemOnAuction(itemId,authentication));
     }
 

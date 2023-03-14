@@ -4,12 +4,11 @@ import io.turntabl.ttbay.dto.ItemRequest;
 import io.turntabl.ttbay.enums.AuctionStatus;
 import io.turntabl.ttbay.exceptions.*;
 import io.turntabl.ttbay.model.*;
-import io.turntabl.ttbay.repository.AuctionRepository;
-import io.turntabl.ttbay.repository.BidRepository;
-import io.turntabl.ttbay.repository.ItemRepository;
-import io.turntabl.ttbay.repository.UserRepository;
+import io.turntabl.ttbay.repository.*;
 import io.turntabl.ttbay.service.ItemService;
 import io.turntabl.ttbay.service.TokenAttributesExtractor;
+import io.turntabl.ttbay.utils.mappers.ItemMapper;
+import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
@@ -27,6 +26,7 @@ public class ItemServiceImpl implements ItemService {
     private final BidRepository bidRepository;
     private final TokenAttributesExtractor tokenAttributesExtractor;
     private final UserRepository userRepository;
+    private final ItemImageRepository itemImageRepository;
 
     @Override
     public List<Item> returnAllAuctionItemsByUser(Authentication authentication) throws ResourceNotFoundException {
@@ -73,6 +73,15 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
+    public String deleteDraftItem(Long itemId, Authentication authentication) throws ResourceNotFoundException, MismatchedEmailException, ItemAlreadyOnAuctionException {
+        Item item = returnOneItemOfUser(itemId, authentication);
+        if (item.getOnAuction()) throw new ItemAlreadyOnAuctionException("cannot remove item(draft) on auction");
+        itemRepository.delete(item);
+
+        return "item deleted successfully";
+    }
+
+    @Override
     public String deleteItemOnAuction(Long itemId, Authentication authentication) throws ResourceNotFoundException, ForbiddenActionException, MismatchedEmailException {
         String tokenEmail = tokenAttributesExtractor.extractEmailFromToken(authentication);
 
@@ -103,15 +112,6 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public String deleteItem(Long itemId, Authentication authentication) throws ResourceNotFoundException, MismatchedEmailException, ItemAlreadyOnAuctionException {
-        Item item = returnOneItemOfUser(itemId, authentication);
-        if (item.getOnAuction()) throw new ItemAlreadyOnAuctionException("cannot remove item(draft) on auction");
-        itemRepository.delete(item);
-
-        return "item deleted successfully";
-    }
-
-    @Override
     public List<Item> returnAllItemsByUser(Authentication authentication) throws ResourceNotFoundException {
         String email = tokenAttributesExtractor.extractEmailFromToken(authentication);
 
@@ -124,5 +124,19 @@ public class ItemServiceImpl implements ItemService {
         if (targetItems.isEmpty()) throw new ResourceNotFoundException("User currently has no items");
 
         return targetItems.get();
+    }
+
+    @Transactional
+    @Override
+    public String updateItem(Long itemId, ItemRequest itemRequest, Authentication authentication) throws MismatchedEmailException, ResourceNotFoundException {
+        Item item = returnOneItemOfUser(itemId, authentication);
+
+        itemImageRepository.deleteByItem(item);
+
+        Item copy = ItemMapper.INSTANCE.itemDTOtoProfile(itemRequest, item);
+
+        itemRepository.save(copy);
+
+        return "item updated successfully";
     }
 }

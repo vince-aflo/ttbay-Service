@@ -2,10 +2,7 @@ package io.turntabl.ttbay.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 
 @Entity
@@ -13,6 +10,7 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 public class ItemImage {
 
     @Id
@@ -22,11 +20,10 @@ public class ItemImage {
 
     @Column(unique = true)
     private String imageUrl;
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne(cascade = CascadeType.DETACH)
     @JsonBackReference
     @JoinColumn(name = "item_id")
     private Item item;
-
 
     public ItemImage(Item itemId, String imageUrl) {
         this.item = itemId;
