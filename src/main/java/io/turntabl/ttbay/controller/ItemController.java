@@ -1,6 +1,7 @@
 package io.turntabl.ttbay.controller;
 
 import io.turntabl.ttbay.dto.ItemRequest;
+import io.turntabl.ttbay.dto.ItemResponseDTO;
 import io.turntabl.ttbay.exceptions.ForbiddenActionException;
 import io.turntabl.ttbay.exceptions.ItemAlreadyOnAuctionException;
 import io.turntabl.ttbay.exceptions.MismatchedEmailException;
@@ -26,7 +27,7 @@ public class ItemController {
         return ResponseEntity.status(HttpStatus.OK).body(itemService.returnAllAuctionItemsByUser(authentication));
     }
     @PostMapping("/add")
-    public ResponseEntity<String> createItem(@RequestBody ItemRequest itemRequest,Authentication authentication) throws ResourceNotFoundException {
+    public ResponseEntity<Item> createItem(@RequestBody ItemRequest itemRequest,Authentication authentication) throws ResourceNotFoundException {
         return ResponseEntity.status(HttpStatus.OK).body(itemService.addItem(itemRequest,authentication));
     }
     @DeleteMapping("/{itemId}")
@@ -39,7 +40,7 @@ public class ItemController {
     }
 
     @GetMapping("/{itemId}")
-    public ResponseEntity<Item> getOneItemOfUser(@PathVariable Long itemId, Authentication authentication) throws ResourceNotFoundException, MismatchedEmailException {
+    public ResponseEntity<ItemResponseDTO> getOneItemOfUser(@PathVariable Long itemId, Authentication authentication) throws ResourceNotFoundException, MismatchedEmailException {
         return ResponseEntity.status(HttpStatus.OK).body(itemService.returnOneItemOfUser(itemId, authentication));
     }
 

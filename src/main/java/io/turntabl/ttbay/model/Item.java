@@ -27,17 +27,19 @@ public class Item {
 
 
     @OneToMany(mappedBy = "item",cascade = CascadeType.ALL)
+    @JsonManagedReference(value = "item-auction")
     private List<Auction> auction;
     private String description;
     @ManyToOne
     @JsonBackReference
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "user_email")
     private User user;
     private Boolean onAuction;
 
     private Boolean isSold;
 
     @Enumerated(EnumType.STRING)
+
     private ItemCondition condition;
 
     @Enumerated(EnumType.STRING)

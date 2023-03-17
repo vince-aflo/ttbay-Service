@@ -2,6 +2,7 @@ package io.turntabl.ttbay.controller;
 
 
 import io.turntabl.ttbay.dto.AuctionRequest;
+import io.turntabl.ttbay.dto.AuctionResponseDTO;
 import io.turntabl.ttbay.exceptions.MismatchedEmailException;
 import io.turntabl.ttbay.exceptions.ResourceNotFoundException;
 import io.turntabl.ttbay.model.Auction;
@@ -29,7 +30,7 @@ public class AuctionController {
         return ResponseEntity.status(HttpStatus.OK).body(auctionService.createAuction(auctionRequest,authentication));
     }
     @GetMapping("/{auctionId}")
-    public ResponseEntity<Auction> getOneAuctionOfUser(@PathVariable Long auctionId, Authentication authentication) throws ResourceNotFoundException, MismatchedEmailException {
+    public ResponseEntity<AuctionResponseDTO> getOneAuctionOfUser(@PathVariable Long auctionId, Authentication authentication) throws ResourceNotFoundException, MismatchedEmailException {
         return ResponseEntity.status(HttpStatus.OK).body(auctionService.returnOneAuctionOfUser(auctionId, authentication));
     }
     @DeleteMapping("/{auctionId}")

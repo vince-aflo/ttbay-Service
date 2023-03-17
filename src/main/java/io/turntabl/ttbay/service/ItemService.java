@@ -1,6 +1,7 @@
 package io.turntabl.ttbay.service;
 
 import io.turntabl.ttbay.dto.ItemRequest;
+import io.turntabl.ttbay.dto.ItemResponseDTO;
 import io.turntabl.ttbay.exceptions.ForbiddenActionException;
 import io.turntabl.ttbay.exceptions.ItemAlreadyOnAuctionException;
 import io.turntabl.ttbay.exceptions.MismatchedEmailException;
@@ -16,10 +17,11 @@ public interface ItemService {
 
     List<Item> returnAllItemsByUser(Authentication authentication) throws ResourceNotFoundException;
 
-    String addItem(ItemRequest itemRequest, Authentication authentication) throws ResourceNotFoundException;
+    Item addItem(ItemRequest itemRequest, Authentication authentication) throws ResourceNotFoundException;
 
-    Item returnOneItemOfUser(Long itemId, Authentication authentication) throws ResourceNotFoundException, MismatchedEmailException;
+    ItemResponseDTO returnOneItemOfUser(Long itemId, Authentication authentication) throws ResourceNotFoundException, MismatchedEmailException;
 
+    public Item returnOneItem(Authentication authentication, Long itemId) throws ResourceNotFoundException, MismatchedEmailException;
     String deleteDraftItem(Long itemId, Authentication authentication) throws ResourceNotFoundException, MismatchedEmailException, ItemAlreadyOnAuctionException;
 
     String updateItem(Long itemId, ItemRequest itemRequest, Authentication authentication) throws MismatchedEmailException, ResourceNotFoundException;

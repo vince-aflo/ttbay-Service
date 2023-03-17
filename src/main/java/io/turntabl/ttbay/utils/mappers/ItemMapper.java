@@ -11,7 +11,7 @@ public interface ItemMapper {
 
     ItemMapper INSTANCE = Mappers.getMapper(ItemMapper.class);
 
-    default Item itemDTOtoProfile(ItemRequest request,Item item) {
+    default Item itemDTOtoItem(ItemRequest request,Item item) {
         Item copyItem = Item.builder().id(item.getId())
                 .name(request.name())
                 .description(request.description())

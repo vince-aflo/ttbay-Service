@@ -13,7 +13,7 @@ import java.util.List;
 @NoArgsConstructor
 @Getter
 @Setter
-@Table(name="users")
+@Table(name = "users")
 @Builder
 public class User {
     @Id
@@ -26,7 +26,7 @@ public class User {
     @Enumerated(EnumType.STRING)
     private OfficeLocation officeLocation;
 
-    @OneToMany(mappedBy = "user", fetch= FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JsonManagedReference
     private List<OfficeDay> officeDays;
 
@@ -34,13 +34,12 @@ public class User {
     @JsonManagedReference
     private List<Item> items;
 
-    public User(
-            String username,
-            String email,
-            String fullName,
-            String profileUrl,
-            OfficeLocation officeLocation){
-        this.username= username;
+    @OneToMany(mappedBy = "auctioner", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JsonManagedReference
+    private List<Auction> auctions;
+
+    public User(String username, String email, String fullName, String profileUrl, OfficeLocation officeLocation) {
+        this.username = username;
         this.email = email;
         this.fullName = fullName;
         this.profileUrl = profileUrl;

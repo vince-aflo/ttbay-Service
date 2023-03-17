@@ -18,8 +18,8 @@ public class AppExceptionHandler {
         return new ResponseEntity<>(exception.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
-    @ExceptionHandler({MismatchedEmailException.class,ForbiddenActionException.class})
-    public ResponseEntity<String> handleMismatchEmails(MismatchedEmailException exception){
+    @ExceptionHandler({MismatchedEmailException.class,ForbiddenActionException.class,ItemAlreadyOnAuctionException.class})
+    public ResponseEntity<String> handleMismatchEmails(Exception exception){
         return new ResponseEntity<>(exception.getMessage(), HttpStatus.FORBIDDEN);
     }
 
@@ -33,9 +33,9 @@ public class AppExceptionHandler {
         return new ResponseEntity<>(exception.getMessage(), HttpStatus.CONFLICT);
     }
 
-    @ExceptionHandler(ItemAlreadyOnAuctionException.class)
-    public ResponseEntity<String> handleChecksOnExistingAuctions(ItemAlreadyOnAuctionException exception){
-        return new ResponseEntity<>(exception.getMessage(), HttpStatus.FORBIDDEN);
-    }
+//    @ExceptionHandler(ItemAlreadyOnAuctionException.class)
+//    public ResponseEntity<String> handleChecksOnExistingAuctions(ItemAlreadyOnAuctionException exception){
+//        return new ResponseEntity<>(exception.getMessage(), HttpStatus.FORBIDDEN);
+//    }
 
 }

@@ -34,20 +34,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import static io.turntabl.ttbay.enums.ItemCondition.NEW;
 import static org.mockito.Mockito.*;
 
 @SpringBootTest
 class ItemServiceImplTest {
-//    private final User testUser = new User("aikscode", "aikins.dwamena@turntabl.io", "Aikins Akenten Dwamena", "", OfficeLocation.SONNIDOM_HOUSE);
-//    private final List<Item> testAuctionList = List.of(new Item("Book", "Harry Potter", testUser, null, true, false), new Item("Book1", "Harry Potter2", testUser, null, true, true), new Item("Book2", "Harry Potter3", testUser, null, false, false), new Item("Book3", "Harry Potter4", testUser, null, false, true));
-//    private final List<Item> testItemsList = List.of(new Item("Book", "Harry Potter", testUser, null, false, false), new Item("Book1", "Harry Potter2", testUser, null, true, true), new Item("Book2", "Harry Potter3", testUser, null, false, false), new Item("Book3", "Harry Potter4", testUser, null, false, true));
-//    private final Item testItem = new Item("Book1", "Harry Potter2", testUser, null, true, true);
-//    private final List<Item> testAuctionList2 = List.of(
-//
-//            new Item("Book1", "Harry Potter2", testUser, null, true, true), new Item("Book2", "Harry Potter3", testUser, null, false, false), new Item("Book3", "Harry Potter4", testUser, null, false, true));
-//    User testUser1 = new User("Emma", "a@gmail.com", "Emmanuel Koduah Tweneboah", "", OfficeLocation.SONNIDOM_HOUSE);
-
-
     private JwtAuthenticationToken jwtAuthenticationToken;
 
     @MockBean
@@ -92,6 +83,7 @@ class ItemServiceImplTest {
     );
     private final List<Item> testItemsList = List.of(new Item("Book", "Harry Potter", testUser, null, false, false), new Item("Book1", "Harry Potter2", testUser, null, true, true), new Item("Book2", "Harry Potter3", testUser, null, false, false), new Item("Book3", "Harry Potter4", testUser, null, false, true));
     private final Item testItem = new Item("Book1", "Harry Potter2", testUser, null, false, false);
+    private final Item testItem2 = new Item("Book1", "Harry Potter2", testUser1, null, false, false);
     private final Item testItem1 = new Item("Book1", "Harry Potter2", testUser, null, true, true);
     private final List<Item> testItemList2 = List.of(
 
@@ -182,20 +174,16 @@ class ItemServiceImplTest {
     @Test
     void testThat_givenAValidToken_addingAnItemShouldReturnString_itemAddedSuccessfully() throws ResourceNotFoundException {
         doReturn(Optional.of(testUser)).when(userRepository).findByEmail("aikins.dwamena@turntabl.io");
-        doReturn(Optional.of(testItem1)).when(itemRepository).save(testItem1);
-        String expected = "item successfully added";
-        String actual = itemService.addItem(new ItemRequest("aiks", "ss", ItemCondition.USED, Category.BOOKS, List.of()), jwtAuthenticationToken);
+        itemService.addItem(new ItemRequest("name","test",NEW,Category.BOOKS,List.of()),jwtAuthenticationToken);
         verify(userRepository, times(1)).findByEmail("aikins.dwamena@turntabl.io");
         verify(itemRepository, times(1)).save(any());
-        Assertions.assertEquals(expected, actual);
-
     }
 
     @Test
     void testThat_givenAValidToken_activeUserShouldBeAbleToUpdateOneOfItsItems() throws ResourceNotFoundException, MismatchedEmailException{
         doReturn(Optional.of(testItem)).when(itemRepository).findById(any());
         doNothing().when(itemImageRepository).deleteByItem(testItem);
-        doReturn(new Item()).when(itemMapper).itemDTOtoProfile(any(), any());
+        doReturn(new Item()).when(itemMapper).itemDTOtoItem(any(), any());
         String expected = "item updated successfully";
         String actualResponse = itemService.updateItem(any(), new ItemRequest("aiks", "ss", ItemCondition.USED, Category.BOOKS, List.of()), jwtAuthenticationToken);
         verify(itemImageRepository, times(1)).deleteByItem(any());
@@ -232,7 +220,8 @@ class ItemServiceImplTest {
     void testThat_givenAValidToken_activeUserShouldBeAbleToReturnOneOfItsItems() throws ResourceNotFoundException, MismatchedEmailException {
         doReturn(Optional.of(testUser)).when(userRepository).findByEmail("aikins.dwamena@turntabl.io");
         doReturn(Optional.of(testItem1)).when(itemRepository).findById(any());
-        Item item = itemService.returnOneItemOfUser(any(), jwtAuthenticationToken);
+        Item item = itemService.returnOneItem(jwtAuthenticationToken,any());
+        itemService.returnOneItemOfUser(any(),jwtAuthenticationToken);
 
         Assertions.assertNotNull(item);
     }
@@ -254,6 +243,33 @@ class ItemServiceImplTest {
 
         Assertions.assertThrows(MismatchedEmailException.class, () -> itemService.returnOneItemOfUser(this.testItem1.getId(), jwtAuthenticationToken));
 
+    }
+
+    @Test
+    void returnOneItem_givenAnItemId_shouldReturnOneItemWithItemIdGiven() throws MismatchedEmailException, ResourceNotFoundException {
+        doReturn(Optional.of(testItem)).when(itemRepository).findById(any());
+
+        itemService.returnOneItem(jwtAuthenticationToken,1L);
+
+        verify(itemRepository,times(1)).findById(1L);
+        Assertions.assertEquals(testItem,itemService.returnOneItem(jwtAuthenticationToken,1L));
+
+    }
+
+    @Test
+    void returnOneItem_givenAnItemIdWithInvalidToken_shouldThrowMismatchedEmailException(){
+        doReturn(Optional.of(testItem2)).when(itemRepository).findById(any());
+        Assertions.assertThrows(MismatchedEmailException.class,()->
+            itemService.returnOneItem(jwtAuthenticationToken,1L)
+        );
+    }
+
+    @Test
+    void returnOneItem_givenAnItemIdWithValidToken_shouldThrowResourceNotFoundException(){
+        doReturn(Optional.empty()).when(itemRepository).findById(any());
+        Assertions.assertThrows(ResourceNotFoundException.class,()->
+                itemService.returnOneItem(jwtAuthenticationToken,1L)
+        );
     }
 
 

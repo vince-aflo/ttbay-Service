@@ -3,6 +3,7 @@ package io.turntabl.ttbay.service.Impl;
 import io.turntabl.ttbay.exceptions.UsernameAlreadyExistException;
 import io.turntabl.ttbay.model.User;
 import io.turntabl.ttbay.repository.UserRepository;
+import io.turntabl.ttbay.service.TokenAttributesExtractor;
 import io.turntabl.ttbay.service.UsernameService;
 import lombok.AllArgsConstructor;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
@@ -17,6 +18,8 @@ import java.util.stream.Collectors;
 public class UsernameServiceImpl implements UsernameService {
 
     private final UserRepository userRepository;
+
+    private final TokenAttributesExtractor tokenAttributesExtractor;
 
     @Override
     public String updateUsername(JwtAuthenticationToken auth, String username) {
@@ -38,7 +41,7 @@ public class UsernameServiceImpl implements UsernameService {
     }
 
     public Map<String, String> removeActiveUsersUsername(JwtAuthenticationToken auth, Map<String, String> usernames) {
-        String userEmail = (String) auth.getTokenAttributes().get("email");
+        String userEmail = tokenAttributesExtractor.extractEmailFromToken(auth);
         User foundUser = userRepository.findByEmail(userEmail).orElse(null);
         assert foundUser != null;
         String usernameOfFoundUser = foundUser.getUsername();
