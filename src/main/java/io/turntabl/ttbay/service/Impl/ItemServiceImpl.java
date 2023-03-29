@@ -32,21 +32,18 @@ public class ItemServiceImpl implements ItemService {
     private final ItemMapperService itemMapperService;
 
     @Override
-    public List<Item> returnAllAuctionItemsByUser(Authentication authentication) throws ResourceNotFoundException {
+    public List<ItemResponseDTO> returnAllAuctionItemsByUser(Authentication authentication) throws ResourceNotFoundException {
 
-        List<Item> allUserItems = returnAllItemsByUser(authentication);
+        List<ItemResponseDTO> allUserItems = returnAllItemsByUser(authentication);
 
         //check and return items onAuction and not sold
-        List<Item> onAuctionItems = allUserItems.stream().filter(item -> item.getOnAuction() && !item.getIsSold()).toList();
 
-        if (onAuctionItems.isEmpty()) throw new ResourceNotFoundException("User has no items on auction");
-
-        return onAuctionItems;
+        return allUserItems.stream().filter(item -> item.onAuction() && !item.isSold()).toList();
     }
 
 
     @Override
-    public Item addItem(ItemRequest itemRequest, Authentication authentication) throws ResourceNotFoundException {
+    public ItemResponseDTO addItem(ItemRequest itemRequest, Authentication authentication) throws ResourceNotFoundException {
         String email = tokenAttributesExtractor.extractEmailFromToken(authentication);
 
         User currentUser = userRepository.findByEmail(email).orElseThrow(() -> new ResourceNotFoundException("User not found"));
@@ -54,7 +51,8 @@ public class ItemServiceImpl implements ItemService {
         Item newItem = Item.builder().user(currentUser).isSold(false).onAuction(false).condition(itemRequest.condition()).category(itemRequest.category()).name(itemRequest.name()).description(itemRequest.description()).build();
         newItem.setImageList(itemRequest.imageList().parallelStream().map(itemImage -> new ItemImage(newItem, itemImage.getImageUrl())).toList());
         try {
-            return itemRepository.save(newItem);
+            Item item = itemRepository.save(newItem);
+            return itemMapperService.returnItemResponse(item);
         } catch (Exception exception) {
             throw new ModelCreateException("Error creating item");
         }
@@ -69,31 +67,29 @@ public class ItemServiceImpl implements ItemService {
     @Override
     public String deleteDraftItem(Long itemId, Authentication authentication) throws ResourceNotFoundException, MismatchedEmailException, ItemAlreadyOnAuctionException {
         Item item = returnOneItem(authentication, itemId);
-        if (item.getOnAuction()) throw new ItemAlreadyOnAuctionException("cannot remove item(draft) on auction");
         itemRepository.delete(item);
 
         return "item deleted successfully";
     }
 
     @Override
-    public String deleteItemOnAuction(Long itemId, Authentication authentication) throws ResourceNotFoundException, ForbiddenActionException, MismatchedEmailException {
+    public String deleteItemOnAuction(Long itemId, Authentication authentication) throws ResourceNotFoundException, MismatchedEmailException {
         String tokenEmail = tokenAttributesExtractor.extractEmailFromToken(authentication);
-
+        Item targetItem = returnOneItem(authentication,itemId);
 
         //find live auction by item id
-        Optional<List<Auction>> listAuction = auctionRepository.findAllByItemId(itemId);
+        List<Auction> listAuction = auctionRepository.findByItem(targetItem);
 
-        if (listAuction.isEmpty()) throw new ResourceNotFoundException("Item isn't on auction");
-        if (!listAuction.get().get(0).getAuctioner().getEmail().equalsIgnoreCase(tokenEmail))
+        if (!listAuction.isEmpty() &&!listAuction.get(0).getAuctioner().getEmail().equalsIgnoreCase(tokenEmail))
             throw new MismatchedEmailException("You don't have access to this action");
 
-        Optional<List<Auction>> targetAuction = Optional.of(listAuction.get().stream().filter(auction -> auction.getStatus() == AuctionStatus.LIVE).toList());
+        List<Auction> targetAuction = listAuction.stream().filter(auction -> auction.getStatus() == AuctionStatus.LIVE).toList();
 
-        if (!targetAuction.get().isEmpty()) {
+        if (!targetAuction.isEmpty()) {
             //find bid by auction and throw exception if any
-            Optional<List<Bid>> availableBids = bidRepository.findByAuction(targetAuction.get().get(0));
-            if (availableBids.isPresent() && !availableBids.get().isEmpty())
-                throw new ForbiddenActionException("Item on auction has bid(s)");
+            List<Bid> availableBids = bidRepository.findByAuction(targetAuction.get(0));
+            if ( !availableBids.isEmpty())
+                return "Item on auction has bid(s)";
         }
 
         //delete if there's no bid
@@ -103,18 +99,17 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public List<Item> returnAllItemsByUser(Authentication authentication) throws ResourceNotFoundException {
+    public List<ItemResponseDTO> returnAllItemsByUser(Authentication authentication) throws ResourceNotFoundException {
         String email = tokenAttributesExtractor.extractEmailFromToken(authentication);
 
         Optional<User> targetUser = userRepository.findByEmail(email);
 
         if (targetUser.isEmpty()) throw new ResourceNotFoundException("User cannot be found");
 
-        Optional<List<Item>> targetItems = itemRepository.findAllByUser(targetUser.get());
+        List<Item> targetItems = itemRepository.findByUser(targetUser.get());
 
-        if (targetItems.isEmpty()) throw new ResourceNotFoundException("User currently has no items");
 
-        return targetItems.get();
+        return targetItems.stream().map(itemMapperService::returnItemResponse).toList();
     }
 
     @Transactional

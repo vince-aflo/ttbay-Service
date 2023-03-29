@@ -48,12 +48,12 @@ public class BidServiceImpl implements BidService {
         if(auction.get().getAuctioner().getEmail().equalsIgnoreCase(email) )throw new UserCannotBidOnTheirAuction();
 
         //fetch AllBids by AuctionId and use stream to get max amount
-        Optional<List<Bid>> bidsOfTargetAuction = bidRepository.findByAuction(auction.get());
+        List<Bid> bidsOfTargetAuction = bidRepository.findByAuction(auction.get());
 
-        if(bidsOfTargetAuction.isPresent()){
+        if(!bidsOfTargetAuction.isEmpty()){
 
             //check from dto if bidAmount is less than the max bid and throw exception
-            double maxBid = bidsOfTargetAuction.get().stream().mapToDouble(Bid::getBidAmount).max().orElse(0.0);
+            double maxBid = bidsOfTargetAuction.stream().mapToDouble(Bid::getBidAmount).max().orElse(0.0);
             if(maxBid > bidDTO.bidAmount()) throw new BidLessThanMaxBidException("Bid is less than current maximum bid");
 
         }

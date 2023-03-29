@@ -40,8 +40,10 @@ public class BidServiceImplTest {
     private final User testUser = new User("aikscode", "test@gmail.com", "Aikins Akenten Dwamena", "", OfficeLocation.SONNIDOM_HOUSE);
     private final User testUser1 = new User("aikscode", "aikins.dwamena@turntabl.io", "Aikins Akenten Dwamena", "", OfficeLocation.SONNIDOM_HOUSE);
     private final Item testItem = new Item("Book1", "Harry Potter2", testUser, null, true, true);
-    Auction testAuction = new Auction(1L, testUser, testItem, new Date(), new Date(), 85.8, null, null, AuctionStatus.LIVE);
-    Auction testAuction1 = new Auction(1L, testUser1, testItem, new Date(), new Date(), 85.8, null, null, AuctionStatus.LIVE);
+    private final Auction testAuction = Auction.builder().id(1L).auctioner(testUser).item(testItem).startDate(new Date()).endDate(new Date()).reservedPrice(85.8).status(AuctionStatus.LIVE).build();
+
+    private final Auction testAuction1 = Auction.builder().id(1L).auctioner(testUser1).item(testItem).startDate(new Date()).endDate(new Date()).reservedPrice(85.8).status(AuctionStatus.LIVE).build();
+
     List<Bid> testBids = List.of(
             Bid.builder().bidAmount(5000.0).build(),
             Bid.builder().bidAmount(2000.0).build(),
@@ -91,7 +93,7 @@ public class BidServiceImplTest {
         BidDTO testBidDTO = new BidDTO(6000.0, 1L);
         doReturn(Optional.of(testUser)).when(userRepository).findByEmail(any());
         doReturn(Optional.of(testAuction)).when(auctionRepository).findById(any());
-        doReturn(Optional.of(testBids)).when(bidRepository).findByAuction(testAuction);
+        doReturn(testBids).when(bidRepository).findByAuction(testAuction);
 
         bidService.makeBid(testBidDTO, jwtAuthenticationToken);
 
@@ -107,7 +109,7 @@ public class BidServiceImplTest {
         BidDTO testBidDTO = new BidDTO(1000.0, 1L);
         doReturn(Optional.of(testUser)).when(userRepository).findByEmail(any());
         doReturn(Optional.of(testAuction)).when(auctionRepository).findById(any());
-        doReturn(Optional.of(testBids)).when(bidRepository).findByAuction(testAuction);
+        doReturn(testBids).when(bidRepository).findByAuction(testAuction);
 
         assertThrows(BidLessThanMaxBidException.class, () -> bidService.makeBid(testBidDTO, jwtAuthenticationToken));
 
@@ -119,7 +121,7 @@ public class BidServiceImplTest {
         BidDTO testBidDTO = new BidDTO(5000.0, 1L);
         doReturn(Optional.of(testUser)).when(userRepository).findByEmail(any());
         doReturn(Optional.of(testAuction)).when(auctionRepository).findById(any());
-        doReturn(Optional.of(testBids)).when(bidRepository).findByAuction(testAuction);
+        doReturn(testBids).when(bidRepository).findByAuction(testAuction);
 
         bidService.makeBid(testBidDTO, jwtAuthenticationToken);
 

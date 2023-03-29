@@ -37,12 +37,11 @@ public class AuctionServiceImpl implements AuctionService {
     private final AuctionMapperService auctionMapperService;
 
     @Override
-    public List<Auction> returnAllAuctionByUser(Authentication authentication) throws ResourceNotFoundException {
+    public List<AuctionResponseDTO> returnAllAuctionByUser(Authentication authentication) throws ResourceNotFoundException {
         String email = tokenAttributesExtractor.extractEmailFromToken(authentication);
         User targetUser = userRepository.findByEmail(email).orElseThrow(() -> new ResourceNotFoundException("User not found"));
-        Optional<List<Auction>> allAuctions = auctionRepository.findAllByAuctioner(targetUser);
-        if (allAuctions.isEmpty()) throw new ResourceNotFoundException("Empty auctions");
-        return allAuctions.get();
+        List<Auction> allAuctions = auctionRepository.findByAuctioner(targetUser);
+        return allAuctions.stream().map(auctionMapperService::returnAuctionResponse).toList();
     }
 
     @Override
@@ -86,6 +85,11 @@ public class AuctionServiceImpl implements AuctionService {
             throw new ResourceNotFoundException("Item not found");
         }
         return auction.get();
+    }
+
+    public List<AuctionResponseDTO> returnAllAuctions() {
+        List<Auction> allAuctions = auctionRepository.findAll();
+        return allAuctions.stream().map(auctionMapperService::returnAuctionResponse).toList();
     }
 
 

@@ -23,11 +23,11 @@ public class ItemController {
     private final ItemService itemService;
 
     @GetMapping("/on-auction")
-    public ResponseEntity<List<Item>> getAllUserAuctionItems(Authentication authentication) throws ResourceNotFoundException {
+    public ResponseEntity<List<ItemResponseDTO>> getAllUserAuctionItems(Authentication authentication) throws ResourceNotFoundException {
         return ResponseEntity.status(HttpStatus.OK).body(itemService.returnAllAuctionItemsByUser(authentication));
     }
     @PostMapping("/add")
-    public ResponseEntity<Item> createItem(@RequestBody ItemRequest itemRequest,Authentication authentication) throws ResourceNotFoundException {
+    public ResponseEntity<ItemResponseDTO> createItem(@RequestBody ItemRequest itemRequest,Authentication authentication) throws ResourceNotFoundException {
         return ResponseEntity.status(HttpStatus.OK).body(itemService.addItem(itemRequest,authentication));
     }
     @DeleteMapping("/{itemId}")
@@ -35,7 +35,7 @@ public class ItemController {
         return ResponseEntity.status(HttpStatus.OK).body(itemService.deleteDraftItem(itemId,authentication));
     }
     @GetMapping("/all-by-user")
-    public ResponseEntity<List<Item>> getAllUserItems(Authentication authentication) throws ResourceNotFoundException {
+    public ResponseEntity<List<ItemResponseDTO>> getAllUserItems(Authentication authentication) throws ResourceNotFoundException {
         return ResponseEntity.status(HttpStatus.OK).body(itemService.returnAllItemsByUser(authentication));
     }
 

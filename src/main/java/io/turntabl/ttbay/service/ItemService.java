@@ -13,15 +13,15 @@ import java.util.List;
 
 
 public interface ItemService {
-    List<Item> returnAllAuctionItemsByUser(Authentication authentication) throws ResourceNotFoundException;
+    List<ItemResponseDTO> returnAllAuctionItemsByUser(Authentication authentication) throws ResourceNotFoundException;
 
-    List<Item> returnAllItemsByUser(Authentication authentication) throws ResourceNotFoundException;
+    List<ItemResponseDTO> returnAllItemsByUser(Authentication authentication) throws ResourceNotFoundException;
 
-    Item addItem(ItemRequest itemRequest, Authentication authentication) throws ResourceNotFoundException;
+    ItemResponseDTO addItem(ItemRequest itemRequest, Authentication authentication) throws ResourceNotFoundException;
 
     ItemResponseDTO returnOneItemOfUser(Long itemId, Authentication authentication) throws ResourceNotFoundException, MismatchedEmailException;
 
-    public Item returnOneItem(Authentication authentication, Long itemId) throws ResourceNotFoundException, MismatchedEmailException;
+    Item returnOneItem(Authentication authentication, Long itemId) throws ResourceNotFoundException, MismatchedEmailException;
     String deleteDraftItem(Long itemId, Authentication authentication) throws ResourceNotFoundException, MismatchedEmailException, ItemAlreadyOnAuctionException;
 
     String updateItem(Long itemId, ItemRequest itemRequest, Authentication authentication) throws MismatchedEmailException, ResourceNotFoundException;

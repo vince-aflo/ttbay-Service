@@ -10,9 +10,11 @@ import org.springframework.security.core.Authentication;
 import java.util.List;
 
 public interface AuctionService {
-    List<Auction> returnAllAuctionByUser(Authentication authentication) throws ResourceNotFoundException;
+    List<AuctionResponseDTO> returnAllAuctionByUser(Authentication authentication) throws ResourceNotFoundException;
     AuctionResponseDTO returnOneAuctionOfUser(Long auctionId, Authentication authentication) throws ResourceNotFoundException, MismatchedEmailException;
     Auction returnOneAuction(Long auctionId, Authentication authentication) throws ResourceNotFoundException, MismatchedEmailException;
     String createAuction(AuctionRequest auctionRequest, Authentication authentication) throws ResourceNotFoundException, MismatchedEmailException;
     String deleteAuctionWithNoBId(Long actionId, Authentication authentication) throws ResourceNotFoundException,MismatchedEmailException;
+
+    List<AuctionResponseDTO> returnAllAuctions() ;
 }

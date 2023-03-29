@@ -30,7 +30,7 @@ class ItemMapperServiceImplTest {
             .isSold(false)
             .imageList(List.of())
             .condition(ItemCondition.NEW)
-        .category(Category.BOOKS)
+            .category(Category.BOOKS)
             .onAuction(true)
             .description("test")
             .build();

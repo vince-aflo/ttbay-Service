@@ -9,6 +9,10 @@ import io.turntabl.ttbay.service.UsernameService;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -25,18 +29,18 @@ import java.util.stream.Stream;
 import static org.junit.Assert.assertThrows;
 import static org.mockito.Mockito.doReturn;
 
-@SpringBootTest
+@ExtendWith(MockitoExtension.class)
 class UsernameServiceImplTest {
     User testUser1 = new User("Tkayy", "test@gmail.com", "Emmanuel Tweneboah", "pic", OfficeLocation.SONNIDOM_HOUSE);
     User testUser2 = new User(null, "saeps@gmail.com", "Sarpong Albert", "pic", OfficeLocation.SONNIDOM_HOUSE);
     User testUser3 = new User("fes", "fes@gmail.com", "Festus Obeng", "pic", OfficeLocation.SONNIDOM_HOUSE);
     List<User> allUsers = List.of(testUser1, testUser2, testUser3);
 
-    @MockBean
+    @Mock
     private UserRepository userRepository;
-    @Autowired
-    private UsernameService classUnderTest;
-    @MockBean
+    @InjectMocks
+    private UsernameServiceImpl classUnderTest;
+    @Mock
     private TokenAttributesExtractor tokenAttributesExtractor;
 
     private Jwt jwt;

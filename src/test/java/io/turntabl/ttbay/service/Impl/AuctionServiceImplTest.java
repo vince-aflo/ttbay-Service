@@ -1,5 +1,6 @@
 package io.turntabl.ttbay.service.Impl;
 
+import io.turntabl.ttbay.dto.AuctionResponseDTO;
 import io.turntabl.ttbay.enums.AuctionStatus;
 import io.turntabl.ttbay.enums.OfficeLocation;
 import io.turntabl.ttbay.enums.Role;
@@ -39,9 +40,9 @@ class AuctionServiceImplTest {
 
     private final User testUser1 = new User("aikscode", "aiks@gmail.com", "Aikins Akenten Dwamena", "", OfficeLocation.SONNIDOM_HOUSE);
     private final Item testItem = new Item("Book1", "Harry Potter2", testUser, null, false, false);
-    private final Auction auction = new Auction(1L, testUser, testItem, new Date(), new Date(), 85.8, null, null, AuctionStatus.LIVE);
-    private final Auction auction1 = new Auction(1L, testUser1, testItem, new Date(), new Date(), 85.8, null, null, AuctionStatus.LIVE);
-    List<Auction> auctions = List.of(new Auction(), new Auction());
+    private final Auction auction = Auction.builder().id(1L).auctioner(testUser).item(testItem).startDate(new Date()).endDate(new Date()).reservedPrice(85.8).status(AuctionStatus.LIVE).build();
+    private final Auction auction1 = Auction.builder().id(1L).auctioner(testUser1).item(testItem).startDate(new Date()).endDate(new Date()).reservedPrice(81.5).status(AuctionStatus.LIVE).build();
+    List<Auction> auctions = List.of(auction , auction1);
     @Autowired
     private AuctionService serviceUnderTest;
     @MockBean
@@ -86,20 +87,13 @@ class AuctionServiceImplTest {
         Assertions.assertThrows(ResourceNotFoundException.class, () -> serviceUnderTest.returnAllAuctionByUser(jwtAuthenticationToken));
     }
 
-    @Test
-    void returnAllAuctionByUser_givenJwtAuthTokenAndNoUserAuctionsInDb_shouldThrowError() {
-        doReturn(Optional.of(user)).when(userRepository).findByEmail(any());
-        doReturn(Optional.empty()).when(auctionRepository).findAllByAuctioner(any());
-
-        Assertions.assertThrows(ResourceNotFoundException.class, () -> serviceUnderTest.returnAllAuctionByUser(jwtAuthenticationToken));
-    }
 
     @Test
     void returnAllAuctionByUser_givenJwtAuthTokenAndUserAuctionsInDb_shouldReturnItems() throws ResourceNotFoundException {
         doReturn(Optional.of(user)).when(userRepository).findByEmail(any());
-        doReturn(Optional.of(auctions)).when(auctionRepository).findAllByAuctioner(any());
+        doReturn(auctions).when(auctionRepository).findByAuctioner(any());
 
-        List<Auction> expectedAuctions = serviceUnderTest.returnAllAuctionByUser(jwtAuthenticationToken);
+        List<AuctionResponseDTO> expectedAuctions = serviceUnderTest.returnAllAuctionByUser(jwtAuthenticationToken);
 
         Assertions.assertNotNull(expectedAuctions);
 

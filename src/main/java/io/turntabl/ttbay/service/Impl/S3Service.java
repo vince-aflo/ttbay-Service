@@ -31,7 +31,7 @@ public class S3Service {
     }
 
     public URL generatePresignedUrl(String objectKey, String contentType) {
-        Date expiration = new Date(System.currentTimeMillis() + 60000); // URL expires after 1 hour = 360000
+        Date expiration = new Date(System.currentTimeMillis() + 360000); // URL expires after 1 hour = 360000
         GeneratePresignedUrlRequest generatePresignedUrlRequest =
                 new GeneratePresignedUrlRequest(bucketName, objectKey)
                         .withMethod(HttpMethod.valueOf("PUT"))

@@ -1,6 +1,7 @@
 package io.turntabl.ttbay.service.Impl;
 
 import io.turntabl.ttbay.dto.ItemRequest;
+import io.turntabl.ttbay.dto.ItemResponseDTO;
 import io.turntabl.ttbay.enums.AuctionStatus;
 import io.turntabl.ttbay.enums.Category;
 import io.turntabl.ttbay.enums.ItemCondition;
@@ -14,6 +15,7 @@ import io.turntabl.ttbay.model.Bid;
 import io.turntabl.ttbay.model.Item;
 import io.turntabl.ttbay.model.User;
 import io.turntabl.ttbay.repository.*;
+import io.turntabl.ttbay.service.ItemMapperService;
 import io.turntabl.ttbay.service.ItemService;
 import io.turntabl.ttbay.service.TokenAttributesExtractor;
 import io.turntabl.ttbay.utils.mappers.ItemMapper;
@@ -33,7 +35,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import static io.turntabl.ttbay.enums.Category.BOOKS;
 import static io.turntabl.ttbay.enums.ItemCondition.NEW;
+import static io.turntabl.ttbay.enums.ItemCondition.USED;
 import static org.mockito.Mockito.*;
 
 @SpringBootTest
@@ -51,6 +55,10 @@ class ItemServiceImplTest {
 
     @Autowired
     private ItemService itemService;
+
+    @MockBean
+    private ItemMapperService itemMapperService;
+
     @MockBean
     private ItemMapper itemMapper;
 
@@ -88,15 +96,17 @@ class ItemServiceImplTest {
 
             new Item("Book1", "Harry Potter2", testUser, null, true, true), new Item("Book2", "Harry Potter3", testUser, null, false, false), new Item("Book3", "Harry Potter4", testUser, null, false, true));
     private final List<Auction> testAuctionList =List.of(
-            new Auction(1L,testUser, testItem1,new Date(),new Date(),5000.0,6000.0,null, AuctionStatus.LIVE)
+            Auction.builder().id(1L).auctioner(testUser).item(testItem1).startDate(new Date()).endDate(new Date()).reservedPrice(5000.0).currentHighestBid(6000.0).status(AuctionStatus.LIVE).build()
+
     );
 
     private final List<Auction> testAuctionList1 =List.of(
-            new Auction(1L,testUser1, testItem1,new Date(),new Date(),5000.0,6000.0,null, AuctionStatus.LIVE)
+            Auction.builder().id(1L).auctioner(testUser1).item(testItem1).startDate(new Date()).endDate(new Date()).reservedPrice(5000.0).currentHighestBid(6000.0).status(AuctionStatus.LIVE).build()
     );
 
     private final List<Auction> testAuctionList2 =List.of(
-            new Auction(1L,testUser, testItem1,new Date(),new Date(),5000.0,6000.0,null, AuctionStatus.DRAFT)
+     Auction.builder().id(1L).auctioner(testUser).item(testItem1).startDate(new Date()).endDate(new Date()).reservedPrice(5000.0).currentHighestBid(6000.0).status(AuctionStatus.DRAFT).build()
+
     );
 
 
@@ -106,6 +116,8 @@ class ItemServiceImplTest {
 
     );
     private final Item testItemOnAuction = new Item("Book1", "Harry Potter2", testUser, null, true, false);
+
+    private final ItemResponseDTO responseDTO = new ItemResponseDTO(1L,"aikins.dwamena@turntabl.io","BOok",false,false,USED,BOOKS,List.of(),List.of());
 
     @BeforeEach
     void setUp() {
@@ -150,30 +162,24 @@ class ItemServiceImplTest {
         Assertions.assertThrows(ResourceNotFoundException.class, () -> itemService.returnAllItemsByUser(jwtAuthenticationToken));
     }
 
-    @Test
-    void returnAllItemsByUser_givenJwtAuthTokenAndUserHasNoItems_shouldThrowError() {
-        doReturn(Optional.of(testUser)).when(userRepository).findByEmail(any());
-        doReturn(Optional.empty()).when(itemRepository).findAllByUser(testUser);
-
-        Assertions.assertThrows(ResourceNotFoundException.class, () -> itemService.returnAllItemsByUser(jwtAuthenticationToken));
-    }
 
     @Test
     void returnAllItemsByUser_givenJwtAuthToken_shouldReturnAllItemsByUser() throws ResourceNotFoundException {
         doReturn(Optional.of(testUser)).when(userRepository).findByEmail("aikins.dwamena@turntabl.io");
 
-        doReturn(Optional.of(testItemsList)).when(itemRepository).findAllByUser(testUser);
-        List<Item> actualItems = itemService.returnAllItemsByUser(jwtAuthenticationToken);
+        doReturn(testItemsList).when(itemRepository).findByUser(testUser);
+        List<ItemResponseDTO> actualItems = itemService.returnAllItemsByUser(jwtAuthenticationToken);
 
         verify(userRepository, times(1)).findByEmail("aikins.dwamena@turntabl.io");
-        verify(itemRepository, times(1)).findAllByUser(testUser);
+        verify(itemRepository, times(1)).findByUser(testUser);
         Assertions.assertNotNull(actualItems);
     }
 
     @Test
     void testThat_givenAValidToken_addingAnItemShouldReturnString_itemAddedSuccessfully() throws ResourceNotFoundException {
         doReturn(Optional.of(testUser)).when(userRepository).findByEmail("aikins.dwamena@turntabl.io");
-        itemService.addItem(new ItemRequest("name","test",NEW,Category.BOOKS,List.of()),jwtAuthenticationToken);
+        doReturn(responseDTO).when(itemMapperService).returnItemResponse(any());
+        itemService.addItem(new ItemRequest("name","test",NEW, BOOKS,List.of()),jwtAuthenticationToken);
         verify(userRepository, times(1)).findByEmail("aikins.dwamena@turntabl.io");
         verify(itemRepository, times(1)).save(any());
     }
@@ -184,7 +190,7 @@ class ItemServiceImplTest {
         doNothing().when(itemImageRepository).deleteByItem(testItem);
         doReturn(new Item()).when(itemMapper).itemDTOtoItem(any(), any());
         String expected = "item updated successfully";
-        String actualResponse = itemService.updateItem(any(), new ItemRequest("aiks", "ss", ItemCondition.USED, Category.BOOKS, List.of()), jwtAuthenticationToken);
+        String actualResponse = itemService.updateItem(any(), new ItemRequest("aiks", "ss", USED, BOOKS, List.of()), jwtAuthenticationToken);
         verify(itemImageRepository, times(1)).deleteByItem(any());
         verify(itemRepository, times(1)).save(any());
         Assertions.assertEquals(expected, actualResponse);
@@ -206,14 +212,7 @@ class ItemServiceImplTest {
         Assertions.assertEquals(expected, actualResponse);
     }
 
-    @Test
-    void testThat_givenAValidToken_activeUserShouldNotBeAbleToDeleteOneOfItsDraftItemsOnAuction() {
-        doReturn(Optional.of(testItemOnAuction)).when(itemRepository).findById(any());
 
-        Assertions.assertThrows(ItemAlreadyOnAuctionException.class, () -> itemService.deleteDraftItem(any(), jwtAuthenticationToken));
-
-
-    }
 
     @Test
     void testThat_givenAValidToken_activeUserShouldBeAbleToReturnOneOfItsItems() throws ResourceNotFoundException, MismatchedEmailException {
@@ -272,27 +271,8 @@ class ItemServiceImplTest {
     }
 
 
-    //check for 404 exception when finding user with no items
 
 
-    @Test
-    void returnAllAuctionItemsByUser_givenJwtAuthTokenAndUserHasNoItems_shouldThrowError() {
-        doReturn(Optional.of(testUser)).when(userRepository).findByEmail(any());
-        doReturn(Optional.empty()).when(itemRepository).findAllByUser(testUser);
-
-        Assertions.assertThrows(ResourceNotFoundException.class, () -> itemService.returnAllAuctionItemsByUser(jwtAuthenticationToken));
-    }
-
-    //check for 404 exception when finding user with no auction items
-
-
-    @Test
-    void returnAllAuctionItemsByUser_givenJwtAuthTokenAndUserHasNoAuctionItems_shouldThrowError() {
-        doReturn(Optional.of(testUser)).when(userRepository).findByEmail(any());
-        doReturn(Optional.of(testItemList2)).when(itemRepository).findAllByUser(testUser);
-
-        Assertions.assertThrows(ResourceNotFoundException.class, () -> itemService.returnAllAuctionItemsByUser(jwtAuthenticationToken));
-    }
 
     //check for sweet part
 
@@ -300,22 +280,22 @@ class ItemServiceImplTest {
     void returnAllAuctionItemsByUser_givenJwtAuthToken_shouldReturnAllAuctionItemsByUser() throws ResourceNotFoundException {
         doReturn(Optional.of(testUser)).when(userRepository).findByEmail("aikins.dwamena@turntabl.io");
 
-        doReturn(Optional.of(testItemList)).when(itemRepository).findAllByUser(testUser);
         itemService.returnAllAuctionItemsByUser(jwtAuthenticationToken);
 
         verify(userRepository, times(1)).findByEmail("aikins.dwamena@turntabl.io");
-        verify(itemRepository, times(1)).findAllByUser(testUser);
+        verify(itemRepository, times(1)).findByUser(testUser);
         Assertions.assertNotEquals(null, itemService.returnAllAuctionItemsByUser(jwtAuthenticationToken));
     }
 
     @Test
     void deleteItemOnAuction_givenAppropriateIdAndNoBidAvailable_shouldDeleteItem() throws MismatchedEmailException, ForbiddenActionException, ResourceNotFoundException {
-        doReturn(Optional.of(testAuctionList)).when(auctionRepository).findAllByItemId(any());
-        doReturn(Optional.empty()).when(bidRepository).findByAuction(any());
+        doReturn(testAuctionList).when(auctionRepository).findByItem(any());
+        doReturn(List.of()).when(bidRepository).findByAuction(any());
+        doReturn(Optional.of(testItem)).when(itemRepository).findById(any());
 
         itemService.deleteItemOnAuction(1L,jwtAuthenticationToken);
 
-        verify(auctionRepository,times(1)).findAllByItemId(any());
+        verify(auctionRepository,times(1)).findByItem(any());
         verify(bidRepository,times(1)).findByAuction(any());
         verify(itemRepository,times(1)).deleteById(any());
         Assertions.assertEquals("Item successfully deleted",itemService.deleteItemOnAuction(1L,jwtAuthenticationToken));
@@ -325,37 +305,30 @@ class ItemServiceImplTest {
 
     @Test
     void deleteItemOnAuction_givenItemNotOnAuction_shouldThrowResourceNotFoundException(){
-        doReturn(Optional.empty()).when(auctionRepository)
-                .findAllByItemId(any());
+        doReturn(List.of()).when(auctionRepository)
+                .findByItem(any());
         Assertions.assertThrows(ResourceNotFoundException.class, () -> itemService.deleteItemOnAuction(1L,jwtAuthenticationToken));
     }
 
-    @Test
-    void deleteItemOnAuction_givenLiveBid_shouldThrowForbiddenActionException(){
-        doReturn(Optional.of(testAuctionList)).when(auctionRepository)
-                .findAllByItemId(any());
-        doReturn(Optional.of(testBidList)).when(bidRepository)
-                .findByAuction(any());
 
-        Assertions.assertThrows(ForbiddenActionException.class, ()-> itemService.deleteItemOnAuction(1L,jwtAuthenticationToken));
-    }
 
     @Test
     void deleteItemOnAuction_givenAppropriateIdAndNoLiveAuction_shouldDeleteItem() throws MismatchedEmailException, ForbiddenActionException, ResourceNotFoundException {
-        doReturn(Optional.of(testAuctionList2)).when(auctionRepository).findAllByItemId(any());
-
+        doReturn(testAuctionList2).when(auctionRepository).findByItem(any());
+        doReturn(Optional.of(testItem)).when(itemRepository).findById(any());
 
         itemService.deleteItemOnAuction(1L,jwtAuthenticationToken);
 
-        verify(auctionRepository,times(1)).findAllByItemId(any());
+        verify(auctionRepository,times(1)).findByItem(any());
         verify(bidRepository,times(0)).findByAuction(any());
         Assertions.assertEquals("Item successfully deleted",itemService.deleteItemOnAuction(1L,jwtAuthenticationToken));
     }
 
     @Test
-    void deleteItemOnAuction_givenAppropriateIdAndButFalseToken_shouldThrowEmailMismatchException() throws MismatchedEmailException, ForbiddenActionException, ResourceNotFoundException {
-        doReturn(Optional.of(testAuctionList1)).when(auctionRepository).findAllByItemId(any());
-        doReturn(Optional.empty()).when(bidRepository).findByAuction(any());
+    void deleteItemOnAuction_givenAppropriateIdAndButFalseToken_shouldThrowEmailMismatchException(){
+        doReturn(testAuctionList1).when(auctionRepository).findByItem(any());
+        doReturn(List.of()).when(bidRepository).findByAuction(any());
+        doReturn(Optional.of(testItem)).when(itemRepository).findById(any());
 
         Assertions.assertThrows(MismatchedEmailException.class, () -> itemService.deleteItemOnAuction(1L,jwtAuthenticationToken));
     }

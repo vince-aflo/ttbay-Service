@@ -1,11 +1,13 @@
 package io.turntabl.ttbay.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import io.turntabl.ttbay.enums.AuctionStatus;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.util.Date;
+import java.util.List;
 
 @Entity
 @Getter
@@ -40,6 +42,10 @@ public class Auction {
 
     @Enumerated(EnumType.STRING)
     private AuctionStatus status;
+
+    @OneToMany(mappedBy = "auction",fetch = FetchType.LAZY,cascade = CascadeType.ALL)
+    @JsonManagedReference
+    private List<Bid> bids;
     
 }
 

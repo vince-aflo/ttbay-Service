@@ -21,8 +21,13 @@ import java.util.List;
 public class AuctionController {
     private final AuctionService auctionService;
 
+    @GetMapping("/all")
+    public ResponseEntity<List<AuctionResponseDTO>> getAllAuctions() throws ResourceNotFoundException {
+        return ResponseEntity.status(HttpStatus.OK).body(auctionService.returnAllAuctions());
+    }
+
     @GetMapping("/all-by-user")
-    public ResponseEntity<List<Auction>> returnAllAuction(Authentication authentication) throws ResourceNotFoundException {
+    public ResponseEntity<List<AuctionResponseDTO>> returnAllAuction(Authentication authentication) throws ResourceNotFoundException {
         return ResponseEntity.status(HttpStatus.OK).body(auctionService.returnAllAuctionByUser(authentication));
     }
     @PostMapping("/add")
