@@ -117,7 +117,7 @@ class ItemServiceImplTest {
     );
     private final Item testItemOnAuction = new Item("Book1", "Harry Potter2", testUser, null, true, false);
 
-    private final ItemResponseDTO responseDTO = new ItemResponseDTO(1L,"aikins.dwamena@turntabl.io","BOok",false,false,USED,BOOKS,List.of(),List.of());
+    private final ItemResponseDTO responseDTO = new ItemResponseDTO(1L,"aikins.dwamena@turntabl.io","BOok","This is a good book", false,false,USED,BOOKS,List.of(),List.of());
 
     @BeforeEach
     void setUp() {

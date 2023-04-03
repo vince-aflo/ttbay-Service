@@ -13,6 +13,7 @@ public record ItemResponseDTO(
         Long itemId,
         String userEmail,
         String itemName,
+        String description,
         Boolean onAuction,
         Boolean isSold,
         ItemCondition condition,

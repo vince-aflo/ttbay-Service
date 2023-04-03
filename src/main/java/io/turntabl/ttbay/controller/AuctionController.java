@@ -3,6 +3,8 @@ package io.turntabl.ttbay.controller;
 
 import io.turntabl.ttbay.dto.AuctionRequest;
 import io.turntabl.ttbay.dto.AuctionResponseDTO;
+import io.turntabl.ttbay.dto.EditAuctionRequestDTO;
+import io.turntabl.ttbay.exceptions.ForbiddenActionException;
 import io.turntabl.ttbay.exceptions.MismatchedEmailException;
 import io.turntabl.ttbay.exceptions.ResourceNotFoundException;
 import io.turntabl.ttbay.model.Auction;
@@ -41,6 +43,11 @@ public class AuctionController {
     @DeleteMapping("/{auctionId}")
     public ResponseEntity<String> deleteAuctionWithNoBId(@PathVariable Long auctionId, Authentication authentication) throws ResourceNotFoundException, MismatchedEmailException {
         return ResponseEntity.status(HttpStatus.OK).body(auctionService.deleteAuctionWithNoBId(auctionId, authentication));
+    }
+
+    @PutMapping("")
+    public ResponseEntity<AuctionResponseDTO> updateAuction(@RequestBody EditAuctionRequestDTO editAuctionRequestDTO, Authentication authentication) throws ResourceNotFoundException, MismatchedEmailException, ForbiddenActionException {
+        return ResponseEntity.status(HttpStatus.OK).body(auctionService.updateAuctionWithNoBid(editAuctionRequestDTO, authentication));
     }
 
 }

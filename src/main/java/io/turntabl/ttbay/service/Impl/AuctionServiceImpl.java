@@ -2,10 +2,8 @@ package io.turntabl.ttbay.service.Impl;
 
 import io.turntabl.ttbay.dto.AuctionRequest;
 import io.turntabl.ttbay.dto.AuctionResponseDTO;
-import io.turntabl.ttbay.exceptions.ItemAlreadyOnAuctionException;
-import io.turntabl.ttbay.exceptions.MismatchedEmailException;
-import io.turntabl.ttbay.exceptions.ModelCreateException;
-import io.turntabl.ttbay.exceptions.ResourceNotFoundException;
+import io.turntabl.ttbay.dto.EditAuctionRequestDTO;
+import io.turntabl.ttbay.exceptions.*;
 import io.turntabl.ttbay.model.Auction;
 import io.turntabl.ttbay.model.Item;
 import io.turntabl.ttbay.model.User;
@@ -92,5 +90,24 @@ public class AuctionServiceImpl implements AuctionService {
         return allAuctions.stream().map(auctionMapperService::returnAuctionResponse).toList();
     }
 
+    @Override
+    public AuctionResponseDTO updateAuctionWithNoBid(EditAuctionRequestDTO editAuctionRequestDTO, Authentication authentication) throws MismatchedEmailException, ForbiddenActionException, ResourceNotFoundException {
+        String email = tokenAttributesExtractor.extractEmailFromToken(authentication);
 
+        Auction auctionToEdit = validateAuctionUpdateRequest(editAuctionRequestDTO, email);
+
+        if (editAuctionRequestDTO.reservedPrice() != null) auctionToEdit.setReservedPrice(editAuctionRequestDTO.reservedPrice());
+        if (editAuctionRequestDTO.endDate() != null) auctionToEdit.setEndDate(editAuctionRequestDTO.endDate());
+
+        return auctionMapperService.returnAuctionResponse(auctionRepository.save(auctionToEdit));
+    }
+
+    private Auction validateAuctionUpdateRequest(EditAuctionRequestDTO editAuctionRequestDTO, String email) throws ResourceNotFoundException, MismatchedEmailException, ForbiddenActionException {
+        Optional<Auction> auctionResult = auctionRepository.findById(editAuctionRequestDTO.auctionId());
+        if (auctionResult.isPresent() && !Objects.equals(auctionResult.get().getAuctioner().getEmail(), email)) throw new MismatchedEmailException("You don't have access to this resource");
+        if (auctionResult.isEmpty()) throw new ResourceNotFoundException("Item not found");
+        System.out.println(auctionResult.get().getBids());
+        if (!auctionResult.get().getBids().isEmpty()) throw new ForbiddenActionException("Cannot perform this action because item has bids");
+        return auctionResult.get();
+    }
 }

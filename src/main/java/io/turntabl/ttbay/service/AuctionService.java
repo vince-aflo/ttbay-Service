@@ -2,6 +2,8 @@ package io.turntabl.ttbay.service;
 
 import io.turntabl.ttbay.dto.AuctionRequest;
 import io.turntabl.ttbay.dto.AuctionResponseDTO;
+import io.turntabl.ttbay.dto.EditAuctionRequestDTO;
+import io.turntabl.ttbay.exceptions.ForbiddenActionException;
 import io.turntabl.ttbay.exceptions.MismatchedEmailException;
 import io.turntabl.ttbay.exceptions.ResourceNotFoundException;
 import io.turntabl.ttbay.model.Auction;
@@ -16,5 +18,6 @@ public interface AuctionService {
     String createAuction(AuctionRequest auctionRequest, Authentication authentication) throws ResourceNotFoundException, MismatchedEmailException;
     String deleteAuctionWithNoBId(Long actionId, Authentication authentication) throws ResourceNotFoundException,MismatchedEmailException;
 
+    AuctionResponseDTO updateAuctionWithNoBid(EditAuctionRequestDTO editAuctionRequestDTO, Authentication authentication) throws ResourceNotFoundException, MismatchedEmailException, ForbiddenActionException;
     List<AuctionResponseDTO> returnAllAuctions() ;
 }
