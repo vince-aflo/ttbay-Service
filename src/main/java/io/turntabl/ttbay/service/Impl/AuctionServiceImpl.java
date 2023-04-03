@@ -15,12 +15,19 @@ import io.turntabl.ttbay.service.AuctionService;
 import io.turntabl.ttbay.service.ItemService;
 import io.turntabl.ttbay.service.TokenAttributesExtractor;
 import lombok.AllArgsConstructor;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
+
+import static io.turntabl.ttbay.enums.AuctionStatus.DRAFT;
+import static io.turntabl.ttbay.enums.AuctionStatus.LIVE;
 
 @AllArgsConstructor
 @Service
@@ -88,6 +95,38 @@ public class AuctionServiceImpl implements AuctionService {
     public List<AuctionResponseDTO> returnAllAuctions() {
         List<Auction> allAuctions = auctionRepository.findAll();
         return allAuctions.stream().map(auctionMapperService::returnAuctionResponse).toList();
+    }
+
+    public List<Auction> returnAllAuction() throws ResourceNotFoundException {
+        List<Auction> allAuctions = auctionRepository.findAll();
+        if (allAuctions.isEmpty()) throw new ResourceNotFoundException("Empty Auctions");
+        return allAuctions;
+    }
+
+    // Run every five minute
+    @Scheduled(cron = "0 */5 * * * *")
+    @Async
+    public void updateDraftAuctionToLiveAndPersistInDatabase() throws ResourceNotFoundException {
+        List<Auction> draftAuctionsWithPastStartDates = getDraftAuctionsWithPastStartDates();
+
+        draftAuctionsWithPastStartDates.parallelStream().forEach(auction -> {
+           setAuctionStatusToLive(auction);
+           auctionRepository.save(auction);
+        });
+
+    }
+
+    private List<Auction> getDraftAuctionsWithPastStartDates() throws ResourceNotFoundException {
+         Date timeNow = new Date(System.currentTimeMillis());
+
+        List<Auction> allAuctions = returnAllAuction();
+
+        return  allAuctions.parallelStream()
+                .filter(auction -> auction.getStatus() == DRAFT && timeNow.after(auction.getStartDate())).collect(Collectors.toList());
+    }
+
+    private void setAuctionStatusToLive(Auction auction){
+        auction.setStatus(LIVE);
     }
 
     @Override

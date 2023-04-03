@@ -17,7 +17,7 @@ public interface AuctionService {
     Auction returnOneAuction(Long auctionId, Authentication authentication) throws ResourceNotFoundException, MismatchedEmailException;
     String createAuction(AuctionRequest auctionRequest, Authentication authentication) throws ResourceNotFoundException, MismatchedEmailException;
     String deleteAuctionWithNoBId(Long actionId, Authentication authentication) throws ResourceNotFoundException,MismatchedEmailException;
-
+    void updateDraftAuctionToLiveAndPersistInDatabase() throws ResourceNotFoundException;
     AuctionResponseDTO updateAuctionWithNoBid(EditAuctionRequestDTO editAuctionRequestDTO, Authentication authentication) throws ResourceNotFoundException, MismatchedEmailException, ForbiddenActionException;
     List<AuctionResponseDTO> returnAllAuctions() ;
 }

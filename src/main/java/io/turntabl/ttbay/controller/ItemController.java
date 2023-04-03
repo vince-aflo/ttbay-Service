@@ -6,7 +6,6 @@ import io.turntabl.ttbay.exceptions.ForbiddenActionException;
 import io.turntabl.ttbay.exceptions.ItemAlreadyOnAuctionException;
 import io.turntabl.ttbay.exceptions.MismatchedEmailException;
 import io.turntabl.ttbay.exceptions.ResourceNotFoundException;
-import io.turntabl.ttbay.model.Item;
 import io.turntabl.ttbay.service.ItemService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;

@@ -65,7 +65,7 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public String deleteDraftItem(Long itemId, Authentication authentication) throws ResourceNotFoundException, MismatchedEmailException, ItemAlreadyOnAuctionException {
+    public String deleteDraftItem(Long itemId, Authentication authentication) throws ResourceNotFoundException, MismatchedEmailException {
         Item item = returnOneItem(authentication, itemId);
         itemRepository.delete(item);
 

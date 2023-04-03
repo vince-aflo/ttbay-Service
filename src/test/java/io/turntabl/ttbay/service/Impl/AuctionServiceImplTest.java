@@ -16,7 +16,6 @@ import io.turntabl.ttbay.repository.AuctionRepository;
 import io.turntabl.ttbay.repository.ItemRepository;
 import io.turntabl.ttbay.repository.UserRepository;
 import io.turntabl.ttbay.service.AuctionService;
-import io.turntabl.ttbay.service.AuctionMapperService;
 import io.turntabl.ttbay.service.ItemService;
 import io.turntabl.ttbay.service.TokenAttributesExtractor;
 import org.junit.jupiter.api.Assertions;
@@ -25,6 +24,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
@@ -35,6 +35,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import static io.turntabl.ttbay.enums.AuctionStatus.LIVE;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
 
@@ -45,14 +46,14 @@ class AuctionServiceImplTest {
     private final User testUser1 = new User("aikscode", "aiks@gmail.com", "Aikins Akenten Dwamena", "", OfficeLocation.SONNIDOM_HOUSE);
     private final Item testItem = new Item("Book1", "Harry Potter2", testUser, null, false, false);
     private final Auction auction = Auction.builder().id(1L).auctioner(testUser).item(testItem)
-                                        .startDate(new Date()).endDate(new Date()).reservedPrice(85.8)
-                                        .status(AuctionStatus.LIVE).build();
+            .startDate(new Date()).endDate(new Date()).reservedPrice(85.8)
+            .status(AuctionStatus.LIVE).build();
     private final Auction auction1 = Auction.builder().id(1L).auctioner(testUser1).item(testItem).startDate(new Date()).endDate(new Date()).reservedPrice(81.5).status(AuctionStatus.LIVE).build();
+    List<Auction> auctions = List.of(auction, auction1);
     private final Auction auction2 = Auction.builder().id(1L).auctioner(testUser).item(testItem)
             .startDate(new Date()).endDate(new Date()).reservedPrice(85.8)
             .status(AuctionStatus.LIVE)
             .bids(List.of(new Bid(1L, 300.00, testUser1, null))).build();
-    List<Auction> auctions = List.of(auction , auction1);
     @Autowired
     private AuctionService serviceUnderTest;
     @MockBean
@@ -168,7 +169,21 @@ class AuctionServiceImplTest {
     }
 
 
-//TOdo test remaining methods
+    @Test
+    @Scheduled(cron = "* * * * * *")
+    public void updateAuctionStatus_givenEmptyAuctions_shouldThrow404() {
+        doReturn(List.of()).when(auctionRepository).findAll();
+        Assertions.assertThrows(ResourceNotFoundException.class, () -> serviceUnderTest.updateDraftAuctionToLiveAndPersistInDatabase());
+    }
+
+    @Test
+    @Scheduled(cron = "* * * * * *")
+    public void updateAuctionStatus_givenEmptyAuctionsWithPastDates_shouldSetAuctionStatusToLive() throws ResourceNotFoundException {
+        doReturn(List.of(auction1, auction)).when(auctionRepository).findAll();
+        serviceUnderTest.updateDraftAuctionToLiveAndPersistInDatabase();
+        Assertions.assertEquals(auction.getStatus(), LIVE);
+        Assertions.assertEquals(auction1.getStatus(), LIVE);
+    }
 
 
 }

@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.turntabl.ttbay.dto.ItemRequest;
 import io.turntabl.ttbay.enums.Category;
 import io.turntabl.ttbay.enums.ItemCondition;
-import io.turntabl.ttbay.exceptions.ItemAlreadyOnAuctionException;
 import io.turntabl.ttbay.exceptions.MismatchedEmailException;
 import io.turntabl.ttbay.exceptions.ModelCreateException;
 import io.turntabl.ttbay.exceptions.ResourceNotFoundException;
@@ -137,16 +136,6 @@ class ItemControllerTest {
         ResultActions response = mockMvc.perform(MockMvcRequestBuilders.delete("/api/v1/items/" + itemId).with(jwt()));
 
         response.andExpect(MockMvcResultMatchers.status().isOk());
-
-    }
-
-    @Test
-    void testThat_givenJwtAuthToken_deleteDraftItem_shouldReturn403() throws Exception {
-        long itemId = 1L;
-        when(itemService.deleteDraftItem(any(), any())).thenThrow(new ItemAlreadyOnAuctionException(""));
-        ResultActions response = mockMvc.perform(MockMvcRequestBuilders.delete("/api/v1/items/" + itemId).with(jwt()));
-
-        response.andExpect(MockMvcResultMatchers.status().isForbidden());
 
     }
 

@@ -7,7 +7,6 @@ import io.turntabl.ttbay.dto.EditAuctionRequestDTO;
 import io.turntabl.ttbay.exceptions.ForbiddenActionException;
 import io.turntabl.ttbay.exceptions.MismatchedEmailException;
 import io.turntabl.ttbay.exceptions.ResourceNotFoundException;
-import io.turntabl.ttbay.model.Auction;
 import io.turntabl.ttbay.service.AuctionService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;

@@ -7,7 +7,6 @@ import io.turntabl.ttbay.enums.Category;
 import io.turntabl.ttbay.enums.ItemCondition;
 import io.turntabl.ttbay.enums.OfficeLocation;
 import io.turntabl.ttbay.model.Auction;
-import io.turntabl.ttbay.model.Item;
 import io.turntabl.ttbay.model.User;
 import io.turntabl.ttbay.service.ItemMapperService;
 import org.junit.jupiter.api.Assertions;

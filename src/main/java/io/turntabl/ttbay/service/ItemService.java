@@ -22,7 +22,7 @@ public interface ItemService {
     ItemResponseDTO returnOneItemOfUser(Long itemId, Authentication authentication) throws ResourceNotFoundException, MismatchedEmailException;
 
     Item returnOneItem(Authentication authentication, Long itemId) throws ResourceNotFoundException, MismatchedEmailException;
-    String deleteDraftItem(Long itemId, Authentication authentication) throws ResourceNotFoundException, MismatchedEmailException, ItemAlreadyOnAuctionException;
+    String deleteDraftItem(Long itemId, Authentication authentication) throws ResourceNotFoundException, MismatchedEmailException;
 
     String updateItem(Long itemId, ItemRequest itemRequest, Authentication authentication) throws MismatchedEmailException, ResourceNotFoundException;
 

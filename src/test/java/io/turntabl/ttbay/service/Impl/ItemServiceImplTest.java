@@ -3,8 +3,6 @@ package io.turntabl.ttbay.service.Impl;
 import io.turntabl.ttbay.dto.ItemRequest;
 import io.turntabl.ttbay.dto.ItemResponseDTO;
 import io.turntabl.ttbay.enums.AuctionStatus;
-import io.turntabl.ttbay.enums.Category;
-import io.turntabl.ttbay.enums.ItemCondition;
 import io.turntabl.ttbay.enums.OfficeLocation;
 import io.turntabl.ttbay.exceptions.ForbiddenActionException;
 import io.turntabl.ttbay.exceptions.ItemAlreadyOnAuctionException;
