@@ -13,11 +13,13 @@ import java.util.List;
 
 public interface AuctionService {
     List<AuctionResponseDTO> returnAllAuctionByUser(Authentication authentication) throws ResourceNotFoundException;
-    AuctionResponseDTO returnOneAuctionOfUser(Long auctionId, Authentication authentication) throws ResourceNotFoundException, MismatchedEmailException;
-    Auction returnOneAuction(Long auctionId, Authentication authentication) throws ResourceNotFoundException, MismatchedEmailException;
+    AuctionResponseDTO returnOneAuctionOfUser(Long auctionId) throws ResourceNotFoundException, MismatchedEmailException;
+    Auction returnOneAuction(Long auctionId) throws ResourceNotFoundException, MismatchedEmailException;
     String createAuction(AuctionRequest auctionRequest, Authentication authentication) throws ResourceNotFoundException, MismatchedEmailException;
     String deleteAuctionWithNoBId(Long actionId, Authentication authentication) throws ResourceNotFoundException,MismatchedEmailException;
     void updateDraftAuctionToLiveAndPersistInDatabase() throws ResourceNotFoundException;
     AuctionResponseDTO updateAuctionWithNoBid(EditAuctionRequestDTO editAuctionRequestDTO, Authentication authentication) throws ResourceNotFoundException, MismatchedEmailException, ForbiddenActionException;
     List<AuctionResponseDTO> returnAllAuctions() ;
+    void updateCurrentHighestBidOfAuction(Auction auction, Double highestBid);
+
 }

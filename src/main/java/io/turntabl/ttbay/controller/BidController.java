@@ -1,10 +1,7 @@
 package io.turntabl.ttbay.controller;
 
 import io.turntabl.ttbay.dto.BidDTO;
-import io.turntabl.ttbay.exceptions.BidCannotBeZero;
-import io.turntabl.ttbay.exceptions.BidLessThanMaxBidException;
-import io.turntabl.ttbay.exceptions.ResourceNotFoundException;
-import io.turntabl.ttbay.exceptions.UserCannotBidOnTheirAuction;
+import io.turntabl.ttbay.exceptions.*;
 import io.turntabl.ttbay.service.BidService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -23,7 +20,7 @@ public class BidController {
     private final BidService bidService;
 
     @PostMapping("")
-    public ResponseEntity<String> makeBid(@RequestBody BidDTO bidDTO , Authentication authentication) throws BidLessThanMaxBidException, ResourceNotFoundException, BidCannotBeZero, UserCannotBidOnTheirAuction {
+    public ResponseEntity<String> makeBid(@RequestBody BidDTO bidDTO , Authentication authentication) throws BidLessThanMaxBidException, ResourceNotFoundException, BidCannotBeZero, UserCannotBidOnTheirAuction, ForbiddenActionException {
         return ResponseEntity.status(HttpStatus.OK).body(bidService.makeBid(bidDTO,authentication));
     }
 }

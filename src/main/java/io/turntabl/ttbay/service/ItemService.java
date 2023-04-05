@@ -3,7 +3,6 @@ package io.turntabl.ttbay.service;
 import io.turntabl.ttbay.dto.ItemRequest;
 import io.turntabl.ttbay.dto.ItemResponseDTO;
 import io.turntabl.ttbay.exceptions.ForbiddenActionException;
-import io.turntabl.ttbay.exceptions.ItemAlreadyOnAuctionException;
 import io.turntabl.ttbay.exceptions.MismatchedEmailException;
 import io.turntabl.ttbay.exceptions.ResourceNotFoundException;
 import io.turntabl.ttbay.model.Item;

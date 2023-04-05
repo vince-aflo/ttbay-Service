@@ -3,10 +3,7 @@ package io.turntabl.ttbay.service.Impl;
 import io.turntabl.ttbay.dto.BidDTO;
 import io.turntabl.ttbay.enums.AuctionStatus;
 import io.turntabl.ttbay.enums.OfficeLocation;
-import io.turntabl.ttbay.exceptions.BidCannotBeZero;
-import io.turntabl.ttbay.exceptions.BidLessThanMaxBidException;
-import io.turntabl.ttbay.exceptions.ResourceNotFoundException;
-import io.turntabl.ttbay.exceptions.UserCannotBidOnTheirAuction;
+import io.turntabl.ttbay.exceptions.*;
 import io.turntabl.ttbay.model.Auction;
 import io.turntabl.ttbay.model.Bid;
 import io.turntabl.ttbay.model.Item;
@@ -89,7 +86,7 @@ public class BidServiceImplTest {
     }
 
     @Test
-    void makeBid_givenBidDTOAndNewMaxBid_shouldReturnBidHasBeenMadeSuccessfully() throws BidLessThanMaxBidException, ResourceNotFoundException, BidCannotBeZero, UserCannotBidOnTheirAuction {
+    void makeBid_givenBidDTOAndNewMaxBid_shouldReturnBidHasBeenMadeSuccessfully() throws BidLessThanMaxBidException, ResourceNotFoundException, BidCannotBeZero, UserCannotBidOnTheirAuction, ForbiddenActionException {
         BidDTO testBidDTO = new BidDTO(6000.0, 1L);
         doReturn(Optional.of(testUser)).when(userRepository).findByEmail(any());
         doReturn(Optional.of(testAuction)).when(auctionRepository).findById(any());
@@ -105,7 +102,7 @@ public class BidServiceImplTest {
     }
 
     @Test
-    void makeBid_givenBidDTOAndNewNotMaxBid_shouldThrowBidLessThanMaxBidException() throws BidLessThanMaxBidException, ResourceNotFoundException {
+    void makeBid_givenBidDTOAndNewNotMaxBid_shouldThrowBidLessThanMaxBidException()  {
         BidDTO testBidDTO = new BidDTO(1000.0, 1L);
         doReturn(Optional.of(testUser)).when(userRepository).findByEmail(any());
         doReturn(Optional.of(testAuction)).when(auctionRepository).findById(any());
@@ -117,7 +114,7 @@ public class BidServiceImplTest {
     }
 
     @Test
-    void makeBid_givenBidDTOAndOldMaxBid_shouldReturnBidHasBeenMadeSuccessfully() throws BidLessThanMaxBidException, ResourceNotFoundException, BidCannotBeZero, UserCannotBidOnTheirAuction {
+    void makeBid_givenBidDTOAndOldMaxBid_shouldReturnBidHasBeenMadeSuccessfully() throws BidLessThanMaxBidException, ResourceNotFoundException, BidCannotBeZero, UserCannotBidOnTheirAuction, ForbiddenActionException {
         BidDTO testBidDTO = new BidDTO(5000.0, 1L);
         doReturn(Optional.of(testUser)).when(userRepository).findByEmail(any());
         doReturn(Optional.of(testAuction)).when(auctionRepository).findById(any());
@@ -134,7 +131,7 @@ public class BidServiceImplTest {
     }
 
     @Test
-    void makeBid_givenBidDTOInValidAuction_shouldThrowAuctionNotFoundException() throws BidLessThanMaxBidException, ResourceNotFoundException {
+    void makeBid_givenBidDTOInValidAuction_shouldThrowAuctionNotFoundException() {
         BidDTO testBidDTO = new BidDTO(6000.0, 1L);
         doReturn(Optional.of(testUser)).when(userRepository).findByEmail(any());
         doReturn(Optional.empty()).when(auctionRepository).findById(any());
@@ -144,7 +141,7 @@ public class BidServiceImplTest {
     }
 
     @Test
-    void makeBid_givenBidDTOAndBadToken_shouldThrowUserNotFoundException() throws BidLessThanMaxBidException, ResourceNotFoundException {
+    void makeBid_givenBidDTOAndBadToken_shouldThrowUserNotFoundException()  {
         BidDTO testBidDTO = new BidDTO(6000.0, 1L);
         doReturn(Optional.empty()).when(userRepository).findByEmail(any());
 
@@ -154,7 +151,7 @@ public class BidServiceImplTest {
     }
 
     @Test
-    void makeBid_givenBidDTOAndBadToken_shouldThrowBidCannotBeZeroException() throws BidLessThanMaxBidException, ResourceNotFoundException {
+    void makeBid_givenBidDTOAndBadToken_shouldThrowBidCannotBeZeroException()  {
         BidDTO testBidDTO = new BidDTO(0.0, 1L);
         doReturn(Optional.of(testUser)).when(userRepository).findByEmail(any());
 
@@ -165,7 +162,7 @@ public class BidServiceImplTest {
     }
 
     @Test
-    void makeBid_givenBidDTOAndBadToken_shouldThrowUserCannotBidOnTheirItemException() throws BidLessThanMaxBidException, ResourceNotFoundException {
+    void makeBid_givenBidDTOAndBadToken_shouldThrowUserCannotBidOnTheirItemException()  {
         BidDTO testBidDTO = new BidDTO(6000.0, 1L);
         doReturn(Optional.of(testUser1)).when(userRepository).findByEmail(testUser1.getEmail());
         doReturn(Optional.of(testAuction1)).when(auctionRepository).findById(any());
@@ -175,5 +172,15 @@ public class BidServiceImplTest {
         assertThrows(UserCannotBidOnTheirAuction.class, () -> bidService.makeBid(testBidDTO,jwtAuthenticationToken));
     }
 
+    @Test
+    void makeBid_givenBidDTO_shouldThrowBidLessThanMaxException() {
+        BidDTO testBidDTO = new BidDTO(200.0, 1L);
+        doReturn(Optional.of(testUser)).when(userRepository).findByEmail(any());
+        doReturn(Optional.of(testAuction)).when(auctionRepository).findById(any());
+        doReturn(testBids).when(bidRepository).findByAuction(testAuction);
+
+
+        assertThrows(BidLessThanMaxBidException.class, () -> bidService.makeBid(testBidDTO, jwtAuthenticationToken));
+    }
 
 }

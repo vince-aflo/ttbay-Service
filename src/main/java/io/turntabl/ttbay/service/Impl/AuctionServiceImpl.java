@@ -50,8 +50,8 @@ public class AuctionServiceImpl implements AuctionService {
     }
 
     @Override
-    public AuctionResponseDTO returnOneAuctionOfUser(Long auctionId, Authentication authentication) throws ResourceNotFoundException, MismatchedEmailException {
-        Auction auction = returnOneAuction(auctionId, authentication);
+    public AuctionResponseDTO returnOneAuctionOfUser(Long auctionId) throws ResourceNotFoundException {
+        Auction auction = returnOneAuction(auctionId);
         return auctionMapperService.returnAuctionResponse(auction);
     }
 
@@ -75,19 +75,16 @@ public class AuctionServiceImpl implements AuctionService {
     }
 
     @Override
-    public String deleteAuctionWithNoBId(Long auctionId, Authentication authentication) throws ResourceNotFoundException {
+    public String deleteAuctionWithNoBId(Long auctionId, Authentication authentication) {
 
         return null;
     }
 
-    public Auction returnOneAuction(Long auctionId, Authentication authentication) throws ResourceNotFoundException, MismatchedEmailException {
-        String email = tokenAttributesExtractor.extractEmailFromToken(authentication);
-
+    @Override
+    public Auction returnOneAuction(Long auctionId) throws ResourceNotFoundException {
         Optional<Auction> auction = auctionRepository.findById(auctionId);
-        if (auction.isPresent() && !Objects.equals(auction.get().getAuctioner().getEmail(), email)) {
-            throw new MismatchedEmailException("You don't have access to this resource");
-        } else if (auction.isEmpty()) {
-            throw new ResourceNotFoundException("Item not found");
+        if (auction.isEmpty()) {
+            throw new ResourceNotFoundException("Auction not found");
         }
         return auction.get();
     }
@@ -95,6 +92,10 @@ public class AuctionServiceImpl implements AuctionService {
     public List<AuctionResponseDTO> returnAllAuctions() {
         List<Auction> allAuctions = auctionRepository.findAll();
         return allAuctions.stream().map(auctionMapperService::returnAuctionResponse).toList();
+    }
+
+    public void updateCurrentHighestBidOfAuction(Auction auction, Double highestBid) {
+        auction.setCurrentHighestBid(highestBid);
     }
 
     public List<Auction> returnAllAuction() throws ResourceNotFoundException {

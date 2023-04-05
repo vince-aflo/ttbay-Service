@@ -23,7 +23,7 @@ public class AuctionController {
     private final AuctionService auctionService;
 
     @GetMapping("/all")
-    public ResponseEntity<List<AuctionResponseDTO>> getAllAuctions() throws ResourceNotFoundException {
+    public ResponseEntity<List<AuctionResponseDTO>> getAllAuctions() {
         return ResponseEntity.status(HttpStatus.OK).body(auctionService.returnAllAuctions());
     }
 
@@ -31,14 +31,17 @@ public class AuctionController {
     public ResponseEntity<List<AuctionResponseDTO>> returnAllAuction(Authentication authentication) throws ResourceNotFoundException {
         return ResponseEntity.status(HttpStatus.OK).body(auctionService.returnAllAuctionByUser(authentication));
     }
+
     @PostMapping("/add")
     public ResponseEntity<String> createAuction(@RequestBody AuctionRequest auctionRequest, Authentication authentication) throws ResourceNotFoundException, MismatchedEmailException {
-        return ResponseEntity.status(HttpStatus.OK).body(auctionService.createAuction(auctionRequest,authentication));
+        return ResponseEntity.status(HttpStatus.OK).body(auctionService.createAuction(auctionRequest, authentication));
     }
+
     @GetMapping("/{auctionId}")
-    public ResponseEntity<AuctionResponseDTO> getOneAuctionOfUser(@PathVariable Long auctionId, Authentication authentication) throws ResourceNotFoundException, MismatchedEmailException {
-        return ResponseEntity.status(HttpStatus.OK).body(auctionService.returnOneAuctionOfUser(auctionId, authentication));
+    public ResponseEntity<AuctionResponseDTO> getOneAuctionOfUser(@PathVariable Long auctionId) throws ResourceNotFoundException, MismatchedEmailException {
+        return ResponseEntity.status(HttpStatus.OK).body(auctionService.returnOneAuctionOfUser(auctionId));
     }
+
     @DeleteMapping("/{auctionId}")
     public ResponseEntity<String> deleteAuctionWithNoBId(@PathVariable Long auctionId, Authentication authentication) throws ResourceNotFoundException, MismatchedEmailException {
         return ResponseEntity.status(HttpStatus.OK).body(auctionService.deleteAuctionWithNoBId(auctionId, authentication));

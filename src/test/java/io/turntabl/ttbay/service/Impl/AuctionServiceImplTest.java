@@ -115,21 +115,16 @@ class AuctionServiceImplTest {
     void returnOneAuction_givenAuctionId_shouldReturnValidAuction() throws MismatchedEmailException, ResourceNotFoundException {
         doReturn(Optional.of(auction)).when(auctionRepository).findById(1L);
 
-        serviceUnderTest.returnOneAuction(1L, jwtAuthenticationToken);
+        serviceUnderTest.returnOneAuction(1L);
 
-        Assertions.assertEquals(auction, serviceUnderTest.returnOneAuction(1L, jwtAuthenticationToken));
+        Assertions.assertEquals(auction, serviceUnderTest.returnOneAuction(1L));
     }
 
-    @Test
-    void returnOneAuction_givenAuctionId_shouldThrowMismatchedEmailException() {
-        doReturn(Optional.of(auction1)).when(auctionRepository).findById(any());
-        Assertions.assertThrows(MismatchedEmailException.class, () -> serviceUnderTest.returnOneAuction(1L, jwtAuthenticationToken));
-    }
 
     @Test
     void returnOneAuction_givenAuctionId_shouldThrowResourceNotException() {
         doReturn(Optional.empty()).when(auctionRepository).findById(any());
-        Assertions.assertThrows(ResourceNotFoundException.class, () -> serviceUnderTest.returnOneAuction(1L, jwtAuthenticationToken));
+        Assertions.assertThrows(ResourceNotFoundException.class, () -> serviceUnderTest.returnOneAuction(1L));
     }
 
     @Test

@@ -117,7 +117,7 @@ class AuctionControllerTest {
     @Test
     void testThat_accessingADifferentUsersAuction_returnOneAuctionOfUser_shouldReturnAStatus403() throws Exception {
         long auctionId = 1L;
-        when(auctionService.returnOneAuctionOfUser(any(), any())).thenThrow(new MismatchedEmailException("You don't have access to this resource"));
+        when(auctionService.returnOneAuctionOfUser(any())).thenThrow(new MismatchedEmailException("You don't have access to this resource"));
         ResultActions response = mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/auctions/" + auctionId)
                 .with(jwt())
                 .contentType(MediaType.APPLICATION_JSON));
@@ -129,7 +129,7 @@ class AuctionControllerTest {
     @Test
     void testThat_accessingUserWithoutAnyAuctions_returnOneAuctionOfUser_shouldReturnAStatus404() throws Exception {
         long auctionId = 1L;
-        when(auctionService.returnOneAuctionOfUser(any(), any())).thenThrow(new ResourceNotFoundException("Item not found"));
+        when(auctionService.returnOneAuctionOfUser(any())).thenThrow(new ResourceNotFoundException("Item not found"));
         ResultActions response = mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/auctions/" + auctionId)
                 .with(jwt())
                 .contentType(MediaType.APPLICATION_JSON));
