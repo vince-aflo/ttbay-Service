@@ -46,6 +46,8 @@ public class Auction {
     @OneToMany(mappedBy = "auction",fetch = FetchType.LAZY,cascade = CascadeType.ALL)
     @JsonManagedReference
     private List<Bid> bids;
+
+    private Double winningPrice;
     
 }
 

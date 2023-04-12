@@ -52,4 +52,42 @@ public class EmailTriggerServiceImpl implements EmailTriggerService {
 
         }
     }
+
+    @Override
+    @Async
+    public void sendAuctioneerAfterHighestWinEmail(Auction auction) throws MessagingException {
+        Map<String, Object> mapForContext= new HashMap<>();
+        mapForContext.put("username",auction.getAuctioner().getUsername());
+        mapForContext.put("highestBidderEmail",auction.getWinner().getEmail());
+        mapForContext.put("itemName",auction.getItem().getName());
+        mapForContext.put("bidAmount",auction.getWinningPrice());
+        mapForContext.put("highestBidderUsername",auction.getWinner().getUsername());
+
+        Context context = thymeleafService.setTemplateContext(mapForContext);
+
+        String htmlBody = thymeleafService.createHtmlBody(context,"bid-winner.html");
+        String subject = auction.getWinner().getUsername()+" won your auction with item"+ auction.getItem().getName();
+        gmailService.sendHtmlMessage(auction.getWinner().getEmail(),subject,htmlBody);
+    }
+
+    @Async
+    @Override
+    public void sendBidWinnerEmail(Auction auction) throws MessagingException {
+            //create map and context
+            Map<String, Object> mapForContext= new HashMap<>();
+            mapForContext.put("username",auction.getWinner().getUsername());
+            mapForContext.put("auctioneerEmail",auction.getAuctioner().getEmail());
+            mapForContext.put("itemName",auction.getItem().getName());
+            mapForContext.put("bidAmount",auction.getWinningPrice());
+            mapForContext.put("auctioneerUsername",auction.getAuctioner().getUsername());
+
+            Context context = thymeleafService.setTemplateContext(mapForContext);
+
+            //create htmlbody
+            String htmlBody = thymeleafService.createHtmlBody(context,"bid-winner.html");
+            //send email to bidders of auction
+            gmailService.sendHtmlMessage(auction.getWinner().getEmail(),"You won !!!!!!",htmlBody);
+
+
+    }
 }

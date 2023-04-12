@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<div class="container">
+    <h1>Hello <span th:text="${username}">User</span>!</h1>
+    <p>Congratutions !!!
+    <p>
+    <p>Your auction with item <span th:text="${itemName}"></span> has been won by <span
+            th:text="${highestBidderEmail}"></span> with an amount of
+        <span th:text="${bidAmount}"></span> ghana cedis. Arrange and deliver the item to <span
+                th:text="${highestBidderUsername}"></span> </p>
+    <p>Your ttBay team</p>
+</div>
+</body>
+</html>

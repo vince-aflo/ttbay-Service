@@ -42,11 +42,6 @@ public class AuctionController {
         return ResponseEntity.status(HttpStatus.OK).body(auctionService.returnOneAuctionOfUser(auctionId));
     }
 
-    @DeleteMapping("/{auctionId}")
-    public ResponseEntity<String> deleteAuctionWithNoBId(@PathVariable Long auctionId, Authentication authentication) throws ResourceNotFoundException, MismatchedEmailException {
-        return ResponseEntity.status(HttpStatus.OK).body(auctionService.deleteAuctionWithNoBId(auctionId, authentication));
-    }
-
     @PutMapping("")
     public ResponseEntity<AuctionResponseDTO> updateAuction(@RequestBody EditAuctionRequestDTO editAuctionRequestDTO, Authentication authentication) throws ResourceNotFoundException, MismatchedEmailException, ForbiddenActionException {
         return ResponseEntity.status(HttpStatus.OK).body(auctionService.updateAuctionWithNoBid(editAuctionRequestDTO, authentication));

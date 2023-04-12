@@ -5,32 +5,40 @@ import io.turntabl.ttbay.dto.AuctionResponseDTO;
 import io.turntabl.ttbay.dto.EditAuctionRequestDTO;
 import io.turntabl.ttbay.exceptions.*;
 import io.turntabl.ttbay.model.Auction;
+import io.turntabl.ttbay.model.Bid;
 import io.turntabl.ttbay.model.Item;
 import io.turntabl.ttbay.model.User;
 import io.turntabl.ttbay.repository.AuctionRepository;
+import io.turntabl.ttbay.repository.BidRepository;
 import io.turntabl.ttbay.repository.ItemRepository;
 import io.turntabl.ttbay.repository.UserRepository;
-import io.turntabl.ttbay.service.AuctionMapperService;
-import io.turntabl.ttbay.service.AuctionService;
-import io.turntabl.ttbay.service.ItemService;
-import io.turntabl.ttbay.service.TokenAttributesExtractor;
+import io.turntabl.ttbay.service.*;
+import jakarta.mail.MessagingException;
+import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
+import java.util.*;
+import java.util.concurrent.CompletableFuture;
+import java.util.stream.Collectors;
+
+import static io.turntabl.ttbay.enums.AuctionStatus.*;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.stream.Collectors;
+
 
 import static io.turntabl.ttbay.enums.AuctionStatus.DRAFT;
 import static io.turntabl.ttbay.enums.AuctionStatus.LIVE;
 
 @AllArgsConstructor
 @Service
+@Slf4j
 public class AuctionServiceImpl implements AuctionService {
 
     private final AuctionRepository auctionRepository;
@@ -40,6 +48,8 @@ public class AuctionServiceImpl implements AuctionService {
     private final ItemRepository itemRepository;
 
     private final AuctionMapperService auctionMapperService;
+    private final BidRepository bidRepository;
+    private final EmailTriggerService emailTriggerService;
 
     @Override
     public List<AuctionResponseDTO> returnAllAuctionByUser(Authentication authentication) throws ResourceNotFoundException {
@@ -56,7 +66,17 @@ public class AuctionServiceImpl implements AuctionService {
     }
 
     @Override
+    public Auction returnOneAuction(Long auctionId) throws ResourceNotFoundException {
+        Optional<Auction> auction = auctionRepository.findById(auctionId);
+        if (auction.isEmpty()) {
+            throw new ResourceNotFoundException("Auction not found");
+        }
+        return auction.get();
+    }
+
+    @Override
     public String createAuction(AuctionRequest auctionRequest, Authentication authentication) throws ResourceNotFoundException, MismatchedEmailException {
+        System.out.println("auctionRequest" + auctionRequest);
         Item item = itemService.returnOneItem(authentication, auctionRequest.itemId());
 
         try {
@@ -74,20 +94,6 @@ public class AuctionServiceImpl implements AuctionService {
         }
     }
 
-    @Override
-    public String deleteAuctionWithNoBId(Long auctionId, Authentication authentication) {
-
-        return null;
-    }
-
-    @Override
-    public Auction returnOneAuction(Long auctionId) throws ResourceNotFoundException {
-        Optional<Auction> auction = auctionRepository.findById(auctionId);
-        if (auction.isEmpty()) {
-            throw new ResourceNotFoundException("Auction not found");
-        }
-        return auction.get();
-    }
 
     public List<AuctionResponseDTO> returnAllAuctions() {
         List<Auction> allAuctions = auctionRepository.findAll();
@@ -104,18 +110,6 @@ public class AuctionServiceImpl implements AuctionService {
         return allAuctions;
     }
 
-    // Run every five minute
-    @Scheduled(cron = "0 */5 * * * *")
-    @Async
-    public void updateDraftAuctionToLiveAndPersistInDatabase() throws ResourceNotFoundException {
-        List<Auction> draftAuctionsWithPastStartDates = getDraftAuctionsWithPastStartDates();
-
-        draftAuctionsWithPastStartDates.parallelStream().forEach(auction -> {
-           setAuctionStatusToLive(auction);
-           auctionRepository.save(auction);
-        });
-
-    }
 
     private List<Auction> getDraftAuctionsWithPastStartDates() throws ResourceNotFoundException {
          Date timeNow = new Date(System.currentTimeMillis());
@@ -141,13 +135,114 @@ public class AuctionServiceImpl implements AuctionService {
 
         return auctionMapperService.returnAuctionResponse(auctionRepository.save(auctionToEdit));
     }
+    // Run every five minute
+    @Scheduled(cron = "0 */5  * * * *")
+    @Async
+    public CompletableFuture<Void> updateDraftAuctionToLiveAndPersistInDatabase() throws ResourceNotFoundException {
+        log.info("updateDraftAuctionToLiveAndPersistInDatabase-----------");
+        List<Auction> draftAuctionsWithPastStartDates = getDraftAuctionsWithPastStartDates();
+
+        draftAuctionsWithPastStartDates.parallelStream().forEach(auction -> {
+            setAuctionStatusToLive(auction);
+            auctionRepository.save(auction);
+        });
+        return CompletableFuture.completedFuture(null);
+    }
+
+    @Scheduled(cron = "0 */4 * * * *")
+    @Async
+    public CompletableFuture<Void> updateLiveAuctionToEndAndPersistInDatabase() throws ResourceNotFoundException {
+        List<Auction> liveAuctionsWithPastEndDates = getLiveAuctionsWithPastEndDates();
+
+        liveAuctionsWithPastEndDates.parallelStream().forEach(auction -> {
+            setAuctionStatusToEnd(auction);
+            auctionRepository.save(auction);
+        });
+        return CompletableFuture.completedFuture(null);
+    }
+
+    private List<Auction> getAllEndedAuctionsWithoutWinners() throws ResourceNotFoundException {
+        List<Auction> allAuctions = returnAllAuction();
+
+        return allAuctions.parallelStream().filter(auction -> auction.getWinner() == null && auction.getStatus() == END).collect(Collectors.toList());
+    }
+
+    private void setAuctionStatusToEnd(Auction auction) {
+        auction.setStatus(END);
+    }
+
+    private List<Auction> getLiveAuctionsWithPastEndDates() throws ResourceNotFoundException {
+        Date timeNow = new Date(System.currentTimeMillis());
+
+        List<Auction> allAuctions = returnAllAuction();
+
+        return allAuctions.parallelStream().filter(auction -> auction.getStatus() == LIVE && timeNow.after(auction.getEndDate())).collect(Collectors.toList());
+    }
+
+    private Map<User, Double> returnAllBiddersAndRespectiveBidAmountsOnAuction(Auction auction) throws ResourceNotFoundException {
+        Map<User, Double> usersAndRespectiveBids = new HashMap<>();
+        List<Bid> bidsOnAuction = bidRepository.findByAuction(auction);
+        if (bidsOnAuction.isEmpty()) {
+            throw new ResourceNotFoundException("There are no bids on this auction");
+        }
+
+        bidsOnAuction.parallelStream().forEach(bid -> usersAndRespectiveBids.put(bid.getBidder(), bid.getBidAmount()));
+
+        return usersAndRespectiveBids;
+    }
+
+    private Map<User,Double> getHighestBidder(Map<User, Double> usersAndRespectiveBids) throws ResourceNotFoundException {
+        OptionalDouble max = usersAndRespectiveBids.values().parallelStream().mapToDouble(Double::doubleValue).max();
+        if (max.isPresent()) {
+            Optional<User> key = usersAndRespectiveBids.entrySet().stream().filter(entry -> entry.getValue() == max.getAsDouble()).map(Map.Entry::getKey).findFirst();
+
+            if (key.isPresent()) {
+                return Map.of(key.get(), max.getAsDouble());
+            } else throw new ResourceNotFoundException("max bid not found");
+        }
+        return null;
+    }
 
     private Auction validateAuctionUpdateRequest(EditAuctionRequestDTO editAuctionRequestDTO, String email) throws ResourceNotFoundException, MismatchedEmailException, ForbiddenActionException {
         Optional<Auction> auctionResult = auctionRepository.findById(editAuctionRequestDTO.auctionId());
-        if (auctionResult.isPresent() && !Objects.equals(auctionResult.get().getAuctioner().getEmail(), email)) throw new MismatchedEmailException("You don't have access to this resource");
+        if (auctionResult.isPresent() && !Objects.equals(auctionResult.get().getAuctioner().getEmail(), email))
+            throw new MismatchedEmailException("You don't have access to this resource");
         if (auctionResult.isEmpty()) throw new ResourceNotFoundException("Item not found");
-        System.out.println(auctionResult.get().getBids());
-        if (!auctionResult.get().getBids().isEmpty()) throw new ForbiddenActionException("Cannot perform this action because item has bids");
+        if (!auctionResult.get().getBids().isEmpty())
+            throw new ForbiddenActionException("Cannot perform this action because item has bids");
         return auctionResult.get();
     }
+    @Scheduled(cron = "0 */1 * * * *")
+    @Transactional
+    @Async
+    public CompletableFuture<Void> updateAuctionWithWinnerAndBidAmount() throws ResourceNotFoundException {
+
+        List<Auction> endedAuctionsWithoutWinners = getAllEndedAuctionsWithoutWinners();
+
+
+        endedAuctionsWithoutWinners.parallelStream().forEach(auction -> {
+            try {
+                Map<User, Double> usersAndRespectiveBids = returnAllBiddersAndRespectiveBidAmountsOnAuction(auction);
+                Map<User, Double> WinnerAndBidAmount = getHighestBidder(usersAndRespectiveBids);
+                if(WinnerAndBidAmount != null){
+                    User winner = WinnerAndBidAmount.keySet().stream().findFirst().orElseThrow();
+                    Double highestBidAmount = WinnerAndBidAmount.values().stream().findFirst().orElseThrow();
+                    auction.setWinner(winner);
+                    auction.setWinningPrice(highestBidAmount);
+                    auctionRepository.save(auction);
+                    emailTriggerService.sendBidWinnerEmail(auction);
+                    emailTriggerService.sendAuctioneerAfterHighestWinEmail(auction);
+                }else throw new ResourceNotFoundException("WinnerAndBidAmount is null");
+
+            } catch (ResourceNotFoundException | MessagingException e) {
+                throw new RuntimeException(e);
+            }
+        });
+        return CompletableFuture.completedFuture(null);
+
+    }
+
 }
+
+
+

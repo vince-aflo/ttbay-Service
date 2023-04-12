@@ -12,6 +12,7 @@ import io.turntabl.ttbay.repository.AuctionRepository;
 import io.turntabl.ttbay.repository.BidRepository;
 import io.turntabl.ttbay.repository.UserRepository;
 import io.turntabl.ttbay.service.BidService;
+import jakarta.mail.MessagingException;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -86,7 +87,7 @@ public class BidServiceImplTest {
     }
 
     @Test
-    void makeBid_givenBidDTOAndNewMaxBid_shouldReturnBidHasBeenMadeSuccessfully() throws BidLessThanMaxBidException, ResourceNotFoundException, BidCannotBeZero, UserCannotBidOnTheirAuction, ForbiddenActionException {
+    void makeBid_givenBidDTOAndNewMaxBid_shouldReturnBidHasBeenMadeSuccessfully() throws BidLessThanMaxBidException, ResourceNotFoundException, BidCannotBeZero, UserCannotBidOnTheirAuction, ForbiddenActionException, MessagingException {
         BidDTO testBidDTO = new BidDTO(6000.0, 1L);
         doReturn(Optional.of(testUser)).when(userRepository).findByEmail(any());
         doReturn(Optional.of(testAuction)).when(auctionRepository).findById(any());
@@ -114,7 +115,7 @@ public class BidServiceImplTest {
     }
 
     @Test
-    void makeBid_givenBidDTOAndOldMaxBid_shouldReturnBidHasBeenMadeSuccessfully() throws BidLessThanMaxBidException, ResourceNotFoundException, BidCannotBeZero, UserCannotBidOnTheirAuction, ForbiddenActionException {
+    void makeBid_givenBidDTOAndOldMaxBid_shouldReturnBidHasBeenMadeSuccessfully() throws BidLessThanMaxBidException, ResourceNotFoundException, BidCannotBeZero, UserCannotBidOnTheirAuction, ForbiddenActionException, MessagingException {
         BidDTO testBidDTO = new BidDTO(5000.0, 1L);
         doReturn(Optional.of(testUser)).when(userRepository).findByEmail(any());
         doReturn(Optional.of(testAuction)).when(auctionRepository).findById(any());

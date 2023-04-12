@@ -36,13 +36,13 @@ class ItemMapperServiceImplTest {
             .build();
 
 
-    private final ItemResponseDTO itemResponseDTO = ItemResponseDTO.builder().itemId(item.getId()).userEmail(item.getUser().getEmail()).itemName(item.getName()).onAuction(item.getOnAuction()).isSold(item.getIsSold()).condition(item.getCondition()).category(item.getCategory()).imageList(item.getImageList()).auctions(item.getAuction()).build();
+    private final ItemResponseDTO itemResponseDTO = ItemResponseDTO.builder().auctions(null).description(item.getDescription()).itemId(item.getId()).userEmail(item.getUser().getEmail()).itemName(item.getName()).onAuction(item.getOnAuction()).isSold(item.getIsSold()).condition(item.getCondition()).category(item.getCategory()).imageList(item.getImageList()).auctions(item.getAuction()).build();
 
     @Autowired
     private ItemMapperService itemMapperService;
 
     @Test
-    void returnAuctionResponse() {
+    void returnItemResponse() {
         ItemResponseDTO actualDTO = itemMapperService.returnItemResponse(item);
         Assertions.assertEquals(itemResponseDTO, actualDTO);
     }

@@ -16,7 +16,8 @@ public record AuctionResponseDTO(
         Double reservedPrice,
         Double currentHighestBid,
         User winner,
-        AuctionStatus status
+        AuctionStatus status,
+        Double winningPrice
 
 ) {
 }

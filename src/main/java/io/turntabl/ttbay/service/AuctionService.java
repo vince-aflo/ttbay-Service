@@ -10,15 +10,17 @@ import io.turntabl.ttbay.model.Auction;
 import org.springframework.security.core.Authentication;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 public interface AuctionService {
     List<AuctionResponseDTO> returnAllAuctionByUser(Authentication authentication) throws ResourceNotFoundException;
     AuctionResponseDTO returnOneAuctionOfUser(Long auctionId) throws ResourceNotFoundException, MismatchedEmailException;
     Auction returnOneAuction(Long auctionId) throws ResourceNotFoundException, MismatchedEmailException;
     String createAuction(AuctionRequest auctionRequest, Authentication authentication) throws ResourceNotFoundException, MismatchedEmailException;
-    String deleteAuctionWithNoBId(Long actionId, Authentication authentication) throws ResourceNotFoundException,MismatchedEmailException;
-    void updateDraftAuctionToLiveAndPersistInDatabase() throws ResourceNotFoundException;
+    CompletableFuture<Void> updateDraftAuctionToLiveAndPersistInDatabase() throws ResourceNotFoundException;
     AuctionResponseDTO updateAuctionWithNoBid(EditAuctionRequestDTO editAuctionRequestDTO, Authentication authentication) throws ResourceNotFoundException, MismatchedEmailException, ForbiddenActionException;
+    CompletableFuture<Void> updateAuctionWithWinnerAndBidAmount() throws ResourceNotFoundException;
+    CompletableFuture<Void> updateLiveAuctionToEndAndPersistInDatabase() throws ResourceNotFoundException;
     List<AuctionResponseDTO> returnAllAuctions() ;
     void updateCurrentHighestBidOfAuction(Auction auction, Double highestBid);
 
