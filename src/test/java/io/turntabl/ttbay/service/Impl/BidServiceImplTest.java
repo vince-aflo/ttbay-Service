@@ -1,6 +1,7 @@
 package io.turntabl.ttbay.service.Impl;
 
 import io.turntabl.ttbay.dto.BidDTO;
+import io.turntabl.ttbay.dto.BidResponseDTO;
 import io.turntabl.ttbay.enums.AuctionStatus;
 import io.turntabl.ttbay.enums.OfficeLocation;
 import io.turntabl.ttbay.exceptions.*;
@@ -11,6 +12,7 @@ import io.turntabl.ttbay.model.User;
 import io.turntabl.ttbay.repository.AuctionRepository;
 import io.turntabl.ttbay.repository.BidRepository;
 import io.turntabl.ttbay.repository.UserRepository;
+import io.turntabl.ttbay.service.BidMapperService;
 import io.turntabl.ttbay.service.BidService;
 import jakarta.mail.MessagingException;
 import org.junit.jupiter.api.AfterEach;
@@ -43,9 +45,9 @@ public class BidServiceImplTest {
     private final Auction testAuction1 = Auction.builder().id(1L).auctioner(testUser1).item(testItem).startDate(new Date()).endDate(new Date()).reservedPrice(85.8).status(AuctionStatus.LIVE).build();
 
     List<Bid> testBids = List.of(
-            Bid.builder().bidAmount(5000.0).build(),
-            Bid.builder().bidAmount(2000.0).build(),
-            Bid.builder().bidAmount(3000.0).build()
+            Bid.builder().id(1L).auction(testAuction1).bidAmount(5000.0).build(),
+            Bid.builder().id(2L).auction(testAuction1).bidAmount(2000.0).build(),
+            Bid.builder().id(3L).auction(testAuction1).bidAmount(3000.0).build()
     );
     @MockBean
     private BidRepository bidRepository;
@@ -56,6 +58,9 @@ public class BidServiceImplTest {
     @Autowired
     private BidService bidService;
     private JwtAuthenticationToken jwtAuthenticationToken;
+
+    @Autowired
+    BidMapperService bidMapperService;
 
     @BeforeEach
     void setUp() {
@@ -183,5 +188,21 @@ public class BidServiceImplTest {
 
         assertThrows(BidLessThanMaxBidException.class, () -> bidService.makeBid(testBidDTO, jwtAuthenticationToken));
     }
+    @Test
+    void returnAllBidsByUser_givenUnExistingUser_shouldThrowAnError() {
+        doReturn(Optional.empty()).when(userRepository).findByEmail(any());
+        assertThrows(ResourceNotFoundException.class, () -> bidService.returnAllBidsByUser(jwtAuthenticationToken));
+    }
+    @Test
+    void returnAllBidsByUser_givenAnExistingUserWithBids_shouldReturnAllTheBids() throws ResourceNotFoundException {
+        doReturn(Optional.of(testUser1)).when(userRepository).findByEmail(any());
+        doReturn(testBids).when(bidRepository).findByBidder(testUser1);
+        List<BidResponseDTO> bidsByTestUser1 = bidService.returnAllBidsByUser(jwtAuthenticationToken);
+
+        verify(bidRepository, times(1)).findByBidder(testUser1);
+        verify(userRepository, times(1)).findByEmail(any());
+        Assertions.assertEquals(testBids.stream().map(bidMapperService::returnBidResponse).toList() ,bidsByTestUser1 );
+    }
+
 
 }

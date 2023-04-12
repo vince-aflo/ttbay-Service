@@ -24,7 +24,7 @@ public class Bid {
 
     @ManyToOne
     @JoinColumn(name = "auction_id")
-    @JsonBackReference
+    @JsonBackReference(value = "bid-auction")
     private Auction auction;
 
 }

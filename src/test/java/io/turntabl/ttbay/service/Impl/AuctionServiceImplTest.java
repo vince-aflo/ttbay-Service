@@ -138,7 +138,7 @@ class AuctionServiceImplTest {
     }
 
     @Test
-    void updateAuction_givenAuctionDoesNotExist_shouldThrowResourceNotFoundException() throws MismatchedEmailException, ResourceNotFoundException, ForbiddenActionException {
+    void updateAuction_givenAuctionDoesNotExist_shouldThrowResourceNotFoundException() {
         EditAuctionRequestDTO editAuctionRequestDTO = new EditAuctionRequestDTO(2L, 20.00, null);
         doReturn(Optional.empty()).when(auctionRepository).findById(editAuctionRequestDTO.auctionId());
 
@@ -146,7 +146,7 @@ class AuctionServiceImplTest {
     }
 
     @Test
-    void updateAuction_givenAuctionHadBids_shouldThrowForbiddenActionException() throws MismatchedEmailException, ResourceNotFoundException, ForbiddenActionException {
+    void updateAuction_givenAuctionHadBids_shouldThrowForbiddenActionException() {
         EditAuctionRequestDTO editAuctionRequestDTO = new EditAuctionRequestDTO(1L, 20.00, null);
         doReturn(Optional.of(auction2)).when(auctionRepository).findById(editAuctionRequestDTO.auctionId());
 
@@ -164,7 +164,7 @@ class AuctionServiceImplTest {
     }
 
     @Test
-    void updateAuction_givenUserIsNotTheAuctioner_shouldThrowMismatchedEmailException() throws MismatchedEmailException, ResourceNotFoundException, ForbiddenActionException {
+    void updateAuction_givenUserIsNotTheAuctioner_shouldThrowMismatchedEmailException() {
         EditAuctionRequestDTO editAuctionRequestDTO = new EditAuctionRequestDTO(1L, 20.00, null);
         doReturn(Optional.of(draftAuction1)).when(auctionRepository).findById(editAuctionRequestDTO.auctionId());
         doReturn(draftAuction1).when(auctionRepository).save(draftAuction1);

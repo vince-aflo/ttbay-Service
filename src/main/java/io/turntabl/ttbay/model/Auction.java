@@ -1,6 +1,7 @@
 package io.turntabl.ttbay.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import io.turntabl.ttbay.enums.AuctionStatus;
 import jakarta.persistence.*;
@@ -44,7 +45,8 @@ public class Auction {
     private AuctionStatus status;
 
     @OneToMany(mappedBy = "auction",fetch = FetchType.LAZY,cascade = CascadeType.ALL)
-    @JsonManagedReference
+    @JsonManagedReference(value = "bid-auction")
+    @JsonIgnore
     private List<Bid> bids;
 
     private Double winningPrice;

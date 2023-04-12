@@ -5,9 +5,9 @@ spring:
   cors:
     origin: "http://localhost:4200"
   datasource:
-    url: jdbc:postgresql://localhost:5432/ttbay
-    username: postgres
-    password: postgres
+    url: jdbc:postgresql://ttbay-master-db.cbr56jv1s1rh.us-east-1.rds.amazonaws.com:5432/test
+    username: ttbay
+    password: team-ttbay
   jpa:
     properties:
       show-sql: true
