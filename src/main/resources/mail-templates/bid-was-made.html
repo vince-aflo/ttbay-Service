@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Thymeleaf Email Template</title>
+
+</head>
+<body>
+<div class="container">
+    <h1>Hello <span th:text="${username}">User</span>!</h1>
+    <p >The item <span th:text="${itemName}"></span> received a bid of GHS <span th:text="${bidAmount}"></span> from ttBay user <span th:text="${bidderUsername}"></span> .</p>
+    <p>Your ttBay team</p>
+</div>
+</body>
+</html>
