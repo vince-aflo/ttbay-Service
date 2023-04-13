@@ -34,7 +34,7 @@ class BidControllerTest {
 
     @Test
     void makeBid_givenBidDTOAndJwtToken_shouldReturn200() throws Exception {
-        ResultActions response = mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/bid")
+        ResultActions response = mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/bids")
                 .with(jwt())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(bidDTO)));
@@ -45,7 +45,7 @@ class BidControllerTest {
     @Test
     void makeBid_givenBidDTOAndJwtToken_shouldReturn400() throws Exception {
         when(bidService.makeBid(any(), any())).thenThrow(ResourceNotFoundException.class);
-        ResultActions response = mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/bid")
+        ResultActions response = mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/bids")
                 .with(jwt())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(bidDTO)));
@@ -56,7 +56,7 @@ class BidControllerTest {
     @Test
     void makeBid_givenBidDTOAndJwtToken_shouldReturn403() throws Exception {
         when(bidService.makeBid(any(), any())).thenThrow(BidLessThanMaxBidException.class);
-        ResultActions response = mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/bid")
+        ResultActions response = mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/bids")
                 .with(jwt())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(bidDTO)));

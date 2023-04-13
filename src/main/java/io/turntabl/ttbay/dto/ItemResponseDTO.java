@@ -19,6 +19,9 @@ public record ItemResponseDTO(
         ItemCondition condition,
         Category category,
         List<ItemImage> imageList,
-        List<Auction> auctions
+        List<Auction> auctions,
+        boolean isItemExchanged,
+        boolean highestBidderReceivedItem,
+        boolean auctioneerHandItemToHighestBidder
 ) {
 }

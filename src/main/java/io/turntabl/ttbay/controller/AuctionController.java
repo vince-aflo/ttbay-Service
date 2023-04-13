@@ -46,5 +46,13 @@ public class AuctionController {
     public ResponseEntity<AuctionResponseDTO> updateAuction(@RequestBody EditAuctionRequestDTO editAuctionRequestDTO, Authentication authentication) throws ResourceNotFoundException, MismatchedEmailException, ForbiddenActionException {
         return ResponseEntity.status(HttpStatus.OK).body(auctionService.updateAuctionWithNoBid(editAuctionRequestDTO, authentication));
     }
+    @PostMapping("/auction-winner/{auctionId}")
+    public ResponseEntity<String> auctionWinnerMarkAuctionedItemAsReceived(@PathVariable Long auctionId, Authentication authentication) throws ResourceNotFoundException, MismatchedEmailException {
+        return ResponseEntity.status(HttpStatus.OK).body(auctionService.auctionWinnerMarkAuctionedItemAsReceived(auctionId, authentication));
+    }
+    @PostMapping("/auctioner/{auctionId}")
+    public ResponseEntity<String> auctioneerMarkAuctionedItemAsDelivered(@PathVariable Long auctionId, Authentication authentication ) throws ResourceNotFoundException, MismatchedEmailException {
+        return ResponseEntity.status(HttpStatus.OK).body(auctionService.auctioneerMarkAuctionedItemAsDelivered(auctionId,authentication));
+    }
 
 }

@@ -45,6 +45,12 @@ public class Item {
     @Enumerated(EnumType.STRING)
     private Category category;
 
+    private boolean isItemExchanged;
+
+    private boolean highestBidderReceivedItem;
+
+    private boolean auctioneerHandItemToHighestBidder;
+
 
     public Item(String name, String description,  User user, List<ItemImage> imageList, Boolean onAuction, Boolean isSold) {
         this.name = name;

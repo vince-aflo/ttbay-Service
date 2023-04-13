@@ -17,7 +17,6 @@ import io.turntabl.ttbay.service.ItemMapperService;
 import io.turntabl.ttbay.service.ItemService;
 import io.turntabl.ttbay.service.TokenAttributesExtractor;
 import io.turntabl.ttbay.utils.mappers.ItemMapper;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -32,6 +31,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 import static io.turntabl.ttbay.enums.Category.BOOKS;
 import static io.turntabl.ttbay.enums.ItemCondition.NEW;
@@ -80,12 +81,6 @@ class ItemServiceImplTest {
             "Emmanuel Koduah Tweneboah",
             "",
             OfficeLocation.SONNIDOM_HOUSE);
-    private final List<Item> testItemList = List.of(
-            new Item("Book", "Harry Potter", testUser, null, true, false),
-            new Item("Book1", "Harry Potter2", testUser, null, true, true),
-            new Item("Book2", "Harry Potter3", testUser, null, false, false),
-            new Item("Book3", "Harry Potter4", testUser, null, false, true)
-    );
     private final List<Item> testItemsList = List.of(new Item("Book", "Harry Potter", testUser, null, false, false), new Item("Book1", "Harry Potter2", testUser, null, true, true), new Item("Book2", "Harry Potter3", testUser, null, false, false), new Item("Book3", "Harry Potter4", testUser, null, false, true));
     private final Item testItem = new Item("Book1", "Harry Potter2", testUser, null, false, false);
     private final Item testItem2 = new Item("Book1", "Harry Potter2", testUser1, null, false, false);
@@ -115,7 +110,7 @@ class ItemServiceImplTest {
     );
     private final Item testItemOnAuction = new Item("Book1", "Harry Potter2", testUser, null, true, false);
 
-    private final ItemResponseDTO responseDTO = new ItemResponseDTO(1L,"aikins.dwamena@turntabl.io","BOok","This is a good book", false,false,USED,BOOKS,List.of(),List.of());
+    private final ItemResponseDTO responseDTO = new ItemResponseDTO(1L,"aikins.dwamena@turntabl.io","BOok","This is a good book", false,false,USED,BOOKS,List.of(),List.of(),false,false,false);
 
     @BeforeEach
     void setUp() {
@@ -138,11 +133,6 @@ class ItemServiceImplTest {
 
     }
 
-    @AfterEach
-    void tearDown() {
-        userRepository.deleteAll();
-        itemRepository.deleteAll();
-    }
 
     //check for 404 exception when finding user :
 
@@ -202,7 +192,7 @@ class ItemServiceImplTest {
     }
 
     @Test
-    void testThat_givenAValidToken_activeUserShouldBeAbleToDeleteOneOfItsDraftItems() throws ResourceNotFoundException, MismatchedEmailException, ItemAlreadyOnAuctionException {
+    void testThat_givenAValidToken_activeUserShouldBeAbleToDeleteOneOfItsDraftItems() throws ResourceNotFoundException, MismatchedEmailException {
         doReturn(Optional.of(testItem)).when(itemRepository).findById(any());
         String expected = "item deleted successfully";
         String actualResponse = itemService.deleteDraftItem(any(), jwtAuthenticationToken);
@@ -332,6 +322,19 @@ class ItemServiceImplTest {
     }
 
 
-
-
+    @Test
+    void persistExchangedItemsInDb_givenEmptyItems_shouldReturnExecutionExceptions() {
+        doReturn(List.of()).when(itemRepository).findAll();
+        Assertions.assertThrows(ExecutionException.class, ()->itemService.persistExchangedItemsInDb().get());
+    }
+    @Test
+    void persistExchangedItemsInDb_givenItems_shouldReturnSetItemsAsExchanged() throws ResourceNotFoundException, ExecutionException, InterruptedException {
+        testItem.setHighestBidderReceivedItem(true); testItem.setAuctioneerHandItemToHighestBidder(true);
+        testItem1.setHighestBidderReceivedItem(true); testItem1.setAuctioneerHandItemToHighestBidder(true);
+        doReturn(List.of(testItem,testItem1,testItem2)).when(itemRepository).findAll();
+        CompletableFuture<Void> future = itemService.persistExchangedItemsInDb();
+        future.get();
+        Assertions.assertTrue(testItem.isItemExchanged());
+        Assertions.assertTrue(testItem1.isItemExchanged());
+    }
 }
