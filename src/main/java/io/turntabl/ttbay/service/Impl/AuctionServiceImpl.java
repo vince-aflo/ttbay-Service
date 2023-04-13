@@ -14,13 +14,12 @@ import io.turntabl.ttbay.repository.ItemRepository;
 import io.turntabl.ttbay.repository.UserRepository;
 import io.turntabl.ttbay.service.*;
 import jakarta.mail.MessagingException;
-import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
+import jakarta.transaction.Transactional;
 
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
@@ -38,7 +37,7 @@ import static io.turntabl.ttbay.enums.AuctionStatus.LIVE;
 
 @AllArgsConstructor
 @Service
-@Slf4j
+
 public class AuctionServiceImpl implements AuctionService {
 
     private final AuctionRepository auctionRepository;
@@ -47,8 +46,10 @@ public class AuctionServiceImpl implements AuctionService {
     private final TokenAttributesExtractor tokenAttributesExtractor;
     private final ItemRepository itemRepository;
 
-    private final AuctionMapperService auctionMapperService;
     private final BidRepository bidRepository;
+
+    private final AuctionMapperService auctionMapperService;
+
     private final EmailTriggerService emailTriggerService;
 
     @Override
@@ -66,15 +67,6 @@ public class AuctionServiceImpl implements AuctionService {
     }
 
     @Override
-    public Auction returnOneAuction(Long auctionId) throws ResourceNotFoundException {
-        Optional<Auction> auction = auctionRepository.findById(auctionId);
-        if (auction.isEmpty()) {
-            throw new ResourceNotFoundException("Auction not found");
-        }
-        return auction.get();
-    }
-
-    @Override
     public String createAuction(AuctionRequest auctionRequest, Authentication authentication) throws ResourceNotFoundException, MismatchedEmailException {
         Item item = itemService.returnOneItem(authentication, auctionRequest.itemId());
 
@@ -82,7 +74,7 @@ public class AuctionServiceImpl implements AuctionService {
             if (item.getOnAuction()) {
                 throw new ItemAlreadyOnAuctionException("This is item is already on auction");
             }
-            Auction newAuction = Auction.builder().reservedPrice(auctionRequest.price()).auctioner(item.getUser()).item(item).startDate(auctionRequest.startDate()).endDate(auctionRequest.endDate()).status(DRAFT).build();
+            Auction newAuction = Auction.builder().reservedPrice(auctionRequest.price()).auctioner(item.getUser()).item(item).startDate(auctionRequest.startDate()).endDate(auctionRequest.endDate()).status(auctionRequest.status()).build();
 
             item.setOnAuction(true);
             itemRepository.save(item);
@@ -92,7 +84,62 @@ public class AuctionServiceImpl implements AuctionService {
             throw new ModelCreateException("Error creating models");
         }
     }
+    public String cancelAuctionWithBidChecking(Long auctionId, Authentication authentication) throws MismatchedEmailException, ResourceNotFoundException {
+        String tokenEmail = tokenAttributesExtractor.extractEmailFromToken(authentication);
 
+        //get auction
+        Auction targetAuction = returnOneAuction(auctionId);
+
+        if (!targetAuction.getAuctioner().getEmail().equalsIgnoreCase(tokenEmail)) {
+            throw new MismatchedEmailException("You don't have access to this action");
+        }
+
+        //check for available bids
+        List<Bid> availableBids = bidRepository.findByAuction(targetAuction);
+
+        if (!availableBids.isEmpty()) {
+            return "Auction has bid(s), cannot be deleted";
+        }
+
+
+        //set item to draft
+        targetAuction.getItem().setOnAuction(Boolean.FALSE);
+
+        //delete auction
+        auctionRepository.delete(targetAuction);
+        return "Auction cancelled successfully";
+    }
+
+    @Override
+    public Auction returnOneAuction(Long auctionId) throws ResourceNotFoundException {
+
+                Optional<Auction> auction = auctionRepository.findById(auctionId);
+                if (auction.isEmpty()) {
+                    throw new ResourceNotFoundException("Auction not found");
+                }
+                return auction.get();
+
+        }
+
+    public String cancelAuction(Long auctionId,Authentication authentication) throws MismatchedEmailException, ResourceNotFoundException {
+        String tokenEmail = tokenAttributesExtractor.extractEmailFromToken(authentication);
+
+        //get auction
+        Auction targetAuction  =  returnOneAuction(auctionId);
+
+        if (!targetAuction.getAuctioner().getEmail().equalsIgnoreCase(tokenEmail)) {
+            throw new MismatchedEmailException("You don't have access to this action");
+        }
+
+        //set item to draft
+        targetAuction.getItem().setOnAuction(Boolean.FALSE);
+
+        //delete auction
+        auctionRepository.delete(targetAuction);
+
+        return  "Auction cancelled successfully";
+
+    }
 
     public List<AuctionResponseDTO> returnAllAuctions() {
         List<Auction> allAuctions = auctionRepository.findAll();
@@ -226,7 +273,6 @@ public class AuctionServiceImpl implements AuctionService {
     @Scheduled(cron = "0 */5  * * * *")
     @Async
     public CompletableFuture<Void> updateDraftAuctionToLiveAndPersistInDatabase() throws ResourceNotFoundException {
-        log.info("updateDraftAuctionToLiveAndPersistInDatabase-----------");
         List<Auction> draftAuctionsWithPastStartDates = getDraftAuctionsWithPastStartDates();
 
         draftAuctionsWithPastStartDates.parallelStream().forEach(auction -> {

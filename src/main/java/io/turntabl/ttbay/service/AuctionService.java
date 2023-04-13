@@ -22,6 +22,8 @@ public interface AuctionService {
     CompletableFuture<Void> updateAuctionWithWinnerAndBidAmount() throws ResourceNotFoundException;
     CompletableFuture<Void> updateLiveAuctionToEndAndPersistInDatabase() throws ResourceNotFoundException;
     List<AuctionResponseDTO> returnAllAuctions() ;
+    String cancelAuctionWithBidChecking(Long auctionId, Authentication authentication) throws MismatchedEmailException, ResourceNotFoundException;
+    String cancelAuction(Long auctionId, Authentication authentication) throws MismatchedEmailException, ResourceNotFoundException;
     void updateCurrentHighestBidOfAuction(Auction auction, Double highestBid);
     String auctioneerMarkAuctionedItemAsDelivered(Long auctionId,Authentication authentication) throws ResourceNotFoundException, MismatchedEmailException;
     String auctionWinnerMarkAuctionedItemAsReceived(Long auctionId,Authentication authentication) throws MismatchedEmailException, ResourceNotFoundException;

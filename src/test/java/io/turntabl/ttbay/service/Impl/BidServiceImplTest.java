@@ -160,10 +160,6 @@ public class BidServiceImplTest {
     void makeBid_givenBidDTOAndBadToken_shouldThrowBidCannotBeZeroException()  {
         BidDTO testBidDTO = new BidDTO(0.0, 1L);
         doReturn(Optional.of(testUser)).when(userRepository).findByEmail(any());
-
-
-
-
         assertThrows(BidCannotBeZero.class, () -> bidService.makeBid(testBidDTO,jwtAuthenticationToken));
     }
 
