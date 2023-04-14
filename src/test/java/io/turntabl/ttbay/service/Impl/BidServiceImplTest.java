@@ -49,6 +49,8 @@ public class BidServiceImplTest {
             Bid.builder().id(2L).auction(testAuction1).bidAmount(2000.0).build(),
             Bid.builder().id(3L).auction(testAuction1).bidAmount(3000.0).build()
     );
+    @Autowired
+    BidMapperService bidMapperService;
     @MockBean
     private BidRepository bidRepository;
     @MockBean
@@ -59,8 +61,6 @@ public class BidServiceImplTest {
     private BidService bidService;
     private JwtAuthenticationToken jwtAuthenticationToken;
 
-    @Autowired
-    BidMapperService bidMapperService;
 
     @BeforeEach
     void setUp() {
@@ -170,8 +170,7 @@ public class BidServiceImplTest {
         doReturn(Optional.of(testAuction1)).when(auctionRepository).findById(any());
 
 
-
-        assertThrows(UserCannotBidOnTheirAuction.class, () -> bidService.makeBid(testBidDTO,jwtAuthenticationToken));
+        assertThrows(UserCannotBidOnTheirAuction.class, () -> bidService.makeBid(testBidDTO, jwtAuthenticationToken));
     }
 
     @Test

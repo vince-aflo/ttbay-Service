@@ -5,7 +5,6 @@ import io.turntabl.ttbay.dto.BidResponseDTO;
 import io.turntabl.ttbay.exceptions.*;
 import org.springframework.security.core.Authentication;
 import jakarta.mail.MessagingException;
-
 import java.util.List;
 
 public interface BidService {

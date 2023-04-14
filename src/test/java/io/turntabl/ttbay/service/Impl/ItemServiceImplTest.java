@@ -5,7 +5,6 @@ import io.turntabl.ttbay.dto.ItemResponseDTO;
 import io.turntabl.ttbay.enums.AuctionStatus;
 import io.turntabl.ttbay.enums.OfficeLocation;
 import io.turntabl.ttbay.exceptions.ForbiddenActionException;
-import io.turntabl.ttbay.exceptions.ItemAlreadyOnAuctionException;
 import io.turntabl.ttbay.exceptions.MismatchedEmailException;
 import io.turntabl.ttbay.exceptions.ResourceNotFoundException;
 import io.turntabl.ttbay.model.Auction;
@@ -41,8 +40,43 @@ import static org.mockito.Mockito.*;
 
 @SpringBootTest
 class ItemServiceImplTest {
-    private JwtAuthenticationToken jwtAuthenticationToken;
+    private final User testUser = new User(
+            "aikscode",
+            "aikins.dwamena@turntabl.io",
+            "Aikins Akenten Dwamena",
+            "",
+            OfficeLocation.SONNIDOM_HOUSE);
+    private final List<Item> testItemsList = List.of(new Item("Book", "Harry Potter", testUser, null, false, false), new Item("Book1", "Harry Potter2", testUser, null, true, true), new Item("Book2", "Harry Potter3", testUser, null, false, false), new Item("Book3", "Harry Potter4", testUser, null, false, true));
+    private final Item testItem = new Item("Book1", "Harry Potter2", testUser, null, false, false);
+    private final Item testItem1 = new Item("Book1", "Harry Potter2", testUser, null, true, true);
+    private final List<Auction> testAuctionList = List.of(
+            Auction.builder().id(1L).auctioner(testUser).item(testItem1).startDate(new Date()).endDate(new Date()).reservedPrice(5000.0).currentHighestBid(6000.0).status(AuctionStatus.LIVE).build()
 
+    );
+    private final List<Bid> testBidList = List.of(
+
+            new Bid(1L, 9000.0, testUser, testAuctionList.get(0))
+
+    );
+    private final List<Auction> testAuctionList2 = List.of(
+            Auction.builder().id(1L).auctioner(testUser).item(testItem1).startDate(new Date()).endDate(new Date()).reservedPrice(5000.0).currentHighestBid(6000.0).status(AuctionStatus.DRAFT).build()
+
+    );
+    private final List<Item> testItemList2 = List.of(
+
+            new Item("Book1", "Harry Potter2", testUser, null, true, true), new Item("Book2", "Harry Potter3", testUser, null, false, false), new Item("Book3", "Harry Potter4", testUser, null, false, true));
+    private final Item testItemOnAuction = new Item("Book1", "Harry Potter2", testUser, null, true, false);
+    private final ItemResponseDTO responseDTO = new ItemResponseDTO(1L, "aikins.dwamena@turntabl.io", "BOok", "This is a good book", false, false, USED, BOOKS, List.of(), List.of(), false, false, false);
+    User testUser1 = new User("Emma",
+            "a@gmail.com",
+            "Emmanuel Koduah Tweneboah",
+            "",
+            OfficeLocation.SONNIDOM_HOUSE);
+    private final Item testItem2 = new Item("Book1", "Harry Potter2", testUser1, null, false, false);
+    private final List<Auction> testAuctionList1 = List.of(
+            Auction.builder().id(1L).auctioner(testUser1).item(testItem1).startDate(new Date()).endDate(new Date()).reservedPrice(5000.0).currentHighestBid(6000.0).status(AuctionStatus.LIVE).build()
+    );
+    private JwtAuthenticationToken jwtAuthenticationToken;
     @MockBean
     @Autowired
     private UserRepository userRepository;
@@ -51,66 +85,18 @@ class ItemServiceImplTest {
     private ItemRepository itemRepository;
     @Autowired
     private TokenAttributesExtractor tokenAttributesExtractor;
-
     @Autowired
     private ItemService itemService;
-
     @MockBean
     private ItemMapperService itemMapperService;
-
     @MockBean
     private ItemMapper itemMapper;
-
     @MockBean
     private ItemImageRepository itemImageRepository;
-
     @MockBean
     private AuctionRepository auctionRepository;
-
     @MockBean
     private BidRepository bidRepository;
-
-    private final User testUser = new User(
-            "aikscode",
-            "aikins.dwamena@turntabl.io",
-            "Aikins Akenten Dwamena",
-            "",
-            OfficeLocation.SONNIDOM_HOUSE);
-    User testUser1 = new User("Emma",
-            "a@gmail.com",
-            "Emmanuel Koduah Tweneboah",
-            "",
-            OfficeLocation.SONNIDOM_HOUSE);
-    private final List<Item> testItemsList = List.of(new Item("Book", "Harry Potter", testUser, null, false, false), new Item("Book1", "Harry Potter2", testUser, null, true, true), new Item("Book2", "Harry Potter3", testUser, null, false, false), new Item("Book3", "Harry Potter4", testUser, null, false, true));
-    private final Item testItem = new Item("Book1", "Harry Potter2", testUser, null, false, false);
-    private final Item testItem2 = new Item("Book1", "Harry Potter2", testUser1, null, false, false);
-    private final Item testItem1 = new Item("Book1", "Harry Potter2", testUser, null, true, true);
-    private final List<Item> testItemList2 = List.of(
-
-            new Item("Book1", "Harry Potter2", testUser, null, true, true), new Item("Book2", "Harry Potter3", testUser, null, false, false), new Item("Book3", "Harry Potter4", testUser, null, false, true));
-    private final List<Auction> testAuctionList =List.of(
-            Auction.builder().id(1L).auctioner(testUser).item(testItem1).startDate(new Date()).endDate(new Date()).reservedPrice(5000.0).currentHighestBid(6000.0).status(AuctionStatus.LIVE).build()
-
-    );
-
-    private final List<Auction> testAuctionList1 =List.of(
-            Auction.builder().id(1L).auctioner(testUser1).item(testItem1).startDate(new Date()).endDate(new Date()).reservedPrice(5000.0).currentHighestBid(6000.0).status(AuctionStatus.LIVE).build()
-    );
-
-    private final List<Auction> testAuctionList2 =List.of(
-     Auction.builder().id(1L).auctioner(testUser).item(testItem1).startDate(new Date()).endDate(new Date()).reservedPrice(5000.0).currentHighestBid(6000.0).status(AuctionStatus.DRAFT).build()
-
-    );
-
-
-    private final List<Bid> testBidList = List.of(
-
-            new Bid(1L,9000.0,testUser,testAuctionList.get(0))
-
-    );
-    private final Item testItemOnAuction = new Item("Book1", "Harry Potter2", testUser, null, true, false);
-
-    private final ItemResponseDTO responseDTO = new ItemResponseDTO(1L,"aikins.dwamena@turntabl.io","BOok","This is a good book", false,false,USED,BOOKS,List.of(),List.of(),false,false,false);
 
     @BeforeEach
     void setUp() {
@@ -167,13 +153,13 @@ class ItemServiceImplTest {
     void testThat_givenAValidToken_addingAnItemShouldReturnString_itemAddedSuccessfully() throws ResourceNotFoundException {
         doReturn(Optional.of(testUser)).when(userRepository).findByEmail("aikins.dwamena@turntabl.io");
         doReturn(responseDTO).when(itemMapperService).returnItemResponse(any());
-        itemService.addItem(new ItemRequest("name","test",NEW, BOOKS,List.of()),jwtAuthenticationToken);
+        itemService.addItem(new ItemRequest("name", "test", NEW, BOOKS, List.of()), jwtAuthenticationToken);
         verify(userRepository, times(1)).findByEmail("aikins.dwamena@turntabl.io");
         verify(itemRepository, times(1)).save(any());
     }
 
     @Test
-    void testThat_givenAValidToken_activeUserShouldBeAbleToUpdateOneOfItsItems() throws ResourceNotFoundException, MismatchedEmailException{
+    void testThat_givenAValidToken_activeUserShouldBeAbleToUpdateOneOfItsItems() throws ResourceNotFoundException, MismatchedEmailException {
         doReturn(Optional.of(testItem)).when(itemRepository).findById(any());
         doNothing().when(itemImageRepository).deleteByItem(testItem);
         doReturn(new Item()).when(itemMapper).itemDTOtoItem(any(), any());
@@ -201,13 +187,12 @@ class ItemServiceImplTest {
     }
 
 
-
     @Test
     void testThat_givenAValidToken_activeUserShouldBeAbleToReturnOneOfItsItems() throws ResourceNotFoundException, MismatchedEmailException {
         doReturn(Optional.of(testUser)).when(userRepository).findByEmail("aikins.dwamena@turntabl.io");
         doReturn(Optional.of(testItem1)).when(itemRepository).findById(any());
-        Item item = itemService.returnOneItem(jwtAuthenticationToken,any());
-        itemService.returnOneItemOfUser(any(),jwtAuthenticationToken);
+        Item item = itemService.returnOneItem(jwtAuthenticationToken, any());
+        itemService.returnOneItemOfUser(any(), jwtAuthenticationToken);
 
         Assertions.assertNotNull(item);
     }
@@ -222,7 +207,7 @@ class ItemServiceImplTest {
     }
 
     @Test
-    void testThat_givenAValidToken_activeUserShouldNotBeAbleAccessDifferentUserItem()  {
+    void testThat_givenAValidToken_activeUserShouldNotBeAbleAccessDifferentUserItem() {
         Item testItem1 = new Item("test1", "test1", testUser1, null, true, true);
 
         doReturn(Optional.of(testItem1)).when(itemRepository).findById(any());
@@ -235,31 +220,28 @@ class ItemServiceImplTest {
     void returnOneItem_givenAnItemId_shouldReturnOneItemWithItemIdGiven() throws MismatchedEmailException, ResourceNotFoundException {
         doReturn(Optional.of(testItem)).when(itemRepository).findById(any());
 
-        itemService.returnOneItem(jwtAuthenticationToken,1L);
+        itemService.returnOneItem(jwtAuthenticationToken, 1L);
 
-        verify(itemRepository,times(1)).findById(1L);
-        Assertions.assertEquals(testItem,itemService.returnOneItem(jwtAuthenticationToken,1L));
+        verify(itemRepository, times(1)).findById(1L);
+        Assertions.assertEquals(testItem, itemService.returnOneItem(jwtAuthenticationToken, 1L));
 
     }
 
     @Test
-    void returnOneItem_givenAnItemIdWithInvalidToken_shouldThrowMismatchedEmailException(){
+    void returnOneItem_givenAnItemIdWithInvalidToken_shouldThrowMismatchedEmailException() {
         doReturn(Optional.of(testItem2)).when(itemRepository).findById(any());
-        Assertions.assertThrows(MismatchedEmailException.class,()->
-            itemService.returnOneItem(jwtAuthenticationToken,1L)
+        Assertions.assertThrows(MismatchedEmailException.class, () ->
+                itemService.returnOneItem(jwtAuthenticationToken, 1L)
         );
     }
 
     @Test
-    void returnOneItem_givenAnItemIdWithValidToken_shouldThrowResourceNotFoundException(){
+    void returnOneItem_givenAnItemIdWithValidToken_shouldThrowResourceNotFoundException() {
         doReturn(Optional.empty()).when(itemRepository).findById(any());
-        Assertions.assertThrows(ResourceNotFoundException.class,()->
-                itemService.returnOneItem(jwtAuthenticationToken,1L)
+        Assertions.assertThrows(ResourceNotFoundException.class, () ->
+                itemService.returnOneItem(jwtAuthenticationToken, 1L)
         );
     }
-
-
-
 
 
     //check for sweet part
@@ -281,23 +263,21 @@ class ItemServiceImplTest {
         doReturn(List.of()).when(bidRepository).findByAuction(any());
         doReturn(Optional.of(testItem)).when(itemRepository).findById(any());
 
-        itemService.deleteItemOnAuction(1L,jwtAuthenticationToken);
+        itemService.deleteItemOnAuction(1L, jwtAuthenticationToken);
 
-        verify(auctionRepository,times(1)).findByItem(any());
-        verify(bidRepository,times(1)).findByAuction(any());
-        verify(itemRepository,times(1)).deleteById(any());
-        Assertions.assertEquals("Item successfully deleted",itemService.deleteItemOnAuction(1L,jwtAuthenticationToken));
+        verify(auctionRepository, times(1)).findByItem(any());
+        verify(bidRepository, times(1)).findByAuction(any());
+        verify(itemRepository, times(1)).deleteById(any());
+        Assertions.assertEquals("Item successfully deleted", itemService.deleteItemOnAuction(1L, jwtAuthenticationToken));
     }
-
 
 
     @Test
-    void deleteItemOnAuction_givenItemNotOnAuction_shouldThrowResourceNotFoundException(){
+    void deleteItemOnAuction_givenItemNotOnAuction_shouldThrowResourceNotFoundException() {
         doReturn(List.of()).when(auctionRepository)
                 .findByItem(any());
-        Assertions.assertThrows(ResourceNotFoundException.class, () -> itemService.deleteItemOnAuction(1L,jwtAuthenticationToken));
+        Assertions.assertThrows(ResourceNotFoundException.class, () -> itemService.deleteItemOnAuction(1L, jwtAuthenticationToken));
     }
-
 
 
     @Test
@@ -305,33 +285,36 @@ class ItemServiceImplTest {
         doReturn(testAuctionList2).when(auctionRepository).findByItem(any());
         doReturn(Optional.of(testItem)).when(itemRepository).findById(any());
 
-        itemService.deleteItemOnAuction(1L,jwtAuthenticationToken);
+        itemService.deleteItemOnAuction(1L, jwtAuthenticationToken);
 
-        verify(auctionRepository,times(1)).findByItem(any());
-        verify(bidRepository,times(0)).findByAuction(any());
-        Assertions.assertEquals("Item successfully deleted",itemService.deleteItemOnAuction(1L,jwtAuthenticationToken));
+        verify(auctionRepository, times(1)).findByItem(any());
+        verify(bidRepository, times(0)).findByAuction(any());
+        Assertions.assertEquals("Item successfully deleted", itemService.deleteItemOnAuction(1L, jwtAuthenticationToken));
     }
 
     @Test
-    void deleteItemOnAuction_givenAppropriateIdAndButFalseToken_shouldThrowEmailMismatchException(){
+    void deleteItemOnAuction_givenAppropriateIdAndButFalseToken_shouldThrowEmailMismatchException() {
         doReturn(testAuctionList1).when(auctionRepository).findByItem(any());
         doReturn(List.of()).when(bidRepository).findByAuction(any());
         doReturn(Optional.of(testItem)).when(itemRepository).findById(any());
 
-        Assertions.assertThrows(MismatchedEmailException.class, () -> itemService.deleteItemOnAuction(1L,jwtAuthenticationToken));
+        Assertions.assertThrows(MismatchedEmailException.class, () -> itemService.deleteItemOnAuction(1L, jwtAuthenticationToken));
     }
 
 
     @Test
     void persistExchangedItemsInDb_givenEmptyItems_shouldReturnExecutionExceptions() {
         doReturn(List.of()).when(itemRepository).findAll();
-        Assertions.assertThrows(ExecutionException.class, ()->itemService.persistExchangedItemsInDb().get());
+        Assertions.assertThrows(ExecutionException.class, () -> itemService.persistExchangedItemsInDb().get());
     }
+
     @Test
     void persistExchangedItemsInDb_givenItems_shouldReturnSetItemsAsExchanged() throws ResourceNotFoundException, ExecutionException, InterruptedException {
-        testItem.setHighestBidderReceivedItem(true); testItem.setAuctioneerHandItemToHighestBidder(true);
-        testItem1.setHighestBidderReceivedItem(true); testItem1.setAuctioneerHandItemToHighestBidder(true);
-        doReturn(List.of(testItem,testItem1,testItem2)).when(itemRepository).findAll();
+        testItem.setHighestBidderReceivedItem(true);
+        testItem.setAuctioneerHandItemToHighestBidder(true);
+        testItem1.setHighestBidderReceivedItem(true);
+        testItem1.setAuctioneerHandItemToHighestBidder(true);
+        doReturn(List.of(testItem, testItem1, testItem2)).when(itemRepository).findAll();
         CompletableFuture<Void> future = itemService.persistExchangedItemsInDb();
         future.get();
         Assertions.assertTrue(testItem.isItemExchanged());

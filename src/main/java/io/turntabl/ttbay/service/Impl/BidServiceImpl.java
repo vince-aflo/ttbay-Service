@@ -29,7 +29,6 @@ public class BidServiceImpl implements BidService {
     private final BidMapperService bidMapperService;
     private final AuctionService auctionService;
     private final AuctionRepository auctionRepository;
-
     private final UserRepository userRepository;
     private final TokenAttributesExtractor tokenAttributesExtractor;
     private final EmailTriggerService emailTriggerService;
