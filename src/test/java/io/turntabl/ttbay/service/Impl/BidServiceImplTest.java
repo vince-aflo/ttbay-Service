@@ -61,6 +61,8 @@ public class BidServiceImplTest {
     private BidService bidService;
     private JwtAuthenticationToken jwtAuthenticationToken;
 
+    @MockBean
+    private EmailTriggerServiceImpl emailTriggerService;
 
     @BeforeEach
     void setUp() {
@@ -199,5 +201,20 @@ public class BidServiceImplTest {
         Assertions.assertEquals(testBids.stream().map(bidMapperService::returnBidResponse).toList() ,bidsByTestUser1 );
     }
 
+    @Test
+    void getBidCount_givenAnAuctionId_shouldReturnNumberOfBidsOnTheAuction() throws ResourceNotFoundException {
+        doReturn(3L).when(bidRepository).countByAuction(testAuction);
+        doReturn(Optional.of(testAuction)).when(auctionRepository).findById(testAuction.getId());
+        Long bidCount = bidService.getBidCount(testAuction.getId());
+
+        Assertions.assertEquals(testBids.size(), bidCount);
+    }
+
+    @Test
+    void getBidCount_givenAuctionDoesNotExist_shouldThrowResourceNotFoundException() throws ResourceNotFoundException {
+        doReturn(Optional.empty()).when(auctionRepository).findById(testAuction.getId());
+
+        Assertions.assertThrows(ResourceNotFoundException.class, () -> bidService.getBidCount(testAuction.getId()));
+    }
 
 }

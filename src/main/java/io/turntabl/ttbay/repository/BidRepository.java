@@ -12,4 +12,5 @@ import java.util.List;
 public interface BidRepository extends JpaRepository<Bid, Long> {
     List<Bid> findByAuction(Auction auction);
     List<Bid> findByBidder(User bidder);
+    Long countByAuction(Auction auction);
 }

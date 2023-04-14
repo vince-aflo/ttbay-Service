@@ -71,4 +71,10 @@ public class BidServiceImpl implements BidService {
         List<Bid> allBids = bidRepository.findByBidder(targetUser);
         return allBids.stream().map(bidMapperService::returnBidResponse).toList();
     }
+
+    public Long getBidCount(Long auctionId) throws ResourceNotFoundException {
+        Optional<Auction> auction = auctionRepository.findById(auctionId);
+        if (auction.isEmpty()) throw new ResourceNotFoundException("Auction not found");
+        return bidRepository.countByAuction(auction.get());
+    }
 }

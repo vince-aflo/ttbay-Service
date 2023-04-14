@@ -29,4 +29,9 @@ public class BidController {
     public ResponseEntity<List<BidResponseDTO>> returnAllBids(Authentication authentication) throws ResourceNotFoundException {
         return ResponseEntity.status(HttpStatus.OK).body(bidService.returnAllBidsByUser(authentication));
     }
+
+    @GetMapping("/bid-count/{auctionId}")
+    public ResponseEntity<Long> getBidCount(@PathVariable Long auctionId) throws ResourceNotFoundException {
+        return ResponseEntity.status(HttpStatus.OK).body(bidService.getBidCount(auctionId));
+    }
 }
