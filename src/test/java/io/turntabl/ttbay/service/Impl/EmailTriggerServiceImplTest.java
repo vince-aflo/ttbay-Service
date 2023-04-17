@@ -24,7 +24,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-class EmailTriggerServiceImplTest {
+class EmailTriggerServiceImplTest{
     private final User testUser1 = User.builder().username("aikscode").email("aikins.dwamena@turntabl.io").fullName("Aikins Akenten Dwamena").build();
     private final User testUser2 = User.builder().username("tkay").email("emmanuel.tweneboah@turntabl.io").fullName("Emmanuel Tweneboah Koduah").build();
     private final User testUser3 = User.builder().username("vincent").email("vincent.aflo@turntabl.io").fullName("Vincent Aflo").build();
@@ -44,18 +44,15 @@ class EmailTriggerServiceImplTest {
     private EmailTriggerServiceImpl emailTriggerService;
 
     @BeforeEach
-    void setUp() {
+    void setUp(){
     }
 
     @Test
-    void sendBidWasMadeEmail_givenAuctionUserBidAmount_shouldSend() throws MessagingException {
+    void sendBidWasMadeEmail_givenAuctionUserBidAmount_shouldSend() throws MessagingException{
         doReturn(testBids).when(bidRepository).findByAuction(testAuction);
         doReturn(new Context()).when(thymeleafService).setTemplateContext(any());
         doReturn("").when(thymeleafService).createHtmlBody(any(), any());
-
         emailTriggerService.sendBidWasMadeEmail(testAuction, testUser2, 5000.00);
         verify(gmailService, times(2)).sendHtmlMessage((String) any(), any(), any());
-
-
     }
 }

@@ -15,13 +15,12 @@ import java.text.ParseException;
 
 @RestController
 @RequestMapping("api/v1")
-public class UserAuthController {
-
+public class UserAuthController{
     @Autowired
     private UserAuthService userAuthService;
 
     @GetMapping("/register")
-    public ResponseEntity<AuthResponse> authenticate(Authentication authentication) throws ParseException {
+    public ResponseEntity<AuthResponse> authenticate(Authentication authentication) throws ParseException{
         return ResponseEntity.status(HttpStatus.OK).body(userAuthService.register(authentication));
     }
 }

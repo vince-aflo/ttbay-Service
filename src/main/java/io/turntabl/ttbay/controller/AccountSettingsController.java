@@ -17,11 +17,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @AllArgsConstructor
 @RequestMapping("api/v1/account")
 @CrossOrigin(origins = "*")
-public class AccountSettingsController {
-
+public class AccountSettingsController{
     private final AccountSettingsService accountSettingsService;
+
     @DeleteMapping("/user/{email}")
-    public ResponseEntity<String> deleteUser(Authentication authentication, @PathVariable String email) throws MismatchedEmailException, ResourceNotFoundException {
+    public ResponseEntity<String> deleteUser(Authentication authentication, @PathVariable String email) throws MismatchedEmailException, ResourceNotFoundException{
         return ResponseEntity.ok(accountSettingsService.deleteAccount(authentication,email));
     }
 }

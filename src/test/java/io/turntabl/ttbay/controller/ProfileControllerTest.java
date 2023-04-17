@@ -30,22 +30,15 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 @ExtendWith(MockitoExtension.class)
 @AutoConfigureMockMvc(addFilters = false)
 class ProfileControllerTest {
-
     @Autowired
     private MockMvc mockMvc;
-
     @Autowired
     private ObjectMapper objectMapper;
-
     @MockBean
     private ProfileService profileService;
-
     private ProfileDTO validProfileDTO;
-
     private ProfileDTO invalidProfileDTO;
-
     private User validUser;
-
 
     @BeforeEach
     void setup(){
@@ -57,7 +50,6 @@ class ProfileControllerTest {
                 SONNIDOM_HOUSE,
                 List.of(MONDAY, TUESDAY)
         );
-
         invalidProfileDTO = new ProfileDTO(
                 "Mick",
                 "testing.com",
@@ -66,9 +58,6 @@ class ProfileControllerTest {
                 SONNIDOM_HOUSE,
                 List.of(MONDAY, TUESDAY)
         );
-
-
-
         validUser = new User(
                 "testing@testing.com",
                 "Mick",
@@ -81,30 +70,27 @@ class ProfileControllerTest {
     }
 
     @Test
-    void givenValidExistingEmail_whenGettingUserWithThatEmail_shouldRespondStatus200 () throws Exception {
+    void givenValidExistingEmail_whenGettingUserWithThatEmail_shouldRespondStatus200 () throws Exception{
         String validEmail = "testing@testing.com";
-
         ResultActions response = mockMvc.perform(get("/api/v1/profile/"+validEmail)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(validUser)));
-
         response.andExpect(MockMvcResultMatchers.status().isOk());
     }
+
     @Test
-    void givenValidProfileDTO_whenUpdatingProfile_thenResponseStatus200() throws Exception {
+    void givenValidProfileDTO_whenUpdatingProfile_thenResponseStatus200() throws Exception{
         ResultActions response = mockMvc.perform(put("/api/v1/profile")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(validProfileDTO)));
-
         response.andExpect(MockMvcResultMatchers.status().isOk());
     }
 
     @Test
-    void givenInvalidProfileDTO_whenUpdatingProfile_thenResponseStatus400() throws Exception {
+    void givenInvalidProfileDTO_whenUpdatingProfile_thenResponseStatus400() throws Exception{
         ResultActions response = mockMvc.perform(put("/api/v1/profile")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(invalidProfileDTO)));
-
         response.andExpect(MockMvcResultMatchers.status().isBadRequest());
     }
 }

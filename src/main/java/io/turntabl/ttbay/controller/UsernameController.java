@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 @RequestMapping("api/v1/profile/username")
 @CrossOrigin(origins = "*")
-public class UsernameController {
+public class UsernameController{
     private final UsernameService usernameService;
 
     @GetMapping("/{username}")

@@ -46,10 +46,7 @@ import static org.mockito.Mockito.*;
 class AuctionServiceImplTest {
     private final User testUser = new User("aikscode", "test@gmail.com", "Aikins Akenten Dwamena", "", OfficeLocation.SONNIDOM_HOUSE);
     private final User winner = new User("winner", "winner@gmail.com", "Aikins Akenten winner", "", OfficeLocation.SONNIDOM_HOUSE);
-
     private final User testUser2 = new User("invalid", "invalid@gmail.com", "Aikins Akenten Dwamena", "", OfficeLocation.SONNIDOM_HOUSE);
-
-
     private final User testUser1 = new User("aikscode", "aiks@gmail.com", "Aikins Akenten Dwamena", "", OfficeLocation.SONNIDOM_HOUSE);
     private final Item testItem = new Item("Book1", "Harry Potter2", testUser, null, false, false);
     private final Auction auction = Auction.builder().id(1L).auctioner(testUser).item(testItem)
@@ -65,17 +62,14 @@ class AuctionServiceImplTest {
             .startDate(new Date(System.currentTimeMillis() - 1000 * 60 * 60 * 24)).reservedPrice(85.8)
             .status(DRAFT).bids(List.of()).build();
     private final Auction draftAuction1 = Auction.builder().id(1L).auctioner(testUser1).item(testItem).startDate(new Date(System.currentTimeMillis()-100000)).reservedPrice(81.5).status(DRAFT).build();
-
     private final Auction liveAuction = Auction.builder().id(1L).auctioner(testUser).item(testItem)
             .endDate(new Date(System.currentTimeMillis() - 1000 * 60 * 60 * 24)).reservedPrice(85.8)
             .status(LIVE).bids(List.of()).build();
     private final Auction liveAuction1 = Auction.builder().id(1L).auctioner(testUser1).item(testItem).endDate(new Date(System.currentTimeMillis()-100000)).reservedPrice(81.5).status(LIVE).build();
-
     private final Auction endedAuction = Auction.builder().id(1L).auctioner(testUser).item(testItem).reservedPrice(85.8).status(END).build();
     Bid bid = Bid.builder().id(1L).bidder(testUser1).auction(endedAuction).bidAmount(90.0).build();
     Bid winningBid =   Bid.builder().id(2L).bidder(winner).bidAmount(100.0).auction(endedAuction).build();
     List<Bid> bidsOnEndedAuction = List.of(bid,winningBid);
-
     private final Auction endedAuction1 = Auction.builder().id(1L).auctioner(testUser1).item(testItem).reservedPrice(81.5).status(END).build();
     List<Auction> draftAuctions = List.of(draftAuction, draftAuction1);
     List<Auction> liveAuctions = List.of(liveAuction1,liveAuction);
@@ -101,10 +95,8 @@ class AuctionServiceImplTest {
     @MockBean
     private BidRepository bidRepository;
 
-
-
     @BeforeEach
-    void setUp() {
+    void setUp(){
         String tokenValue = "token";
         String email = "test@gmail.com";
         String picture = "xxxxxx";
@@ -120,53 +112,49 @@ class AuctionServiceImplTest {
         user = User.builder().fullName(given_name + family_name).profileUrl(picture).email(email).build();
     }
 
-
     @Test
-    void returnAllAuctionByUser_givenJwtAuthTokenAndNoUserInDb_shouldThrowError() {
+    void returnAllAuctionByUser_givenJwtAuthTokenAndNoUserInDb_shouldThrowError(){
         doReturn(Optional.empty()).when(userRepository).findByEmail(any());
         Assertions.assertThrows(ResourceNotFoundException.class, () -> serviceUnderTest.returnAllAuctionByUser(jwtAuthenticationToken));
     }
 
-
     @Test
-    void returnAllAuctionByUser_givenJwtAuthTokenAndUserAuctionsInDb_shouldReturnItems() throws ResourceNotFoundException {
+    void returnAllAuctionByUser_givenJwtAuthTokenAndUserAuctionsInDb_shouldReturnItems() throws ResourceNotFoundException{
         doReturn(Optional.of(user)).when(userRepository).findByEmail(any());
         doReturn(draftAuctions).when(auctionRepository).findByAuctioner(any());
         List<AuctionResponseDTO> expectedAuctions = serviceUnderTest.returnAllAuctionByUser(jwtAuthenticationToken);
         Assertions.assertNotNull(expectedAuctions);
-
     }
 
     @Test
-    void returnOneAuction_givenAuctionId_shouldReturnValidAuction() throws MismatchedEmailException, ResourceNotFoundException {
+    void returnOneAuction_givenAuctionId_shouldReturnValidAuction() throws MismatchedEmailException, ResourceNotFoundException{
         doReturn(Optional.of(draftAuction)).when(auctionRepository).findById(1L);
         serviceUnderTest.returnOneAuction(1L);
         Assertions.assertEquals(draftAuction, serviceUnderTest.returnOneAuction(1L));
     }
+
     @Test
-    void returnOneAuction_givenAuctionId_shouldThrowResourceNotException() {
+    void returnOneAuction_givenAuctionId_shouldThrowResourceNotException(){
         doReturn(Optional.empty()).when(auctionRepository).findById(any());
         Assertions.assertThrows(ResourceNotFoundException.class, () -> serviceUnderTest.returnOneAuction(1L));
     }
 
     @Test
-    void updateAuction_givenAuctionDoesNotExist_shouldThrowResourceNotFoundException() {
+    void updateAuction_givenAuctionDoesNotExist_shouldThrowResourceNotFoundException(){
         EditAuctionRequestDTO editAuctionRequestDTO = new EditAuctionRequestDTO(2L, 20.00, null);
         doReturn(Optional.empty()).when(auctionRepository).findById(editAuctionRequestDTO.auctionId());
-
         Assertions.assertThrows(ResourceNotFoundException.class, () -> serviceUnderTest.updateAuctionWithNoBid(editAuctionRequestDTO, jwtAuthenticationToken));
     }
 
     @Test
-    void updateAuction_givenAuctionHadBids_shouldThrowForbiddenActionException() {
+    void updateAuction_givenAuctionHadBids_shouldThrowForbiddenActionException(){
         EditAuctionRequestDTO editAuctionRequestDTO = new EditAuctionRequestDTO(1L, 20.00, null);
         doReturn(Optional.of(auction2)).when(auctionRepository).findById(editAuctionRequestDTO.auctionId());
-
         Assertions.assertThrows(ForbiddenActionException.class, () -> serviceUnderTest.updateAuctionWithNoBid(editAuctionRequestDTO, jwtAuthenticationToken));
     }
 
     @Test
-    void updateAuction_editAuctionRequestBody_shouldReturnUpdatedEntity() throws MismatchedEmailException, ResourceNotFoundException, ForbiddenActionException {
+    void updateAuction_editAuctionRequestBody_shouldReturnUpdatedEntity() throws MismatchedEmailException, ResourceNotFoundException, ForbiddenActionException{
         EditAuctionRequestDTO editAuctionRequestDTO = new EditAuctionRequestDTO(1L, 20.00, null);
         doReturn(Optional.of(draftAuction)).when(auctionRepository).findById(editAuctionRequestDTO.auctionId());
         doReturn(draftAuction).when(auctionRepository).save(draftAuction);
@@ -175,22 +163,24 @@ class AuctionServiceImplTest {
     }
 
     @Test
-    void updateAuction_givenUserIsNotTheAuctioner_shouldThrowMismatchedEmailException() {
+    void updateAuction_givenUserIsNotTheAuctioner_shouldThrowMismatchedEmailException(){
         EditAuctionRequestDTO editAuctionRequestDTO = new EditAuctionRequestDTO(1L, 20.00, null);
         doReturn(Optional.of(draftAuction1)).when(auctionRepository).findById(editAuctionRequestDTO.auctionId());
         doReturn(draftAuction1).when(auctionRepository).save(draftAuction1);
         Assertions.assertThrows(MismatchedEmailException.class, () -> serviceUnderTest.updateAuctionWithNoBid(editAuctionRequestDTO, jwtAuthenticationToken));
     }
+
     @Test
-    public void updateDraftAuctionStatusToLive_givenDraftAuctionsWithPastDates_shouldSetAuctionStatusToLive() throws ResourceNotFoundException, ExecutionException, InterruptedException {
+    public void updateDraftAuctionStatusToLive_givenDraftAuctionsWithPastDates_shouldSetAuctionStatusToLive() throws ResourceNotFoundException, ExecutionException, InterruptedException{
         doReturn(draftAuctions).when(auctionRepository).findAll();
         CompletableFuture<Void> future= serviceUnderTest.updateDraftAuctionToLiveAndPersistInDatabase();
         future.get();
         Assertions.assertEquals(LIVE, draftAuction.getStatus());
         Assertions.assertEquals(LIVE, draftAuction1.getStatus());
     }
+
     @Test
-    public void updateDraftAuctionStatusToLive_givenEmptyAuctions_shouldThrow404() {
+    public void updateDraftAuctionStatusToLive_givenEmptyAuctions_shouldThrow404(){
         doReturn(List.of()).when(auctionRepository).findAll();
         Assertions.assertThrows(ExecutionException.class, () -> serviceUnderTest.updateDraftAuctionToLiveAndPersistInDatabase().get());
     }
@@ -205,12 +195,13 @@ class AuctionServiceImplTest {
     }
 
     @Test
-    public void updateLiveAuctionStatusToEnd_givenEmptyAuctions_shouldThrow404() {
+    public void updateLiveAuctionStatusToEnd_givenEmptyAuctions_shouldThrow404(){
         doReturn(List.of()).when(auctionRepository).findAll();
         Assertions.assertThrows(ExecutionException.class, () -> serviceUnderTest.updateLiveAuctionToEndAndPersistInDatabase().get());
     }
+
     @Test
-    public void updateEndedAuctionWithWinners_givenEndedAuctionsWithoutWinners_shouldSetRespectiveHighestBiddersAsWinners() throws ResourceNotFoundException, ExecutionException, InterruptedException {
+    public void updateEndedAuctionWithWinners_givenEndedAuctionsWithoutWinners_shouldSetRespectiveHighestBiddersAsWinners() throws ResourceNotFoundException, ExecutionException, InterruptedException{
         doReturn(endedAuctions).when(auctionRepository).findAll();
         doReturn(bidsOnEndedAuction).when(bidRepository).findByAuction(endedAuction);
         doReturn(bidsOnEndedAuction).when(bidRepository).findByAuction(endedAuction1);
@@ -220,7 +211,7 @@ class AuctionServiceImplTest {
     }
 
     @Test
-    public void updateAuctionStatus_givenEmptyAuctionsWithPastDates_shouldSetAuctionStatusToLive() throws ResourceNotFoundException {
+    public void updateAuctionStatus_givenEmptyAuctionsWithPastDates_shouldSetAuctionStatusToLive() throws ResourceNotFoundException{
         doReturn(List.of(auction1, auction)).when(auctionRepository).findAll();
         serviceUnderTest.updateDraftAuctionToLiveAndPersistInDatabase();
         Assertions.assertEquals(auction.getStatus(), LIVE);
@@ -228,21 +219,17 @@ class AuctionServiceImplTest {
     }
 
     @Test
-    public void updateEndedAuctionWithWinners_givenEmptyAuctions_shouldThrow404() {
+    public void updateEndedAuctionWithWinners_givenEmptyAuctions_shouldThrow404(){
         doReturn(List.of()).when(auctionRepository).findAll();
         Assertions.assertThrows(ExecutionException.class, () -> serviceUnderTest.updateAuctionWithWinnerAndBidAmount().get());
     }
 
-
     @Test
-    public void cancelAuctionWithBidChecking_givenAppropriateAuctionIdButBidsAvailable_shouldReturnErrorMessage() throws MismatchedEmailException, ResourceNotFoundException {
+    public void cancelAuctionWithBidChecking_givenAppropriateAuctionIdButBidsAvailable_shouldReturnErrorMessage() throws MismatchedEmailException, ResourceNotFoundException{
         doReturn(Optional.of(auction)).when(auctionRepository).findById(any());
         doReturn(testBidList).when(bidRepository).findByAuction(any());
-
-
         //execute cancelAuctionWithBidChecking
         String result = serviceUnderTest.cancelAuctionWithBidChecking(1L, jwtAuthenticationToken);
-
         //verify methods called and result
         verify(auctionRepository, times(1)).findById(any());
         verify(bidRepository, times(1)).findByAuction(any());
@@ -251,21 +238,16 @@ class AuctionServiceImplTest {
     }
 
     @Test
-    public void cancelAuctionWithBidChecking_givenAppropriateAuctionIdAndMatchingEmailAndNoBidAvailable_shouldCancelAuction() throws MismatchedEmailException, ResourceNotFoundException {
+    public void cancelAuctionWithBidChecking_givenAppropriateAuctionIdAndMatchingEmailAndNoBidAvailable_shouldCancelAuction() throws MismatchedEmailException, ResourceNotFoundException{
         doReturn(Optional.of(auction)).when(auctionRepository).findById(any());
         doReturn(List.of()).when(bidRepository).findByAuction(any());
-
         //execute cancelAuctionWithBidChecking
         String result = serviceUnderTest.cancelAuctionWithBidChecking(1L, jwtAuthenticationToken);
-
         //verify methods called and result
         verify(auctionRepository, times(1)).findById(any());
         verify(bidRepository, times(1)).findByAuction(auction);
         verify(auctionRepository, times(1)).delete(any());
-
         Assertions.assertEquals(false, auction.getItem().getOnAuction());
         Assertions.assertEquals("Auction cancelled successfully", result);
     }
-
-
 }

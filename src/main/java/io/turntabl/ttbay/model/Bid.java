@@ -10,7 +10,7 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class Bid {
+public class Bid{
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id", nullable = false)
@@ -26,5 +26,4 @@ public class Bid {
     @JoinColumn(name = "auction_id")
     @JsonBackReference(value = "bid-auction")
     private Auction auction;
-
 }

@@ -17,21 +17,21 @@ import java.util.List;
 @RestController
 @AllArgsConstructor
 @RequestMapping("api/v1/bids")
-public class BidController {
+public class BidController{
     private final BidService bidService;
 
     @PostMapping("")
-    public ResponseEntity<String> makeBid(@RequestBody BidDTO bidDTO , Authentication authentication) throws BidLessThanMaxBidException, ResourceNotFoundException, BidCannotBeZero, UserCannotBidOnTheirAuction, MessagingException, ForbiddenActionException {
+    public ResponseEntity<String> makeBid(@RequestBody BidDTO bidDTO , Authentication authentication) throws BidLessThanMaxBidException, ResourceNotFoundException, BidCannotBeZero, UserCannotBidOnTheirAuction, MessagingException, ForbiddenActionException{
         return ResponseEntity.status(HttpStatus.OK).body(bidService.makeBid(bidDTO,authentication));
     }
 
     @GetMapping("/all-by-user")
-    public ResponseEntity<List<BidResponseDTO>> returnAllBids(Authentication authentication) throws ResourceNotFoundException {
+    public ResponseEntity<List<BidResponseDTO>> returnAllBids(Authentication authentication) throws ResourceNotFoundException{
         return ResponseEntity.status(HttpStatus.OK).body(bidService.returnAllBidsByUser(authentication));
     }
 
     @GetMapping("/bid-count/{auctionId}")
-    public ResponseEntity<Long> getBidCount(@PathVariable Long auctionId) throws ResourceNotFoundException {
+    public ResponseEntity<Long> getBidCount(@PathVariable Long auctionId) throws ResourceNotFoundException{
         return ResponseEntity.status(HttpStatus.OK).body(bidService.getBidCount(auctionId));
     }
 }

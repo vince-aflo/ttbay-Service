@@ -24,7 +24,7 @@ import java.util.concurrent.CompletableFuture;
 
 @AllArgsConstructor
 @Service
-public class ItemServiceImpl implements ItemService {
+public class ItemServiceImpl implements ItemService{
     private final ItemRepository itemRepository;
     private final AuctionRepository auctionRepository;
     private final BidRepository bidRepository;
@@ -34,15 +34,14 @@ public class ItemServiceImpl implements ItemService {
     private final ItemMapperService itemMapperService;
 
     @Override
-    public List<ItemResponseDTO> returnAllAuctionItemsByUser(Authentication authentication) throws ResourceNotFoundException {
+    public List<ItemResponseDTO> returnAllAuctionItemsByUser(Authentication authentication) throws ResourceNotFoundException{
         List<ItemResponseDTO> allUserItems = returnAllItemsByUser(authentication);
         //check and return items onAuction and not sold
         return allUserItems.stream().filter(item -> item.onAuction() && !item.isSold()).toList();
     }
 
-
     @Override
-    public ItemResponseDTO addItem(ItemRequest itemRequest, Authentication authentication) throws ResourceNotFoundException {
+    public ItemResponseDTO addItem(ItemRequest itemRequest, Authentication authentication) throws ResourceNotFoundException{
         String email = tokenAttributesExtractor.extractEmailFromToken(authentication);
         User currentUser = userRepository.findByEmail(email).orElseThrow(() -> new ResourceNotFoundException("User not found"));
         Item newItem = Item.builder().user(currentUser).isSold(false).onAuction(false).condition(itemRequest.condition()).category(itemRequest.category()).name(itemRequest.name()).description(itemRequest.description()).build();
@@ -56,20 +55,20 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public ItemResponseDTO returnOneItemOfUser(Long itemId, Authentication authentication) throws ResourceNotFoundException, MismatchedEmailException {
+    public ItemResponseDTO returnOneItemOfUser(Long itemId, Authentication authentication) throws ResourceNotFoundException, MismatchedEmailException{
         Item item = returnOneItem(authentication, itemId);
         return itemMapperService.returnItemResponse(item);
     }
 
     @Override
-    public String deleteDraftItem(Long itemId, Authentication authentication) throws ResourceNotFoundException, MismatchedEmailException {
+    public String deleteDraftItem(Long itemId, Authentication authentication) throws ResourceNotFoundException, MismatchedEmailException{
         Item item = returnOneItem(authentication, itemId);
         itemRepository.delete(item);
         return "item deleted successfully";
     }
 
     @Override
-    public String deleteItemOnAuction(Long itemId, Authentication authentication) throws ResourceNotFoundException, MismatchedEmailException {
+    public String deleteItemOnAuction(Long itemId, Authentication authentication) throws ResourceNotFoundException, MismatchedEmailException{
         String tokenEmail = tokenAttributesExtractor.extractEmailFromToken(authentication);
         Item targetItem = returnOneItem(authentication,itemId);
         //find live auction by item id
@@ -77,7 +76,7 @@ public class ItemServiceImpl implements ItemService {
         if (!listAuction.isEmpty() &&!listAuction.get(0).getAuctioner().getEmail().equalsIgnoreCase(tokenEmail))
             throw new MismatchedEmailException("You don't have access to this action");
         List<Auction> targetAuction = listAuction.stream().filter(auction -> auction.getStatus() == AuctionStatus.LIVE).toList();
-        if (!targetAuction.isEmpty()) {
+        if (!targetAuction.isEmpty()){
             //find bid by auction and throw exception if any
             List<Bid> availableBids = bidRepository.findByAuction(targetAuction.get(0));
             if ( !availableBids.isEmpty())
@@ -89,7 +88,7 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public List<ItemResponseDTO> returnAllItemsByUser(Authentication authentication) throws ResourceNotFoundException {
+    public List<ItemResponseDTO> returnAllItemsByUser(Authentication authentication) throws ResourceNotFoundException{
         String email = tokenAttributesExtractor.extractEmailFromToken(authentication);
         Optional<User> targetUser = userRepository.findByEmail(email);
         if (targetUser.isEmpty()) throw new ResourceNotFoundException("User cannot be found");
@@ -99,7 +98,7 @@ public class ItemServiceImpl implements ItemService {
 
     @Transactional
     @Override
-    public String updateItem(Long itemId, ItemRequest itemRequest, Authentication authentication) throws MismatchedEmailException, ResourceNotFoundException {
+    public String updateItem(Long itemId, ItemRequest itemRequest, Authentication authentication) throws MismatchedEmailException,ResourceNotFoundException{
         Item item = returnOneItem(authentication, itemId);
         itemImageRepository.deleteByItem(item);
         Item copy = ItemMapper.INSTANCE.itemDTOtoItem(itemRequest, item);
@@ -107,32 +106,31 @@ public class ItemServiceImpl implements ItemService {
         return "item updated successfully";
     }
 
-    public Item returnOneItem(Authentication authentication, Long itemId) throws ResourceNotFoundException, MismatchedEmailException {
+    public Item returnOneItem(Authentication authentication, Long itemId) throws ResourceNotFoundException,MismatchedEmailException{
         String email = tokenAttributesExtractor.extractEmailFromToken(authentication);
         Optional<Item> item = itemRepository.findById(itemId);
-        if (item.isPresent() && !Objects.equals(item.get().getUser().getEmail(), email)) {
+        if (item.isPresent() && !Objects.equals(item.get().getUser().getEmail(), email)){
             throw new MismatchedEmailException("You don't have access to this resource");
-        } else if (item.isEmpty()) {
+        } else if (item.isEmpty()){
             throw new ResourceNotFoundException("Item not found");
         }
         return item.get();
     }
     @Scheduled(cron = "0 */5 * * * *")
     @Async
-    public CompletableFuture<Void> persistExchangedItemsInDb() throws ResourceNotFoundException {
+    public CompletableFuture<Void> persistExchangedItemsInDb() throws ResourceNotFoundException{
         List<Item> itemsNotExchanged = getAllItemsNotExchanged();
-
         itemsNotExchanged.parallelStream().filter(item -> item.isAuctioneerHandItemToHighestBidder() && item.isHighestBidderReceivedItem()).forEach(item -> {
             setItemAsExchanged(item);
             itemRepository.save(item);
         });
-
         return CompletableFuture.completedFuture(null);
     }
+
     private void setItemAsExchanged(Item item){
         item.setItemExchanged(true);
     }
-    private List<Item> getAllItemsNotExchanged() throws ResourceNotFoundException {
+    private List<Item> getAllItemsNotExchanged() throws ResourceNotFoundException{
         List<Item> allItems = itemRepository.findAll();
         if (allItems.isEmpty()){
             throw new ResourceNotFoundException("Empty items");

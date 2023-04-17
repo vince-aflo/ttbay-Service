@@ -4,4 +4,4 @@ public record EditAuctionRequestDTO(
      Long auctionId,
      Double reservedPrice,
      Date endDate
-) {}
+){}

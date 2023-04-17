@@ -14,23 +14,14 @@ import org.springframework.security.web.SecurityFilterChain;
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
-public class WebSecurity  {
-
+public class WebSecurity{
     private final UserRepository userRepository;
     @Value("${jwt-set-url}")
     private String jwtSetUrl;
 
     @Bean
-    protected SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http
-                .cors()
-                .and()
-                .csrf()
-                .disable()
-                .authorizeHttpRequests(auth -> auth.anyRequest().authenticated())
-                .oauth2ResourceServer(oauth2 ->oauth2.jwt( jwt -> jwt.jwkSetUri(jwtSetUrl)
-                        .jwtAuthenticationConverter(new CustomAuthenticationConverter(userRepository))));
-
+    protected SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception{
+        http.cors().and().csrf().disable().authorizeHttpRequests(auth -> auth.anyRequest().authenticated()).oauth2ResourceServer(oauth2 -> oauth2.jwt(jwt -> jwt.jwkSetUri(jwtSetUrl).jwtAuthenticationConverter(new CustomAuthenticationConverter(userRepository))));
         return http.build();
     }
 }

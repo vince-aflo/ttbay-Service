@@ -12,7 +12,7 @@ import org.springframework.security.core.Authentication;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
-public interface AuctionService {
+public interface AuctionService{
     List<AuctionResponseDTO> returnAllAuctionByUser(Authentication authentication) throws ResourceNotFoundException;
     AuctionResponseDTO returnOneAuctionOfUser(Long auctionId) throws ResourceNotFoundException, MismatchedEmailException;
     Auction returnOneAuction(Long auctionId) throws ResourceNotFoundException, MismatchedEmailException;

@@ -15,8 +15,7 @@ import org.springframework.mail.javamail.JavaMailSenderImpl;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-class GmailServiceImplTest {
-
+class GmailServiceImplTest{
     @Mock
     private JavaMailSender javaMailSender;
     private MimeMessage mimeMessage;
@@ -25,20 +24,20 @@ class GmailServiceImplTest {
 
 
     @BeforeEach
-    void setUp() throws MessagingException {
+    void setUp(){
         var javaMailSender = new JavaMailSenderImpl();
         mimeMessage = javaMailSender.createMimeMessage();
     }
 
     @Test
-    void sendHtmlMessage_givenRecipientMail_shouldSendMail() throws MessagingException {
+    void sendHtmlMessage_givenRecipientMail_shouldSendMail() throws MessagingException{
         doReturn(mimeMessage).when(javaMailSender).createMimeMessage();
         gmailService.sendHtmlMessage("aikins.dwamena@turntabl.io", "Test", "");
         verify(javaMailSender, times(1)).send(mimeMessage);
     }
 
     @Test
-    void sendHtmlMessage_givenRecipientMails_shouldSendMail() throws MessagingException {
+    void sendHtmlMessage_givenRecipientMails_shouldSendMail() throws MessagingException{
         doReturn(mimeMessage).when(javaMailSender).createMimeMessage();
         gmailService.sendHtmlMessage(Arrays.array("aikins.dwamena@turntabl.io", "aikinsakenten@gmail.com"), "Test", "");
         verify(javaMailSender, times(1)).send(mimeMessage);

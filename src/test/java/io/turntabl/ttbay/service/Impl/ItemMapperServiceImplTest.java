@@ -15,7 +15,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import java.util.List;
 
 @SpringBootTest
-class ItemMapperServiceImplTest {
+class ItemMapperServiceImplTest{
     private final User testUser = new User(
             "aikscode",
             "aikins.dwamena@turntabl.io",
@@ -34,15 +34,12 @@ class ItemMapperServiceImplTest {
             .onAuction(true)
             .description("test")
             .build();
-
-
     private final ItemResponseDTO itemResponseDTO = ItemResponseDTO.builder().auctions(null).description(item.getDescription()).itemId(item.getId()).userEmail(item.getUser().getEmail()).itemName(item.getName()).onAuction(item.getOnAuction()).isSold(item.getIsSold()).condition(item.getCondition()).category(item.getCategory()).imageList(item.getImageList()).auctions(item.getAuction()).build();
-
     @Autowired
     private ItemMapperService itemMapperService;
 
     @Test
-    void returnItemResponse() {
+    void returnItemResponse(){
         ItemResponseDTO actualDTO = itemMapperService.returnItemResponse(item);
         Assertions.assertEquals(itemResponseDTO, actualDTO);
     }

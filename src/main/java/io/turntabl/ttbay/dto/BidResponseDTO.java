@@ -9,5 +9,4 @@ public record BidResponseDTO(
         Double bidAmount,
         User bidder,
         AuctionResponseDTO auctionResponseDTO
-) {
-}
+){}

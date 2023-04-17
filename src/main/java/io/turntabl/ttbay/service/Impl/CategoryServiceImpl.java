@@ -7,9 +7,9 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
-public class CategoryServiceImpl implements CategoryService {
+public class CategoryServiceImpl implements CategoryService{
     @Override
-    public List<Category> getAllCategories() {
+    public List<Category> getAllCategories(){
         return List.of(Category.values());
     }
 }

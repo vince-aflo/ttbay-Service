@@ -18,8 +18,7 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-class UserRepositoryTest {
-
+class UserRepositoryTest{
     @Autowired
     private UserRepository userRepository;
 
@@ -40,12 +39,10 @@ class UserRepositoryTest {
         userRepository.deleteAll();
     }
 
-
     @Test
-    void testToCheckThatUserSavedWIthAParticularEmailIsPresent() {
+    void testToCheckThatUserSavedWIthAParticularEmailIsPresent(){
         //given
         String email = "emma@gmail.com";
-
         //when
         boolean expected = userRepository.findByEmail(email).isPresent();
         //then
@@ -61,5 +58,4 @@ class UserRepositoryTest {
         //then
         Assertions.assertEquals(user.getRole(), expectedRole);
     }
-
 }

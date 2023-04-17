@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
 
 @ControllerAdvice
-public class AppExceptionHandler {
+public class AppExceptionHandler{
     @ExceptionHandler(ProfileUpdateException.class)
     public ResponseEntity<String> handleInvalidOrder(ProfileUpdateException exception){
         return new ResponseEntity<>(exception.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
@@ -32,10 +32,4 @@ public class AppExceptionHandler {
     public ResponseEntity<String> handleUsernameDuplicationValidation(UsernameAlreadyExistException exception, WebRequest request){
         return new ResponseEntity<>(exception.getMessage(), HttpStatus.CONFLICT);
     }
-
-//    @ExceptionHandler(ItemAlreadyOnAuctionException.class)
-//    public ResponseEntity<String> handleChecksOnExistingAuctions(ItemAlreadyOnAuctionException exception){
-//        return new ResponseEntity<>(exception.getMessage(), HttpStatus.FORBIDDEN);
-//    }
-
 }

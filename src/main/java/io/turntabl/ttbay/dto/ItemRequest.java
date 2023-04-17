@@ -9,10 +9,10 @@ import jakarta.validation.constraints.NotNull;
 import java.util.List;
 
 
-public record ItemRequest(@NotBlank(message = "name has to be set") String name,
-                          @NotBlank String description,
-                          ItemCondition condition,
-                          @NotNull(message = "Category has to be set") Category category,
-                          @NotNull(message = "Image has to be set") List<ItemImage> imageList)
-                           {
-}
+public record ItemRequest(
+        @NotBlank(message = "name has to be set") String name,
+        @NotBlank String description,
+        ItemCondition condition,
+        @NotNull(message = "Category has to be set") Category category,
+        @NotNull(message = "Image has to be set") List<ItemImage> imageList
+){}

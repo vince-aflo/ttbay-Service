@@ -23,7 +23,7 @@ import java.util.List;
 import static org.mockito.ArgumentMatchers.any;
 
 @ExtendWith(MockitoExtension.class)
-class AuctionMapperImplTest {
+class AuctionMapperImplTest{
     private final User testUser = new User(
             "aikscode",
             "aikins.dwamena@turntabl.io",
@@ -39,9 +39,8 @@ class AuctionMapperImplTest {
     @InjectMocks
     private AuctionMapperImpl auctionMapperService;
 
-
     @Test
-    void returnAuctionResponse() {
+    void returnAuctionResponse(){
         Mockito.doReturn(itemResponseDTO).when(itemMapperService).returnItemResponse(any());
         AuctionResponseDTO actualDTO = auctionMapperService.returnAuctionResponse(auction);
         Assertions.assertEquals(auctionResponseDTO, actualDTO);

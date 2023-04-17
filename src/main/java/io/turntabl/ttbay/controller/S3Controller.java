@@ -9,8 +9,7 @@ import java.net.URL;
 @RestController
 @RequestMapping("/api/v1")
 @CrossOrigin("*")
-public class S3Controller {
-
+public class S3Controller{
     private final S3Service s3Service;
 
     @Autowired
@@ -19,11 +18,10 @@ public class S3Controller {
     }
 
     @GetMapping("/upload-url")
-    public ResponseEntity<String> getPresignedUrl(@RequestParam String objectKey, @RequestParam String contentType) {
+    public ResponseEntity<String> getPresignedUrl(@RequestParam String objectKey, @RequestParam String contentType){
         System.out.println("s3 controller called");
         URL url = s3Service.generatePresignedUrl(objectKey, contentType);
 //        UrlResponse urlResponse = new UrlResponse(url.toString());
         return ResponseEntity.ok(url.toString());
     }
-
 }

@@ -10,10 +10,11 @@ import org.springframework.stereotype.Service;
 
 @Service
 @AllArgsConstructor
-public class AuctionMapperImpl implements AuctionMapperService {
+public class AuctionMapperImpl implements AuctionMapperService{
     private final ItemMapperService itemMapperService;
+
     @Override
-    public AuctionResponseDTO returnAuctionResponse(Auction auction) {
+    public AuctionResponseDTO returnAuctionResponse(Auction auction){
         return AuctionResponseDTO.builder().auctionId(auction.getId()).auctioneerEmail(auction.getAuctioner().getEmail()).item(itemMapperService.returnItemResponse(auction.getItem())).startDate(auction.getStartDate()).endDate(auction.getEndDate()).reservedPrice(auction.getReservedPrice()).currentHighestBid(auction.getCurrentHighestBid()).winner(auction.getWinner()).status(auction.getStatus()).build();
     }
 }

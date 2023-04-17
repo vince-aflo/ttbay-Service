@@ -23,7 +23,6 @@ import static org.springframework.security.test.web.servlet.request.SecurityMock
 @WebMvcTest(BidController.class)
 @AutoConfigureMockMvc
 class BidControllerTest {
-
     private final BidDTO bidDTO = new BidDTO(5000.0, 1L);
     @Autowired
     ObjectMapper objectMapper;
@@ -33,12 +32,11 @@ class BidControllerTest {
     private BidService bidService;
 
     @Test
-    void makeBid_givenBidDTOAndJwtToken_shouldReturn200() throws Exception {
+    void makeBid_givenBidDTOAndJwtToken_shouldReturn200() throws Exception{
         ResultActions response = mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/bids")
                 .with(jwt())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(bidDTO)));
-
         response.andExpect(MockMvcResultMatchers.status().isOk());
     }
 
@@ -49,7 +47,6 @@ class BidControllerTest {
                 .with(jwt())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(bidDTO)));
-
         response.andExpect(MockMvcResultMatchers.status().isNotFound());
     }
 
@@ -60,8 +57,6 @@ class BidControllerTest {
                 .with(jwt())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(bidDTO)));
-
         response.andExpect(MockMvcResultMatchers.status().isForbidden());
     }
-
 }

@@ -15,14 +15,13 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
-public class ProfileServiceImpl implements ProfileService {
+public class ProfileServiceImpl implements ProfileService{
     private final UserRepository userRepository;
-
     private final OfficeDayRepository officeDayRepository;
 
     @Override
     @Transactional
-    public void updateProfile(ProfileDTO profileDTO) {
+    public void updateProfile(ProfileDTO profileDTO){
         try{
             User user = ProfileMapper.INSTANCE.profileDTOtoProfile(profileDTO);
             officeDayRepository.deleteByUser(user);
@@ -33,8 +32,7 @@ public class ProfileServiceImpl implements ProfileService {
     }
 
     @Override
-    public Optional<User> getUser(String email) {
+    public Optional<User> getUser(String email){
         return userRepository.findByEmail(email);
     }
-
 }

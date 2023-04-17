@@ -23,5 +23,4 @@ public record ItemResponseDTO(
         boolean isItemExchanged,
         boolean highestBidderReceivedItem,
         boolean auctioneerHandItemToHighestBidder
-) {
-}
+){}

@@ -27,8 +27,7 @@ import static org.springframework.security.test.web.servlet.request.SecurityMock
 
 @WebMvcTest(ItemController.class)
 @AutoConfigureMockMvc
-class ItemControllerTest {
-
+class ItemControllerTest{
     @Autowired
     ObjectMapper objectMapper;
     ItemRequest itemRequest = new ItemRequest("iPhone Xs", "slightly used 64g", ItemCondition.USED, Category.ELECTRONICS, List.of());
@@ -38,134 +37,106 @@ class ItemControllerTest {
     private ItemService itemService;
 
     @Test
-    void returnAllUserAuctionItems_givenJwtAuthToken_shouldReturn200() throws Exception {
+    void returnAllUserAuctionItems_givenJwtAuthToken_shouldReturn200() throws Exception{
         ResultActions response = mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/items/on-auction")
                 .with(jwt())
                 .contentType(MediaType.APPLICATION_JSON));
-
-
         response.andExpect(MockMvcResultMatchers.status().isOk());
-
     }
 
     @Test
-    void returnAllUserAuctionItems_givenJwtToken_shouldReturn404() throws Exception {
+    void returnAllUserAuctionItems_givenJwtToken_shouldReturn404() throws Exception{
         when(itemService.returnAllAuctionItemsByUser(any())).thenThrow(new ResourceNotFoundException(""));
-
         ResultActions response = mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/items/on-auction").with(jwt()));
-
         response.andExpect(MockMvcResultMatchers.status().isNotFound());
     }
 
     @Test
-    void testThat_givenJwtAuthToken_createItem_shouldReturn200() throws Exception {
+    void testThat_givenJwtAuthToken_createItem_shouldReturn200() throws Exception{
         ResultActions response = mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/items/on-auction").with(jwt()));
-
-
         response.andExpect(MockMvcResultMatchers.status().isOk());
-
     }
 
     @Test
-    void testThat_givenJwtAuthToken_createItem_shouldReturn404() throws Exception {
+    void testThat_givenJwtAuthToken_createItem_shouldReturn404() throws Exception{
         when(itemService.addItem(any(), any())).thenThrow(new ResourceNotFoundException("User not found"));
         ResultActions response = mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/items/add").with(jwt()).contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(itemRequest)));
-
         response.andExpect(MockMvcResultMatchers.status().isNotFound());
-
     }
 
     @Test
-    void testThat_givenJwtAuthToken_createItem_shouldReturn500() throws Exception {
+    void testThat_givenJwtAuthToken_createItem_shouldReturn500() throws Exception{
         when(itemService.addItem(any(), any())).thenThrow(new ModelCreateException("Error creating item"));
         ResultActions response = mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/items/add").with(jwt()).contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(itemRequest)));
-
         response.andExpect(MockMvcResultMatchers.status().isInternalServerError());
-
     }
 
     @Test
-    void testThat_givenJwtAuthToken_getOneIemOfUser_shouldReturn200() throws Exception {
+    void testThat_givenJwtAuthToken_getOneIemOfUser_shouldReturn200() throws Exception{
         long itemId = 1L;
         ResultActions response = mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/items/" + itemId).with(jwt()));
-
         response.andExpect(MockMvcResultMatchers.status().isOk());
-
     }
 
     @Test
-    void testThat_givenJwtAuthToken_getOneIemOfUser_shouldReturn403() throws Exception {
+    void testThat_givenJwtAuthToken_getOneIemOfUser_shouldReturn403() throws Exception{
         when(itemService.returnOneItemOfUser(any(), any())).thenThrow(new MismatchedEmailException("You don't have access to this resource"));
         long itemId = 1L;
         ResultActions response = mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/items/" + itemId).with(jwt()));
-
         response.andExpect(MockMvcResultMatchers.status().isForbidden());
-
     }
 
     @Test
-    void testThat_givenJwtAuthToken_getOneIemOfUser_shouldReturn404() throws Exception {
+    void testThat_givenJwtAuthToken_getOneIemOfUser_shouldReturn404() throws Exception{
         when(itemService.returnOneItemOfUser(any(), any())).thenThrow(new ResourceNotFoundException("Item not found"));
         long itemId = 1L;
         ResultActions response = mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/items/" + itemId).with(jwt()));
-
         response.andExpect(MockMvcResultMatchers.status().isNotFound());
-
     }
 
     @Test
-    void testThat_givenJwtAuthToken_returnAllItemsByUser_shouldReturn200() throws Exception {
+    void testThat_givenJwtAuthToken_returnAllItemsByUser_shouldReturn200() throws Exception{
         ResultActions response = mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/items/all-by-user").with(jwt()));
-
         response.andExpect(MockMvcResultMatchers.status().isOk());
-
     }
 
     @Test
-    void testThat_givenJwtAuthToken_returnAllItemsByUser_shouldReturn404() throws Exception {
+    void testThat_givenJwtAuthToken_returnAllItemsByUser_shouldReturn404() throws Exception{
         when(itemService.returnAllItemsByUser(any())).thenThrow(new ResourceNotFoundException(""));
         ResultActions response = mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/items/all-by-user").with(jwt()));
-
         response.andExpect(MockMvcResultMatchers.status().isNotFound());
-
     }
 
     @Test
-    void testThat_givenJwtAuthToken_deleteDraftItem_shouldReturn200() throws Exception {
+    void testThat_givenJwtAuthToken_deleteDraftItem_shouldReturn200() throws Exception{
         long itemId = 1L;
         ResultActions response = mockMvc.perform(MockMvcRequestBuilders.delete("/api/v1/items/" + itemId).with(jwt()));
-
         response.andExpect(MockMvcResultMatchers.status().isOk());
-
     }
 
     @Test
     void testThat_givenJwtAuthToken_updateDraftItem_shouldReturn200() throws Exception {
         long itemId = 1L;
         ResultActions response = mockMvc.perform(MockMvcRequestBuilders.put("/api/v1/items/" + itemId).with(jwt()).contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(itemRequest)));
-
         response.andExpect(MockMvcResultMatchers.status().isOk());
-
     }
 
     @Test
-    void deleteItemOnAuction_givenId_shouldReturn200() throws Exception {
+    void deleteItemOnAuction_givenId_shouldReturn200() throws Exception{
         long itemId = 1L;
         ResultActions response = mockMvc.perform(MockMvcRequestBuilders.delete("/api/v1/items/on-auction/"+itemId)
                 .with(jwt())
         );
-
         response.andExpect(MockMvcResultMatchers.status().isOk());
     }
 
     @Test
-    void deleteItemOnAuction_givenId_shouldReturn404() throws Exception {
+    void deleteItemOnAuction_givenId_shouldReturn404() throws Exception{
         when(itemService.deleteItemOnAuction(any(), any())).thenThrow(ResourceNotFoundException.class);
         long itemId = 1L;
         ResultActions response = mockMvc.perform(MockMvcRequestBuilders.delete("/api/v1/items/on-auction/"+itemId)
                 .with(jwt())
         );
-
         response.andExpect(MockMvcResultMatchers.status().isNotFound());
     }
 
@@ -177,10 +148,7 @@ class ItemControllerTest {
                 .with(jwt())
                 .contentType(MediaType.APPLICATION_JSON)
         );
-
         response.andExpect(MockMvcResultMatchers.status().isForbidden());
     }
-
-
 }
 

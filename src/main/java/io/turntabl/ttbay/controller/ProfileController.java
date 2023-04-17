@@ -13,12 +13,11 @@ import java.util.Optional;
 @RestController
 @RequestMapping("/api/v1/profile")
 @RequiredArgsConstructor
-public class ProfileController {
-
+public class ProfileController{
     private final ProfileService profileService;
 
     @PutMapping
-    public ResponseEntity<Object> updateProfile(@Valid @RequestBody ProfileDTO profileDTO) {
+    public ResponseEntity<Object> updateProfile(@Valid @RequestBody ProfileDTO profileDTO){
         profileService.updateProfile(profileDTO);
         return ResponseEntity.ok(null);
     }
@@ -27,6 +26,4 @@ public class ProfileController {
     public ResponseEntity< Optional<User>> getUser(@PathVariable("email") String email){
         return ResponseEntity.ok(profileService.getUser(email));
     }
-
-
 }

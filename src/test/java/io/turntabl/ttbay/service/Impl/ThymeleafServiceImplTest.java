@@ -13,12 +13,11 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
-class ThymeleafServiceImplTest {
+class ThymeleafServiceImplTest{
     @Mock
     private SpringTemplateEngine thymeleafTemplateEngine;
     @InjectMocks
     private ThymeleafServiceImpl thymeleafServiceImpl;
-
     private Context context;
 
     @BeforeEach
@@ -26,7 +25,7 @@ class ThymeleafServiceImplTest {
     }
 
     @Test
-    void createHtmlBody_givenContext_shouldCreateString() {
+    void createHtmlBody_givenContext_shouldCreateString(){
         thymeleafServiceImpl.createHtmlBody(context, "bid-was-made.html");
         verify(thymeleafTemplateEngine, times(1)).process("bid-was-made.html", context);
     }

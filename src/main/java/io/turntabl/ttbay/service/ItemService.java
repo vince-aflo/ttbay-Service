@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 
-public interface ItemService {
+public interface ItemService{
     List<ItemResponseDTO> returnAllAuctionItemsByUser(Authentication authentication) throws ResourceNotFoundException;
     List<ItemResponseDTO> returnAllItemsByUser(Authentication authentication) throws ResourceNotFoundException;
     ItemResponseDTO addItem(ItemRequest itemRequest, Authentication authentication) throws ResourceNotFoundException;

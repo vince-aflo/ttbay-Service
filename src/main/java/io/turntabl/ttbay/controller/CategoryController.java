@@ -15,12 +15,11 @@ import java.util.List;
 @RestController
 @AllArgsConstructor
 @RequestMapping("api/v1/categories")
-public class CategoryController {
+public class CategoryController{
     private final CategoryService categoryService;
 
     @GetMapping("/all")
-    public ResponseEntity<List<Category>> getAllCategories() {
+    public ResponseEntity<List<Category>> getAllCategories(){
         return ResponseEntity.status(HttpStatus.OK).body(categoryService.getAllCategories());
     }
-
 }

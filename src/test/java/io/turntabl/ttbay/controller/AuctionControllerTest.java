@@ -32,7 +32,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 @WebMvcTest(AuctionController.class)
 @ExtendWith(MockitoExtension.class)
 @AutoConfigureMockMvc()
-class AuctionControllerTest {
+class AuctionControllerTest{
     @Autowired
     ObjectMapper objectMapper;
     AuctionRequest auctionRequest = new AuctionRequest(1L, new Date(), new Date(), 52.8, AuctionStatus.LIVE);
@@ -42,36 +42,31 @@ class AuctionControllerTest {
     private AuctionService auctionService;
 
     @Test
-    void testThat_givenAValidToken_createAuction_shouldReturnAStatus200() throws Exception {
+    void testThat_givenAValidToken_createAuction_shouldReturnAStatus200() throws Exception{
         ResultActions response = mockMvc.perform(post("/api/v1/auctions/add")
                 .with(jwt())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(auctionRequest)));
-
         response.andExpect(MockMvcResultMatchers.status().isOk());
     }
 
     @Test
-    void testThat_givenAValidToken_createAuction_shouldReturnAStatus403() throws Exception {
-
+    void testThat_givenAValidToken_createAuction_shouldReturnAStatus403() throws Exception{
         given(auctionService.createAuction(any(), any())).willAnswer(invocation -> {
             throw new ItemAlreadyOnAuctionException("This is item is already on auction");
         });
-
         ResultActions response = mockMvc.perform(post("/api/v1/auctions/add")
                 .with(jwt())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(auctionRequest)));
-
         response.andExpect(MockMvcResultMatchers.status().isForbidden());
     }
 
     @Test
-    void testThat_givenAValidToken_returnAllAuctionByUser_shouldReturnAStatus200() throws Exception {
+    void testThat_givenAValidToken_returnAllAuctionByUser_shouldReturnAStatus200() throws Exception{
         ResultActions response = mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/auctions/all-by-user")
                 .with(jwt())
                 .contentType(MediaType.APPLICATION_JSON));
-
         response.andExpect(MockMvcResultMatchers.status().isOk());
     }
 
@@ -103,19 +98,17 @@ class AuctionControllerTest {
         response.andExpect(MockMvcResultMatchers.status().isNotFound());
     }
 
-
     @Test
-    void testThat_givenAValidToken_returnOneAuctionOfUser_shouldReturnAStatus200() throws Exception {
+    void testThat_givenAValidToken_returnOneAuctionOfUser_shouldReturnAStatus200() throws Exception{
         long auctionId = 1L;
         ResultActions response = mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/auctions/" + auctionId)
                 .with(jwt())
                 .contentType(MediaType.APPLICATION_JSON));
-
         response.andExpect(MockMvcResultMatchers.status().isOk());
     }
 
     @Test
-    void testThat_accessingADifferentUsersAuction_returnOneAuctionOfUser_shouldReturnAStatus403() throws Exception {
+    void testThat_accessingADifferentUsersAuction_returnOneAuctionOfUser_shouldReturnAStatus403() throws Exception{
         long auctionId = 1L;
         when(auctionService.returnOneAuctionOfUser(any())).thenThrow(new MismatchedEmailException("You don't have access to this resource"));
         ResultActions response = mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/auctions/" + auctionId)
@@ -125,16 +118,13 @@ class AuctionControllerTest {
         response.andExpect(MockMvcResultMatchers.status().isForbidden());
     }
 
-
     @Test
-    void testThat_accessingUserWithoutAnyAuctions_returnOneAuctionOfUser_shouldReturnAStatus404() throws Exception {
+    void testThat_accessingUserWithoutAnyAuctions_returnOneAuctionOfUser_shouldReturnAStatus404() throws Exception{
         long auctionId = 1L;
         when(auctionService.returnOneAuctionOfUser(any())).thenThrow(new ResourceNotFoundException("Item not found"));
         ResultActions response = mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/auctions/" + auctionId)
                 .with(jwt())
                 .contentType(MediaType.APPLICATION_JSON));
-
         response.andExpect(MockMvcResultMatchers.status().isNotFound());
     }
-
 }

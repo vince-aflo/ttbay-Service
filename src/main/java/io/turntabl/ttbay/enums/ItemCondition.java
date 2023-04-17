@@ -1,5 +1,5 @@
 package io.turntabl.ttbay.enums;
 
-public enum ItemCondition {
+public enum ItemCondition{
     NEW, USED,REFURBISHED
 }

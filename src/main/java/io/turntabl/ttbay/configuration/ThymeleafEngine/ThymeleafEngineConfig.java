@@ -9,7 +9,7 @@ import org.thymeleaf.templateresolver.ClassLoaderTemplateResolver;
 import org.thymeleaf.templateresolver.ITemplateResolver;
 
 @Configuration
-public class ThymeleafEngineConfig {
+public class ThymeleafEngineConfig{
     @Bean
     ResourceBundleMessageSource emailMessageSource(){
         final ResourceBundleMessageSource messageSource = new ResourceBundleMessageSource();
@@ -19,7 +19,7 @@ public class ThymeleafEngineConfig {
 
     @Bean
     @Qualifier("thymeleaf-personal")
-    public ITemplateResolver thymeleafTemplateResolver() {
+    public ITemplateResolver thymeleafTemplateResolver(){
         ClassLoaderTemplateResolver templateResolver = new ClassLoaderTemplateResolver();
         templateResolver.setPrefix("mail-templates/");
         templateResolver.setSuffix(".html");
@@ -29,7 +29,7 @@ public class ThymeleafEngineConfig {
     }
 
     @Bean
-    public SpringTemplateEngine thymeleafTemplateEngine(@Qualifier("thymeleaf-personal") ITemplateResolver templateResolver) {
+    public SpringTemplateEngine thymeleafTemplateEngine(@Qualifier("thymeleaf-personal") ITemplateResolver templateResolver){
         SpringTemplateEngine templateEngine = new SpringTemplateEngine();
         templateEngine.setTemplateResolver(templateResolver);
         templateEngine.setTemplateEngineMessageSource(emailMessageSource());

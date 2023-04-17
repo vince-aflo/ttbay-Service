@@ -4,6 +4,6 @@ import io.turntabl.ttbay.enums.Category;
 
 import java.util.List;
 
-public interface CategoryService {
+public interface CategoryService{
     List<Category> getAllCategories();
 }

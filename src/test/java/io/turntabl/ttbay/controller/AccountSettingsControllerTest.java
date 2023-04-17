@@ -20,54 +20,43 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 
 @WebMvcTest(AccountSettingsController.class)
 @AutoConfigureMockMvc
-class AccountSettingsControllerTest {
-
+class AccountSettingsControllerTest{
     @Autowired
     private MockMvc mockMvc;
-
     @MockBean
     private AccountSettingsService accountSettingsService;
 
     //check for valid email
     @Test
-    void deleteUser_givenjwtAuthTokenAndValidUserEnteredUserEmail_shouldReturnStatus200() throws Exception {
+    void deleteUser_givenjwtAuthTokenAndValidUserEnteredUserEmail_shouldReturnStatus200() throws Exception{
         String validEmail = "aikins.dwamena@turntabl.io";
-
         ResultActions response = mockMvc.perform(delete("/api/v1/account/user/" + validEmail)
                 .with(jwt())
                 .contentType(MediaType.APPLICATION_JSON));
-
         response.andExpect(MockMvcResultMatchers.status().isOk());
-
     }
 
     //check for invalid email  throwing the right http forbidden
     @Test
-    void deleteUser_givenjwtAuthTokenAndInValidUserEnteredUserEmail_shouldReturnStatus403() throws Exception {
+    void deleteUser_givenjwtAuthTokenAndInValidUserEnteredUserEmail_shouldReturnStatus403() throws Exception{
         String validEmail = "aikinsakenten@gmail.com";
         Mockito.when(accountSettingsService.deleteAccount(any(), any())).thenThrow(new MismatchedEmailException("You're unauthorized"));
         ResultActions response = mockMvc.perform(delete("/api/v1/account/user/" + validEmail)
                 .with(jwt())
         );
-
         response.andExpect(MockMvcResultMatchers.status().isForbidden());
-
     }
 
     //check for resource not found throwing 404
-
     @Test
-    void deleteUser_givenjwtAuthTokenAndValidUserEnteredUserEmail_shouldReturnStatus404() throws Exception {
+    void deleteUser_givenjwtAuthTokenAndValidUserEnteredUserEmail_shouldReturnStatus404() throws Exception{
         String validEmail = "aikins.dwamena@turntabl.io";
         Mockito.when(accountSettingsService.deleteAccount(any(), any())).thenThrow(new ResourceNotFoundException("User couldn't be found"));
         ResultActions response = mockMvc.perform(delete("/api/v1/account/user/" + validEmail)
                 .with(jwt())
         );
-
         response.andExpect(MockMvcResultMatchers.status().isNotFound());
-
     }
-
 }
 
 

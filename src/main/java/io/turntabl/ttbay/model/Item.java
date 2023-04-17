@@ -15,25 +15,29 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class Item {
+public class Item{
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private long id;
+
     @Column(nullable = false)
     private String name;
+
     @OneToMany(mappedBy = "item", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JsonManagedReference
     private List<ItemImage> imageList;
 
-
     @OneToMany(mappedBy = "item",cascade = CascadeType.ALL)
     @JsonManagedReference(value = "item-auction")
     private List<Auction> auction;
+
     private String description;
+
     @ManyToOne
     @JsonBackReference
     @JoinColumn(name = "user_email")
     private User user;
+
     private Boolean onAuction;
 
     private Boolean isSold;
@@ -51,8 +55,7 @@ public class Item {
 
     private boolean auctioneerHandItemToHighestBidder;
 
-
-    public Item(String name, String description,  User user, List<ItemImage> imageList, Boolean onAuction, Boolean isSold) {
+    public Item(String name, String description,  User user, List<ItemImage> imageList, Boolean onAuction, Boolean isSold){
         this.name = name;
         this.imageList = imageList;
         this.description = description;
@@ -60,5 +63,4 @@ public class Item {
         this.onAuction = onAuction;
         this.isSold = isSold;
     }
-
 }

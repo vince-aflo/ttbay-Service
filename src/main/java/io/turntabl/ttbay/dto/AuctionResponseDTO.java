@@ -18,6 +18,4 @@ public record AuctionResponseDTO(
         User winner,
         AuctionStatus status,
         Double winningPrice
-
-) {
-}
+){}

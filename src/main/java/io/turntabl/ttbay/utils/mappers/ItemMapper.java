@@ -7,11 +7,10 @@ import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
 
 @Mapper
-public interface ItemMapper {
-
+public interface ItemMapper{
     ItemMapper INSTANCE = Mappers.getMapper(ItemMapper.class);
 
-    default Item itemDTOtoItem(ItemRequest request,Item item) {
+    default Item itemDTOtoItem(ItemRequest request, Item item){
         Item copyItem = Item.builder().id(item.getId())
                 .name(request.name())
                 .description(request.description())
@@ -21,14 +20,12 @@ public interface ItemMapper {
                 .isSold(item.getIsSold())
                 .user(item.getUser())
                 .build();
-
         copyItem.setImageList(
                 request.imageList().
                         stream()
                         .map(itemImage ->
                                 new ItemImage(item, itemImage.getImageUrl()))
                         .toList());
-
         return copyItem;
     }
 }

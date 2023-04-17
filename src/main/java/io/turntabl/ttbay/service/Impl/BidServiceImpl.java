@@ -32,8 +32,9 @@ public class BidServiceImpl implements BidService {
     private final UserRepository userRepository;
     private final TokenAttributesExtractor tokenAttributesExtractor;
     private final EmailTriggerService emailTriggerService;
+
     @Override
-    public String makeBid(BidDTO bidDTO, Authentication authentication) throws ResourceNotFoundException, BidLessThanMaxBidException, BidCannotBeZero, UserCannotBidOnTheirAuction, MessagingException, ForbiddenActionException {
+    public String makeBid(BidDTO bidDTO, Authentication authentication) throws ResourceNotFoundException, BidLessThanMaxBidException, BidCannotBeZero, UserCannotBidOnTheirAuction, MessagingException, ForbiddenActionException{
         // first bid should be greater than 0
         if (bidDTO.bidAmount() <= 0) throw new BidCannotBeZero();
         //get bidder info else throw exception
@@ -55,16 +56,15 @@ public class BidServiceImpl implements BidService {
             if (maxBid > bidDTO.bidAmount())
                 throw new BidLessThanMaxBidException("Bid is less than current maximum bid");
         }
-
         //else save bid with builder
         Bid newBid = Bid.builder().bidAmount(bidDTO.bidAmount()).bidder(bidder.get()).auction(auction.get()).build();
         bidRepository.save(newBid);
         auctionService.updateCurrentHighestBidOfAuction(auction.get(), bidDTO.bidAmount());
         auctionRepository.save(auction.get());
         emailTriggerService.sendBidWasMadeEmail(auction.get(),bidder.get(),bidDTO.bidAmount());
-
         return "Bid has been made successfully";
     }
+
     public List<BidResponseDTO> returnAllBidsByUser(Authentication authentication) throws ResourceNotFoundException{
         String email = tokenAttributesExtractor.extractEmailFromToken(authentication);
         User targetUser = userRepository.findByEmail(email).orElseThrow(() -> new ResourceNotFoundException("User not found"));

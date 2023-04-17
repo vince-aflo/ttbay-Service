@@ -6,6 +6,6 @@ import org.springframework.security.core.Authentication;
 
 import java.text.ParseException;
 
-public interface UserAuthService {
+public interface UserAuthService{
     AuthResponse register(Authentication authentication) throws ParseException;
 }

@@ -17,7 +17,7 @@ import java.util.Map;
 
 
 @SpringBootTest
-class TokenAttributesExtractorImplTest {
+class TokenAttributesExtractorImplTest{
     @Autowired
     private TokenAttributesExtractor tokenAttributesExtractor;
     private JwtAuthenticationToken jwtAuthenticationToken;
@@ -38,10 +38,9 @@ class TokenAttributesExtractorImplTest {
         jwtAuthenticationToken = new JwtAuthenticationToken(jwt, List.of(authority));
     }
     @Test
-    void testThat_extractEmailFromToken_returnsTheEmailFromTheToken() {
+    void testThat_extractEmailFromToken_returnsTheEmailFromTheToken(){
         String expectedEmail = "test@gmail.com";
         String actualEmail = tokenAttributesExtractor.extractEmailFromToken(jwtAuthenticationToken);
         Assertions.assertEquals(expectedEmail, actualEmail);
     }
-
 }

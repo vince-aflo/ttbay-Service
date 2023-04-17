@@ -6,8 +6,8 @@ import org.springframework.security.oauth2.server.resource.authentication.JwtAut
 import org.springframework.stereotype.Service;
 
 @Service
-public class TokenAttributesExtractorImpl implements TokenAttributesExtractor {
-    public String extractEmailFromToken(Authentication authentication) {
+public class TokenAttributesExtractorImpl implements TokenAttributesExtractor{
+    public String extractEmailFromToken(Authentication authentication){
         JwtAuthenticationToken jwtAuthenticationToken = (JwtAuthenticationToken) authentication;
         return (String) jwtAuthenticationToken.getTokenAttributes().get("email");
     }

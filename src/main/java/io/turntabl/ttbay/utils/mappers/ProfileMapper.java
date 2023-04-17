@@ -9,8 +9,8 @@ import org.mapstruct.factory.Mappers;
 
 @Mapper
 public interface ProfileMapper {
-
     ProfileMapper INSTANCE = Mappers.getMapper(ProfileMapper.class);
+
     default User profileDTOtoProfile(ProfileDTO profileDTO){
         User user =  new User(
                 profileDTO.username(),
@@ -19,16 +19,13 @@ public interface ProfileMapper {
                 profileDTO.profileUrl(),
                 profileDTO.officeLocation()
         );
-
         user.setRole(Role.valueOf("USER")); //Todo set role dynamically
-
         user.setOfficeDays(
                 profileDTO.officeDays()
                         .stream()
                         .map(weekday -> new OfficeDay(user, weekday))
                         .toList()
         );
-
         return user;
     }
 }

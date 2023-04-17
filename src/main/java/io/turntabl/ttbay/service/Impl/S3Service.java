@@ -13,15 +13,13 @@ import java.net.URL;
 import java.util.Date;
 
 @Service
-public class S3Service {
-
+public class S3Service{
     private final AmazonS3 s3Client;
 
-    public S3Service() {
+    public S3Service(){
         String accessKey = System.getenv("AWS_ACCESS_KEY");
         String secretKey = System.getenv("AWS_SECRET_KEY");
         Regions region = Regions.US_EAST_1;
-
         BasicAWSCredentials awsCredentials = new BasicAWSCredentials(accessKey, secretKey);
         s3Client = AmazonS3ClientBuilder.standard()
                 .withRegion(region)
@@ -29,7 +27,7 @@ public class S3Service {
                 .build();
     }
 
-    public URL generatePresignedUrl(String objectKey, String contentType) {
+    public URL generatePresignedUrl(String objectKey, String contentType){
         Date expiration = new Date(System.currentTimeMillis() + 360000); // URL expires after 1 hour = 360000
         String bucketName = "ttbay-demo";
         GeneratePresignedUrlRequest generatePresignedUrlRequest =

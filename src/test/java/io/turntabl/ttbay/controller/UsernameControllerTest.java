@@ -22,33 +22,27 @@ import static org.springframework.security.test.web.servlet.request.SecurityMock
 class UsernameControllerTest {
     @Autowired
     private MockMvc mockMvc;
-
     @MockBean
     private UsernameService usernameService;
 
-
     @Test
-    void testThat_UpdatingUsernameWithAvailableName_shouldReturnAStatus200() throws Exception {
+    void testThat_UpdatingUsernameWithAvailableName_shouldReturnAStatus200() throws Exception{
         String available_username = "available";
         ResultActions response = mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/profile/username/" + available_username)
                 .with(jwt())
                 .contentType(MediaType.APPLICATION_JSON));
-
         response.andExpect(MockMvcResultMatchers.status().isOk());
     }
 
     @Test
-    void testThat_UpdatingUsernameWithUnavailableName_shouldReturnAStatus409() throws Exception {
+    void testThat_UpdatingUsernameWithUnavailableName_shouldReturnAStatus409() throws Exception{
         String unavailable_username = "unavailable";
         when(usernameService.updateUsername(any(), any())).thenThrow(new UsernameAlreadyExistException("unavailable"));
         ResultActions response = mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/profile/username/" + unavailable_username)
                 .with(jwt())
                 .contentType(MediaType.APPLICATION_JSON));
-
         response.andExpect(MockMvcResultMatchers.status().isConflict());
     }
-
-
 }
 
 

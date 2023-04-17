@@ -10,24 +10,27 @@ import lombok.*;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class OfficeDay {
+public class OfficeDay{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
+
     @ManyToOne(cascade = CascadeType.ALL)
     @JsonBackReference
     @JoinColumn(name = "user_id")
     private User user;
+
     @Enumerated(EnumType.STRING)
     private Weekday weekday;
 
-    public OfficeDay(User userId, Weekday weekday) {
+
+    public OfficeDay(User userId, Weekday weekday){
         this.user = userId;
         this.weekday = weekday;
     }
 
     @Override
-    public String toString() {
+    public String toString(){
         return "OfficeDay{" +
                 "weekday=" + weekday +
                 '}';

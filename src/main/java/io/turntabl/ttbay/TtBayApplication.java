@@ -8,9 +8,9 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @SpringBootApplication
 @EnableScheduling
 @EnableAsync
-public class TtBayApplication {
+public class TtBayApplication{
 
-    public static void main(String[] args) {
+    public static void main(String[] args){
         SpringApplication.run(TtBayApplication.class, args);
     }
 
@@ -35,5 +35,4 @@ public class TtBayApplication {
 //		executor.initialize();
 //		return executor;
 //	}
-
 }

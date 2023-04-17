@@ -16,7 +16,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class Auction {
+public class Auction{
     @Id
     @GeneratedValue
     @Column(name = "id", nullable = false)
@@ -33,8 +33,11 @@ public class Auction {
     private Item item;
 
     private Date startDate;
+
     private Date endDate;
+
     private Double reservedPrice;
+
     private Double currentHighestBid;
 
     @OneToOne
@@ -50,6 +53,5 @@ public class Auction {
     private List<Bid> bids;
 
     private Double winningPrice;
-    
 }
 

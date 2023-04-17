@@ -23,7 +23,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.when;
 
 @SpringBootTest
-class ProfileServiceImplTest {
+class ProfileServiceImplTest{
     @Autowired
     private ProfileServiceImpl profileService;
     @MockBean
@@ -52,7 +52,6 @@ class ProfileServiceImplTest {
                 .deleteByUser(any(User.class));
     }
 
-
     @Test
     void givenValidProfileDTO_whenUpdatingProfile_thenSaveProfile(){
         profileService.updateProfile(validProfileDTO);
@@ -64,19 +63,14 @@ class ProfileServiceImplTest {
     @Test
     void whenErrorSavingProfile_thenThrowProfileCreationException(){
         when(userRepository.save(any(User.class))).thenThrow(RuntimeException.class);
-
         assertThrows(ProfileUpdateException.class, () -> profileService.updateProfile(validProfileDTO));
     }
 
     @Test
     void givenValidProfileDTO_whenUpdatingProfile_thenDeleteOfficeDaysBeforeSave(){
         profileService.updateProfile(validProfileDTO);
-
         InOrder inOrder = Mockito.inOrder(officeDayRepository, userRepository);
-
         inOrder.verify(officeDayRepository).deleteByUser(any(User.class));
         inOrder.verify(userRepository).save(any(User.class));
     }
-
-
 }

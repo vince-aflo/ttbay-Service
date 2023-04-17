@@ -9,7 +9,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface BidRepository extends JpaRepository<Bid, Long> {
+public interface BidRepository extends JpaRepository<Bid, Long>{
     List<Bid> findByAuction(Auction auction);
     List<Bid> findByBidder(User bidder);
     Long countByAuction(Auction auction);

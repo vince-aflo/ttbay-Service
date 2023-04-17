@@ -4,5 +4,4 @@ public class BidLessThanMaxBidException extends Exception{
     public BidLessThanMaxBidException(String message){
         super(message);
     }
-
 }

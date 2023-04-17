@@ -11,5 +11,4 @@ public record AuctionRequest(
     Date endDate,
     Double price,
     AuctionStatus status
- )
-{}
+ ){}

@@ -9,11 +9,11 @@ import org.springframework.stereotype.Service;
 
 @Service
 @AllArgsConstructor
-public class BidMapperImpl implements BidMapperService {
+public class BidMapperImpl implements BidMapperService{
     private final AuctionMapperService auctionMapperService;
 
     @Override
-    public BidResponseDTO returnBidResponse(Bid bid) {
+    public BidResponseDTO returnBidResponse(Bid bid){
         return BidResponseDTO.builder().bidId(bid.getId()).bidAmount(bid.getBidAmount()).bidder(bid.getBidder()).auctionResponseDTO(auctionMapperService.returnAuctionResponse(bid.getAuction())).build();
     }
 }

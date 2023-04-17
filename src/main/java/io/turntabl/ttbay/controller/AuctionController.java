@@ -19,50 +19,51 @@ import java.util.List;
 @RestController
 @AllArgsConstructor
 @RequestMapping("api/v1/auctions")
-public class AuctionController {
+public class AuctionController{
     private final AuctionService auctionService;
 
     @GetMapping("/all")
-    public ResponseEntity<List<AuctionResponseDTO>> getAllAuctions() {
+    public ResponseEntity<List<AuctionResponseDTO>> getAllAuctions(){
         return ResponseEntity.status(HttpStatus.OK).body(auctionService.returnAllAuctions());
     }
 
     @GetMapping("/all-by-user")
-    public ResponseEntity<List<AuctionResponseDTO>> returnAllAuction(Authentication authentication) throws ResourceNotFoundException {
+    public ResponseEntity<List<AuctionResponseDTO>> returnAllAuction(Authentication authentication) throws ResourceNotFoundException{
         return ResponseEntity.status(HttpStatus.OK).body(auctionService.returnAllAuctionByUser(authentication));
     }
 
     @PostMapping("/add")
-    public ResponseEntity<String> createAuction(@RequestBody AuctionRequest auctionRequest, Authentication authentication) throws ResourceNotFoundException, MismatchedEmailException {
+    public ResponseEntity<String> createAuction(@RequestBody AuctionRequest auctionRequest, Authentication authentication) throws ResourceNotFoundException, MismatchedEmailException{
         return ResponseEntity.status(HttpStatus.OK).body(auctionService.createAuction(auctionRequest, authentication));
     }
 
     @GetMapping("/{auctionId}")
-    public ResponseEntity<AuctionResponseDTO> getOneAuctionOfUser(@PathVariable Long auctionId) throws ResourceNotFoundException, MismatchedEmailException {
+    public ResponseEntity<AuctionResponseDTO> getOneAuctionOfUser(@PathVariable Long auctionId) throws ResourceNotFoundException, MismatchedEmailException{
         return ResponseEntity.status(HttpStatus.OK).body(auctionService.returnOneAuctionOfUser(auctionId));
     }
 
-
     @DeleteMapping("cancelWithBidCheck/{auctionId}")
-    public ResponseEntity<String> cancelAuctionWithBidChecking(@PathVariable Long auctionId, Authentication authentication) throws ResourceNotFoundException, MismatchedEmailException {
+    public ResponseEntity<String> cancelAuctionWithBidChecking(@PathVariable Long auctionId, Authentication authentication) throws ResourceNotFoundException, MismatchedEmailException{
         return ResponseEntity.status(HttpStatus.OK).body(auctionService.cancelAuctionWithBidChecking(auctionId, authentication));
     }
 
     @DeleteMapping("cancel/{auctionId}")
-    public ResponseEntity<String> cancelAuction(@PathVariable Long auctionId, Authentication authentication) throws ResourceNotFoundException, MismatchedEmailException {
+    public ResponseEntity<String> cancelAuction(@PathVariable Long auctionId, Authentication authentication) throws ResourceNotFoundException, MismatchedEmailException{
         return ResponseEntity.status(HttpStatus.OK).body(auctionService.cancelAuction(auctionId, authentication));
     }
+
     @PutMapping("")
-    public ResponseEntity<AuctionResponseDTO> updateAuction(@RequestBody EditAuctionRequestDTO editAuctionRequestDTO, Authentication authentication) throws ResourceNotFoundException, MismatchedEmailException, ForbiddenActionException {
+    public ResponseEntity<AuctionResponseDTO> updateAuction(@RequestBody EditAuctionRequestDTO editAuctionRequestDTO, Authentication authentication) throws ResourceNotFoundException, MismatchedEmailException, ForbiddenActionException{
         return ResponseEntity.status(HttpStatus.OK).body(auctionService.updateAuctionWithNoBid(editAuctionRequestDTO, authentication));
     }
+
     @PostMapping("/auction-winner/{auctionId}")
-    public ResponseEntity<String> auctionWinnerMarkAuctionedItemAsReceived(@PathVariable Long auctionId, Authentication authentication) throws ResourceNotFoundException, MismatchedEmailException {
+    public ResponseEntity<String> auctionWinnerMarkAuctionedItemAsReceived(@PathVariable Long auctionId, Authentication authentication) throws ResourceNotFoundException, MismatchedEmailException{
         return ResponseEntity.status(HttpStatus.OK).body(auctionService.auctionWinnerMarkAuctionedItemAsReceived(auctionId, authentication));
     }
-    @PostMapping("/auctioner/{auctionId}")
-    public ResponseEntity<String> auctioneerMarkAuctionedItemAsDelivered(@PathVariable Long auctionId, Authentication authentication ) throws ResourceNotFoundException, MismatchedEmailException {
-        return ResponseEntity.status(HttpStatus.OK).body(auctionService.auctioneerMarkAuctionedItemAsDelivered(auctionId,authentication));
-    }
 
+    @PostMapping("/auctioner/{auctionId}")
+    public ResponseEntity<String> auctioneerMarkAuctionedItemAsDelivered(@PathVariable Long auctionId, Authentication authentication) throws ResourceNotFoundException, MismatchedEmailException{
+        return ResponseEntity.status(HttpStatus.OK).body(auctionService.auctioneerMarkAuctionedItemAsDelivered(auctionId, authentication));
+    }
 }

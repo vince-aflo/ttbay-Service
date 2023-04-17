@@ -13,23 +13,21 @@ import org.springframework.security.oauth2.server.resource.authentication.JwtAut
 import java.util.List;
 
 @AllArgsConstructor
-public class CustomAuthenticationConverter implements Converter<Jwt, JwtAuthenticationToken> {
+public class CustomAuthenticationConverter implements Converter<Jwt, JwtAuthenticationToken>{
     private final UserRepository userRepository;
 
     @Override
-    public JwtAuthenticationToken convert(Jwt source) {
+    public JwtAuthenticationToken convert(Jwt source){
         String email = (String) source.getClaims().get("email");
-
-        if (email == null) {
+        if (email == null){
             throw new InvalidBearerTokenException("Invalid bearer token");
         }
         User user = userRepository.findByEmail(email).orElse(null);
         SimpleGrantedAuthority authority;
-        if (user != null) {
+        if (user != null){
             authority = new SimpleGrantedAuthority(user.getRole().toString());
             return new JwtAuthenticationToken(source, List.of(authority));
         } else authority = new SimpleGrantedAuthority(Role.USER.toString());
-
         return new JwtAuthenticationToken(source, List.of(authority));
     }
 }

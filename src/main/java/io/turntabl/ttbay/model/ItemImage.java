@@ -11,8 +11,7 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class ItemImage {
-
+public class ItemImage{
     @Id
     @GeneratedValue
     @Column(name = "id", nullable = false)
@@ -20,18 +19,19 @@ public class ItemImage {
 
     @Column(unique = true)
     private String imageUrl;
+
     @ManyToOne(cascade = CascadeType.DETACH)
     @JsonBackReference
     @JoinColumn(name = "item_id")
     private Item item;
 
-    public ItemImage(Item itemId, String imageUrl) {
+    public ItemImage(Item itemId, String imageUrl){
         this.item = itemId;
         this.imageUrl = imageUrl;
     }
 
     @Override
-    public String toString() {
+    public String toString(){
         return "ItemImage{" +
                 "imageUrl=" + imageUrl +
                 '}';
