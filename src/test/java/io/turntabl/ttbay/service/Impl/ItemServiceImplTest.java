@@ -59,7 +59,7 @@ class ItemServiceImplTest{
 
     );
     private final List<Auction> testAuctionList2 = List.of(
-            Auction.builder().id(1L).auctioner(testUser).item(testItem1).startDate(new Date()).endDate(new Date()).reservedPrice(5000.0).currentHighestBid(6000.0).status(AuctionStatus.DRAFT).build()
+            Auction.builder().id(1L).auctioner(testUser).item(testItem1).startDate(new Date()).endDate(new Date()).reservedPrice(5000.0).currentHighestBid(6000.0).status(AuctionStatus.SCHEDULED).build()
 
     );
     private final List<Item> testItemList2 = List.of(

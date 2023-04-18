@@ -57,11 +57,10 @@ class AuctionServiceImplTest {
             .startDate(new Date()).endDate(new Date()).reservedPrice(85.8)
             .status(AuctionStatus.LIVE).build();
     private final Auction auction1 = Auction.builder().id(1L).auctioner(testUser1).item(testItem).startDate(new Date()).endDate(new Date()).reservedPrice(81.5).status(AuctionStatus.LIVE).build();
-    List<Auction> auctions = List.of(auction, auction1);
     private final Auction draftAuction = Auction.builder().id(1L).auctioner(testUser).item(testItem)
             .startDate(new Date(System.currentTimeMillis() - 1000 * 60 * 60 * 24)).reservedPrice(85.8)
-            .status(DRAFT).bids(List.of()).build();
-    private final Auction draftAuction1 = Auction.builder().id(1L).auctioner(testUser1).item(testItem).startDate(new Date(System.currentTimeMillis()-100000)).reservedPrice(81.5).status(DRAFT).build();
+            .status(SCHEDULED).bids(List.of()).build();
+    private final Auction draftAuction1 = Auction.builder().id(1L).auctioner(testUser1).item(testItem).startDate(new Date(System.currentTimeMillis()-100000)).reservedPrice(81.5).status(SCHEDULED).build();
     private final Auction liveAuction = Auction.builder().id(1L).auctioner(testUser).item(testItem)
             .endDate(new Date(System.currentTimeMillis() - 1000 * 60 * 60 * 24)).reservedPrice(85.8)
             .status(LIVE).bids(List.of()).build();

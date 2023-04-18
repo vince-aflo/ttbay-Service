@@ -32,7 +32,7 @@ import java.util.Objects;
 import java.util.Optional;
 
 
-import static io.turntabl.ttbay.enums.AuctionStatus.DRAFT;
+import static io.turntabl.ttbay.enums.AuctionStatus.SCHEDULED;
 import static io.turntabl.ttbay.enums.AuctionStatus.LIVE;
 
 @AllArgsConstructor
@@ -140,7 +140,7 @@ public class AuctionServiceImpl implements AuctionService{
         Date timeNow = new Date(System.currentTimeMillis());
         List<Auction> allAuctions = returnAllAuction();
         return  allAuctions.parallelStream()
-                .filter(auction -> auction.getStatus() == DRAFT && timeNow.after(auction.getStartDate())).collect(Collectors.toList());
+                .filter(auction -> auction.getStatus() == SCHEDULED && timeNow.after(auction.getStartDate())).collect(Collectors.toList());
     }
 
     private void setAuctionStatusToLive(Auction auction){
