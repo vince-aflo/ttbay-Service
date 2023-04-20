@@ -87,7 +87,7 @@ public class BidServiceImplTest{
     }
 
     @Test
-    void makeBid_givenBidDTOAndNewMaxBid_shouldReturnBidHasBeenMadeSuccessfully() throws BidLessThanMaxBidException, ResourceNotFoundException, BidCannotBeZero, UserCannotBidOnTheirAuction, ForbiddenActionException, MessagingException{
+    void makeBid_givenBidDTOAndNewMaxBid_shouldReturnBidHasBeenMadeSuccessfully() throws ResourceNotFoundException, BidException, ForbiddenActionException, MessagingException{
         BidDTO testBidDTO = new BidDTO(6000.0, 1L);
         doReturn(Optional.of(testUser)).when(userRepository).findByEmail(any());
         doReturn(Optional.of(testAuction)).when(auctionRepository).findById(any());
@@ -109,7 +109,7 @@ public class BidServiceImplTest{
     }
 
     @Test
-    void makeBid_givenBidDTOAndOldMaxBid_shouldReturnBidHasBeenMadeSuccessfully() throws BidLessThanMaxBidException, ResourceNotFoundException, BidCannotBeZero, UserCannotBidOnTheirAuction, ForbiddenActionException, MessagingException{
+    void makeBid_givenBidDTOAndOldMaxBid_shouldReturnBidHasBeenMadeSuccessfully() throws BidException, ResourceNotFoundException, ForbiddenActionException, MessagingException{
         BidDTO testBidDTO = new BidDTO(5000.0, 1L);
         doReturn(Optional.of(testUser)).when(userRepository).findByEmail(any());
         doReturn(Optional.of(testAuction)).when(auctionRepository).findById(any());

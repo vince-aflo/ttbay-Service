@@ -34,7 +34,7 @@ public class BidServiceImpl implements BidService {
     private final EmailTriggerService emailTriggerService;
 
     @Override
-    public String makeBid(BidDTO bidDTO, Authentication authentication) throws ResourceNotFoundException, BidLessThanMaxBidException, BidCannotBeZero, UserCannotBidOnTheirAuction, MessagingException, ForbiddenActionException{
+    public String makeBid(BidDTO bidDTO, Authentication authentication) throws ResourceNotFoundException, BidException, MessagingException, ForbiddenActionException{
         // first bid should be greater than 0
         if (bidDTO.bidAmount() <= 0) throw new BidCannotBeZero();
         //get bidder info else throw exception
