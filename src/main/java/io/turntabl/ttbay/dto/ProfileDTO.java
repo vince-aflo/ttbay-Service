@@ -16,6 +16,5 @@ public record ProfileDTO(
         @NotBlank(message = "fullName has to be set") String fullName,
         @NotBlank(message = "profileUrl has to be set") String profileUrl,
         @NotNull(message = "officeLocation has to be set") OfficeLocation officeLocation,
-        @Size(max = 5, message = "Only 5 office days can be set")
-        @UniqueElements(message = "Office days must be unique") List<Weekday> officeDays
+        @Size(max = 5, message = "Only 5 office days can be set") List<Weekday> officeDays
 ){}
