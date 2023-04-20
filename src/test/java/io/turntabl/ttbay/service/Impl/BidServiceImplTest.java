@@ -173,7 +173,7 @@ public class BidServiceImplTest{
         List<BidResponseDTO> bidsByTestUser1 = bidService.returnAllBidsByUser(jwtAuthenticationToken);
         verify(bidRepository, times(1)).findByBidder(testUser1);
         verify(userRepository, times(1)).findByEmail(any());
-        Assertions.assertEquals(testBids.stream().map(bidMapperService::returnBidResponse).toList() ,bidsByTestUser1 );
+        Assertions.assertEquals(testBids.stream().map(bidMapperService::returnBidResponse).toList(), bidsByTestUser1 );
     }
 
     @Test

@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
-public class UsernameServiceImpl implements UsernameService {
+public class UsernameServiceImpl implements UsernameService{
     private final UserRepository userRepository;
     private final TokenAttributesExtractor tokenAttributesExtractor;
 

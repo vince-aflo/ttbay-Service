@@ -70,7 +70,7 @@ public class ItemServiceImpl implements ItemService{
     @Override
     public String deleteItemOnAuction(Long itemId, Authentication authentication) throws ResourceNotFoundException, MismatchedEmailException{
         String tokenEmail = tokenAttributesExtractor.extractEmailFromToken(authentication);
-        Item targetItem = returnOneItem(authentication,itemId);
+        Item targetItem = returnOneItem(authentication, itemId);
         //find live auction by item id
         List<Auction> listAuction = auctionRepository.findByItem(targetItem);
         if (!listAuction.isEmpty() &&!listAuction.get(0).getAuctioner().getEmail().equalsIgnoreCase(tokenEmail))
@@ -98,7 +98,7 @@ public class ItemServiceImpl implements ItemService{
 
     @Transactional
     @Override
-    public String updateItem(Long itemId, ItemRequest itemRequest, Authentication authentication) throws MismatchedEmailException,ResourceNotFoundException{
+    public String updateItem(Long itemId, ItemRequest itemRequest, Authentication authentication) throws MismatchedEmailException, ResourceNotFoundException{
         Item item = returnOneItem(authentication, itemId);
         itemImageRepository.deleteByItem(item);
         Item copy = ItemMapper.INSTANCE.itemDTOtoItem(itemRequest, item);
@@ -106,7 +106,7 @@ public class ItemServiceImpl implements ItemService{
         return "item updated successfully";
     }
 
-    public Item returnOneItem(Authentication authentication, Long itemId) throws ResourceNotFoundException,MismatchedEmailException{
+    public Item returnOneItem(Authentication authentication, Long itemId) throws ResourceNotFoundException, MismatchedEmailException{
         String email = tokenAttributesExtractor.extractEmailFromToken(authentication);
         Optional<Item> item = itemRepository.findById(itemId);
         if (item.isPresent() && !Objects.equals(item.get().getUser().getEmail(), email)){

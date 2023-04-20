@@ -4,8 +4,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class TtBayApplicationTests {
+class TtBayApplicationTests{
 	@Test
-	void contextLoads() {
+	void contextLoads(){
 	}
 }

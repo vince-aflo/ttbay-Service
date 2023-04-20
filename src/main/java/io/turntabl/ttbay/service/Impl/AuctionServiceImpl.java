@@ -106,7 +106,7 @@ public class AuctionServiceImpl implements AuctionService{
         return auction.get();
     }
 
-    public String cancelAuction(Long auctionId,Authentication authentication) throws MismatchedEmailException, ResourceNotFoundException{
+    public String cancelAuction(Long auctionId, Authentication authentication) throws MismatchedEmailException, ResourceNotFoundException{
         String tokenEmail = tokenAttributesExtractor.extractEmailFromToken(authentication);
         //get auction
         Auction targetAuction  =  returnOneAuction(auctionId);
@@ -197,7 +197,7 @@ public class AuctionServiceImpl implements AuctionService{
         return auctionResult.get();
     }
 
-    public String auctionWinnerMarkAuctionedItemAsReceived(Long auctionId,Authentication authentication) throws MismatchedEmailException, ResourceNotFoundException{
+    public String auctionWinnerMarkAuctionedItemAsReceived(Long auctionId, Authentication authentication) throws MismatchedEmailException, ResourceNotFoundException{
         String email = tokenAttributesExtractor.extractEmailFromToken(authentication);
         Auction auction =  auctionRepository.findById(auctionId).orElse(null);
         if(auction == null){
@@ -211,7 +211,7 @@ public class AuctionServiceImpl implements AuctionService{
         itemRepository.save(item);
         return "item marked as received";
     }
-    public String auctioneerMarkAuctionedItemAsDelivered(Long auctionId,Authentication authentication) throws ResourceNotFoundException, MismatchedEmailException{
+    public String auctioneerMarkAuctionedItemAsDelivered(Long auctionId, Authentication authentication) throws ResourceNotFoundException, MismatchedEmailException{
         String email = tokenAttributesExtractor.extractEmailFromToken(authentication);
         Auction auction =  auctionRepository.findById(auctionId).orElse(null);
         if(auction == null){

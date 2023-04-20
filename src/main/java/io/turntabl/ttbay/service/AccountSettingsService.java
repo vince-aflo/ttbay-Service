@@ -6,5 +6,5 @@ import io.turntabl.ttbay.exceptions.ResourceNotFoundException;
 import org.springframework.security.core.Authentication;
 
 public interface AccountSettingsService{
-    String deleteAccount(Authentication authentication,String userEnteredEmail) throws MismatchedEmailException, ResourceNotFoundException;
+    String deleteAccount(Authentication authentication, String userEnteredEmail) throws MismatchedEmailException, ResourceNotFoundException;
 }

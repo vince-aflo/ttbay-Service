@@ -22,7 +22,7 @@ public class BidController{
 
     @PostMapping("")
     public ResponseEntity<String> makeBid(@RequestBody BidDTO bidDTO , Authentication authentication) throws BidLessThanMaxBidException, ResourceNotFoundException, BidCannotBeZero, UserCannotBidOnTheirAuction, MessagingException, ForbiddenActionException{
-        return ResponseEntity.status(HttpStatus.OK).body(bidService.makeBid(bidDTO,authentication));
+        return ResponseEntity.status(HttpStatus.OK).body(bidService.makeBid(bidDTO, authentication));
     }
 
     @GetMapping("/all-by-user")

@@ -16,6 +16,6 @@ public class UsernameController{
 
     @GetMapping("/{username}")
     public ResponseEntity<String> changeUsername(JwtAuthenticationToken auth, @PathVariable("username") String username){
-       return ResponseEntity.ok(usernameService.updateUsername(auth,username));
+       return ResponseEntity.ok(usernameService.updateUsername(auth, username));
     }
 }

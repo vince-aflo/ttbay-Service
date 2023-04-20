@@ -70,7 +70,7 @@ class ProfileControllerTest {
     }
 
     @Test
-    void givenValidExistingEmail_whenGettingUserWithThatEmail_shouldRespondStatus200 () throws Exception{
+    void givenValidExistingEmail_whenGettingUserWithThatEmail_shouldRespondStatus200() throws Exception{
         String validEmail = "testing@testing.com";
         ResultActions response = mockMvc.perform(get("/api/v1/profile/"+validEmail)
                 .contentType(MediaType.APPLICATION_JSON)
