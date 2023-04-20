@@ -18,7 +18,7 @@ public class AppExceptionHandler{
         return new ResponseEntity<>(exception.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
-    @ExceptionHandler({MismatchedEmailException.class,ForbiddenActionException.class,ItemAlreadyOnAuctionException.class,BidLessThanMaxBidException.class,BidCannotBeZero.class,UserCannotBidOnTheirAuction.class})
+    @ExceptionHandler({MismatchedEmailException.class, ForbiddenActionException.class, ItemAlreadyOnAuctionException.class, BidLessThanMaxBidException.class, BidCannotBeZero.class, UserCannotBidOnTheirAuction.class})
     public ResponseEntity<String> handleMismatchEmails(Exception exception){
         return new ResponseEntity<>(exception.getMessage(), HttpStatus.FORBIDDEN);
     }

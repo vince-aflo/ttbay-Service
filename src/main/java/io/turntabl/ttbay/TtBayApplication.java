@@ -24,15 +24,4 @@ public class TtBayApplication{
 //		executor.initialize();
 //		return executor;
 //	}
-
-//	@Bean
-//	public Executor taskExecutor() {
-//		ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
-//		executor.setCorePoolSize(3);
-//		executor.setMaxPoolSize(3);
-//		executor.setQueueCapacity(500);
-//		executor.setThreadNamePrefix("GmailService-");
-//		executor.initialize();
-//		return executor;
-//	}
 }

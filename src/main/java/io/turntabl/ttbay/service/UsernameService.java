@@ -5,7 +5,7 @@ import org.springframework.security.oauth2.server.resource.authentication.JwtAut
 import java.util.Map;
 
 public interface UsernameService{
-    String updateUsername(JwtAuthenticationToken auth,String username);
+    String updateUsername(JwtAuthenticationToken auth, String username);
     Map<String, String> findAllUsernamesWithEmails();
     Map<String, String> removeActiveUsersUsernameAndEmail(JwtAuthenticationToken auth, Map<String,String> usernames);
 }

@@ -26,13 +26,13 @@ public class ItemController{
     }
 
     @PostMapping("/add")
-    public ResponseEntity<ItemResponseDTO> createItem(@RequestBody ItemRequest itemRequest,Authentication authentication) throws ResourceNotFoundException{
-        return ResponseEntity.status(HttpStatus.OK).body(itemService.addItem(itemRequest,authentication));
+    public ResponseEntity<ItemResponseDTO> createItem(@RequestBody ItemRequest itemRequest, Authentication authentication) throws ResourceNotFoundException{
+        return ResponseEntity.status(HttpStatus.OK).body(itemService.addItem(itemRequest, authentication));
     }
 
     @DeleteMapping("/{itemId}")
     public ResponseEntity<String> removeDraftItem(@PathVariable Long itemId, Authentication authentication) throws ResourceNotFoundException, MismatchedEmailException{
-        return ResponseEntity.status(HttpStatus.OK).body(itemService.deleteDraftItem(itemId,authentication));
+        return ResponseEntity.status(HttpStatus.OK).body(itemService.deleteDraftItem(itemId, authentication));
     }
 
     @GetMapping("/all-by-user")
@@ -46,12 +46,12 @@ public class ItemController{
     }
 
     @PutMapping("/{itemId}")
-    public ResponseEntity<String> editDraftItem(@PathVariable Long itemId,@RequestBody ItemRequest itemRequest, Authentication authentication) throws ResourceNotFoundException, MismatchedEmailException{
-        return ResponseEntity.status(HttpStatus.OK).body(itemService.updateItem(itemId,itemRequest,authentication));
+    public ResponseEntity<String> editDraftItem(@PathVariable Long itemId, @RequestBody ItemRequest itemRequest, Authentication authentication) throws ResourceNotFoundException, MismatchedEmailException{
+        return ResponseEntity.status(HttpStatus.OK).body(itemService.updateItem(itemId,itemRequest, authentication));
     }
 
     @DeleteMapping("/on-auction/{itemId}")
-    public ResponseEntity<String> deleteItem(@PathVariable Long itemId,Authentication authentication) throws  ResourceNotFoundException, MismatchedEmailException, ForbiddenActionException{
-        return ResponseEntity.status(HttpStatus.OK).body(itemService.deleteItemOnAuction(itemId,authentication));
+    public ResponseEntity<String> deleteItem(@PathVariable Long itemId, Authentication authentication) throws  ResourceNotFoundException, MismatchedEmailException, ForbiddenActionException{
+        return ResponseEntity.status(HttpStatus.OK).body(itemService.deleteItemOnAuction(itemId, authentication));
     }
 }

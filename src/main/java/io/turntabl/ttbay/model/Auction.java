@@ -47,7 +47,7 @@ public class Auction{
     @Enumerated(EnumType.STRING)
     private AuctionStatus status;
 
-    @OneToMany(mappedBy = "auction",fetch = FetchType.LAZY,cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "auction", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JsonManagedReference(value = "bid-auction")
     @JsonIgnore
     private List<Bid> bids;

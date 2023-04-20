@@ -25,6 +25,6 @@ public interface AuctionService{
     String cancelAuctionWithBidChecking(Long auctionId, Authentication authentication) throws MismatchedEmailException, ResourceNotFoundException;
     String cancelAuction(Long auctionId, Authentication authentication) throws MismatchedEmailException, ResourceNotFoundException;
     void updateCurrentHighestBidOfAuction(Auction auction, Double highestBid);
-    String auctioneerMarkAuctionedItemAsDelivered(Long auctionId,Authentication authentication) throws ResourceNotFoundException, MismatchedEmailException;
-    String auctionWinnerMarkAuctionedItemAsReceived(Long auctionId,Authentication authentication) throws MismatchedEmailException, ResourceNotFoundException;
+    String auctioneerMarkAuctionedItemAsDelivered(Long auctionId, Authentication authentication) throws ResourceNotFoundException, MismatchedEmailException;
+    String auctionWinnerMarkAuctionedItemAsReceived(Long auctionId, Authentication authentication) throws MismatchedEmailException, ResourceNotFoundException;
 }

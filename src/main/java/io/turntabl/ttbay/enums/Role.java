@@ -1,5 +1,5 @@
 package io.turntabl.ttbay.enums;
 
-public enum Role {
+public enum Role{
     USER
 }

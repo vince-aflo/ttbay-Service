@@ -27,7 +27,7 @@ public class Item{
     @JsonManagedReference
     private List<ItemImage> imageList;
 
-    @OneToMany(mappedBy = "item",cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "item", cascade = CascadeType.ALL)
     @JsonManagedReference(value = "item-auction")
     private List<Auction> auction;
 
@@ -55,7 +55,7 @@ public class Item{
 
     private boolean auctioneerHandItemToHighestBidder;
 
-    public Item(String name, String description,  User user, List<ItemImage> imageList, Boolean onAuction, Boolean isSold){
+    public Item(String name, String description, User user, List<ItemImage> imageList, Boolean onAuction, Boolean isSold){
         this.name = name;
         this.imageList = imageList;
         this.description = description;

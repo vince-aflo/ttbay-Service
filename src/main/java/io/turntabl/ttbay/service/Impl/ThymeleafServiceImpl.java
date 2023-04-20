@@ -22,6 +22,6 @@ public class ThymeleafServiceImpl implements ThymeleafService{
 
     @Override
     public String createHtmlBody(Context templateContext, String templateName){
-        return thymeleafTemplateEngine.process(templateName,templateContext);
+        return thymeleafTemplateEngine.process(templateName, templateContext);
     }
 }

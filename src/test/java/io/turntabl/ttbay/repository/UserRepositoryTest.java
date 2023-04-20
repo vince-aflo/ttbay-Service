@@ -36,26 +36,20 @@ class UserRepositoryTest{
     }
     @AfterEach
     void tearDown(){
-        userRepository.deleteAll();
+        userRepository.deleteById("emma@gmail.com");
     }
 
     @Test
     void testToCheckThatUserSavedWIthAParticularEmailIsPresent(){
-        //given
         String email = "emma@gmail.com";
-        //when
         boolean expected = userRepository.findByEmail(email).isPresent();
-        //then
         assertThat(expected).isTrue();
     }
 
     @Test
     void testThatVerifiesThatASavedUserHasAUserRole(){
-        //given
         Role expectedRole = Role.USER;
-        //when
         User user = userRepository.findByEmail("emma@gmail.com").orElseThrow();
-        //then
         Assertions.assertEquals(user.getRole(), expectedRole);
     }
 }
