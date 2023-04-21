@@ -8,7 +8,6 @@ import java.net.URL;
 
 @RestController
 @RequestMapping("/api/v1")
-@CrossOrigin("*")
 public class S3Controller{
     private final S3Service s3Service;
 

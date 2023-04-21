@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @Controller
 @AllArgsConstructor
 @RequestMapping("api/v1/account")
-@CrossOrigin(origins = "*")
 public class AccountSettingsController{
     private final AccountSettingsService accountSettingsService;
 
