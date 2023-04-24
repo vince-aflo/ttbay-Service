@@ -9,9 +9,10 @@ import io.turntabl.ttbay.service.AccountSettingsService;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 
@@ -21,14 +22,14 @@ import java.util.Optional;
 
 import static org.mockito.Mockito.*;
 
-@SpringBootTest
-class AccountSettingsImplTest{
-    private  JwtAuthenticationToken jwtAuthenticationToken;
-    @Autowired
-    private AccountSettingsService accountSettingsService;
-    @MockBean
+@ExtendWith(MockitoExtension.class)
+class AccountSettingsImplTest {
+    private final User userWithValidDetails = User.builder().username("aikscode").email("aikins.dwamena@turntabl.io").fullName("Aikins Akenten Dwamena").profileUrl("").officeLocation(OfficeLocation.SONNIDOM_HOUSE).build();
+    private JwtAuthenticationToken jwtAuthenticationToken;
+    @InjectMocks
+    private AccountSettingsImpl accountSettingsService;
+    @Mock
     private UserRepository userRepository;
-    private final User testUser = new User("aikscode","aikins.dwamena@turntabl.io","Aikins Akenten Dwamena","", OfficeLocation.SONNIDOM_HOUSE);
 
     @BeforeEach
     public void setup() {
@@ -50,30 +51,30 @@ class AccountSettingsImplTest{
 
     //write test for when email in path is the same as email from token and user exist in db
     @Test
-    void deleteAccount_givenjwtAuthTokenAndValidUserEnteredEmail_shouldReturnSuccessMessage() throws MismatchedEmailException, ResourceNotFoundException{
+    void deleteAccount_givenjwtAuthTokenAndValidUserEnteredEmail_shouldReturnSuccessMessage() throws MismatchedEmailException, ResourceNotFoundException {
         String userEnteredEmail = "aikins.dwamena@turntabl.io";
-        doReturn(Optional.of(testUser))
+        doReturn(Optional.of(userWithValidDetails))
                 .when(userRepository)
                 .findByEmail(userEnteredEmail);
-         accountSettingsService.deleteAccount(jwtAuthenticationToken , userEnteredEmail);
-        verify(userRepository,times(1)).deleteById(userEnteredEmail);
-        Assertions.assertEquals(accountSettingsService.deleteAccount(jwtAuthenticationToken, userEnteredEmail),testUser.getEmail() + " user deleted successfully");
+        accountSettingsService.deleteAccount(jwtAuthenticationToken, userEnteredEmail);
+        verify(userRepository, times(1)).deleteById(userEnteredEmail);
+        Assertions.assertEquals(accountSettingsService.deleteAccount(jwtAuthenticationToken, userEnteredEmail), userWithValidDetails.getEmail() + " user deleted successfully");
     }
 
     //write test to show failure from when email is different and that exception is thrown
     @Test
-    void deleteAccount_givenjwtAuthTokenAndUserEnteredEmail_shouldThrowMismatchException(){
+    void deleteAccount_givenJwtAuthTokenAndInvalidUserEmail_shouldThrowMismatchException() {
         String userEnteredEmail = "aikinsakenten@gmail.com";
-        Assertions.assertThrows(MismatchedEmailException.class, ()-> accountSettingsService.deleteAccount(jwtAuthenticationToken, userEnteredEmail));
+        Assertions.assertThrows(MismatchedEmailException.class, () -> accountSettingsService.deleteAccount(jwtAuthenticationToken, userEnteredEmail));
     }
 
     //write test to show if email matches but user doesn't exist in database
     @Test
-    void deleteAccount_givenjwtAuthTokenAndUserEnteredEmail_shouldThrowNotFoundError(){
+    void deleteAccount_givenJwtAuthTokenAndNonExistingUserEmail_shouldThrowNotFoundError() {
         String userEnteredEmail = "aikins.dwamena@turntabl.io";
         doReturn(Optional.empty())
                 .when(userRepository)
                 .findByEmail(userEnteredEmail);
-        Assertions.assertThrows(ResourceNotFoundException.class, ()-> accountSettingsService.deleteAccount(jwtAuthenticationToken, userEnteredEmail));
+        Assertions.assertThrows(ResourceNotFoundException.class, () -> accountSettingsService.deleteAccount(jwtAuthenticationToken, userEnteredEmail));
     }
 }

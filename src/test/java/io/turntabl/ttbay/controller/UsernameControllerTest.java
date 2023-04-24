@@ -26,7 +26,7 @@ class UsernameControllerTest {
     private UsernameService usernameService;
 
     @Test
-    void testThat_UpdatingUsernameWithAvailableName_shouldReturnAStatus200() throws Exception{
+    void updateUsername_givenAvailableName_shouldReturnAStatus200() throws Exception{
         String available_username = "available";
         ResultActions response = mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/profile/username/" + available_username)
                 .with(jwt())
@@ -35,7 +35,7 @@ class UsernameControllerTest {
     }
 
     @Test
-    void testThat_UpdatingUsernameWithUnavailableName_shouldReturnAStatus409() throws Exception{
+    void updateUsername_givenUnavailableName_shouldReturnAStatus409() throws Exception{
         String unavailable_username = "unavailable";
         when(usernameService.updateUsername(any(), any())).thenThrow(new UsernameAlreadyExistException("unavailable"));
         ResultActions response = mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/profile/username/" + unavailable_username)

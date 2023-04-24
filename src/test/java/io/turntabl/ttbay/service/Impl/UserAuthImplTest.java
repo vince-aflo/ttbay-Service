@@ -17,16 +17,18 @@ import org.springframework.security.oauth2.server.resource.authentication.JwtAut
 import java.time.Instant;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+
+import static org.mockito.Mockito.*;
 
 @SpringBootTest
 class UserAuthImplTest{
-    @Autowired
-    private UserRepository userRepository;
     @MockBean
+    private UserRepository userRepository;
+    @Autowired
     private UserAuthImpl serviceUnderTest;
     private User user;
     private JwtAuthenticationToken jwtAuthenticationToken;
-    private AuthResponse authResponse;
 
     @BeforeEach
     void setUp(){
@@ -48,43 +50,37 @@ class UserAuthImplTest{
     }
 
     @Test
-    void testThat_UserIsRetrievedFromTheDb_UsingHisEmail(){
-        User expectedUser = userRepository.save(user);
-        User retrievedUserByEmail = userRepository.findByEmail(user.getEmail()).orElse(null);
-        assert retrievedUserByEmail != null;
-        Assertions.assertEquals(retrievedUserByEmail.getEmail(), expectedUser.getEmail());
+    void register_existingUserEmail_doesNotSaveDetails(){
+        doReturn(Optional.of(user)).when(userRepository).findByEmail(user.getEmail());
+        AuthResponse response = serviceUnderTest.register(jwtAuthenticationToken);
+        verify(userRepository,never()).save(any());
+        Assertions.assertEquals("test@gmail.com", response.email());
     }
 
     @Test
-    void testThat_WhenFreshUserRegisters_ReturnHasFilledUerProfileToFalse(){
-        authResponse = AuthResponse.builder().hasFilledUserProfile(false).build();
-        AuthResponse expectedResponse = authResponse;
+    void register_freshUser_shouldReturnHasFilledUserProfileToFalseAndSaveDetails(){
+        AuthResponse expectedResponse =  AuthResponse.builder().hasFilledUserProfile(false).build();
         AuthResponse actualResponse = serviceUnderTest.register(jwtAuthenticationToken);
-        Assertions.assertEquals(expectedResponse.isHasFilledUserProfile(), actualResponse.isHasFilledUserProfile());
+        verify(userRepository,times(1)).save(any());
+        Assertions.assertEquals(expectedResponse.hasFilledUserProfile(), actualResponse.hasFilledUserProfile());
     }
 
     @Test
-    void testThat_WhenAnExistingUserWithoutUsernameRegisters_ReturnHasFilledUerProfileToFalse(){
-        userRepository.save(user);
-        authResponse = AuthResponse.builder().hasFilledUserProfile(false).build();
-        AuthResponse expectedResponse = authResponse;
+    void register_existingUserWithoutUsername_shouldReturnHasFilledUserProfileToFalse(){
+        doReturn(Optional.of(user)).when(userRepository).findByEmail(any());
+        AuthResponse expectedResponse = AuthResponse.builder().hasFilledUserProfile(false).build();
         AuthResponse actualResponse = serviceUnderTest.register(jwtAuthenticationToken);
-        Assertions.assertEquals(expectedResponse.isHasFilledUserProfile(), actualResponse.isHasFilledUserProfile());
+        verify(userRepository,never()).save(any());
+        Assertions.assertEquals(expectedResponse.hasFilledUserProfile(), actualResponse.hasFilledUserProfile());
     }
 
     @Test
-    void testThat_WhenAnExistingUserWithUsernameRegisters_ReturnHasFilledUerProfileToTrue(){
+    void register_existingUserWithUsername_shouldReturnHasFilledUserProfileToTrue(){
         user.setUsername("emmanuel");
-        userRepository.save(user);
-        authResponse = AuthResponse.builder().hasFilledUserProfile(true).build();
-        AuthResponse expectedResponse = authResponse;
+        doReturn(Optional.of(user)).when(userRepository).findByEmail(any());
+        AuthResponse expectedResponse =  AuthResponse.builder().hasFilledUserProfile(true).build();
         AuthResponse actualResponse = serviceUnderTest.register(jwtAuthenticationToken);
-        Assertions.assertEquals(expectedResponse.isHasFilledUserProfile(), actualResponse.isHasFilledUserProfile());
+        Assertions.assertEquals(expectedResponse.hasFilledUserProfile(), actualResponse.hasFilledUserProfile());
     }
 
-    @Test
-    void testThat_FindByEmail_ShouldReturnNUllWhenEmailIsNotFoundInDb(){
-        var retrievedUserByEmail = userRepository.findByEmail("albert@gmail.com").orElse(null);
-        Assertions.assertNull(retrievedUserByEmail);
-    }
 }
