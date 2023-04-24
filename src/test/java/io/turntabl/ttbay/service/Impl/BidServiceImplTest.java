@@ -37,15 +37,16 @@ import static org.mockito.Mockito.*;
 
 @SpringBootTest
 public class BidServiceImplTest{
-    private final User testUser = new User("aikscode", "test@gmail.com", "Aikins Akenten Dwamena", "", OfficeLocation.SONNIDOM_HOUSE);
-    private final User testUser1 = new User("aikscode", "aikins.dwamena@turntabl.io", "Aikins Akenten Dwamena", "", OfficeLocation.SONNIDOM_HOUSE);
-    private final Item testItem = new Item("Book1", "Harry Potter2", testUser, null, true, true);
-    private final Auction testAuction = Auction.builder().id(1L).auctioner(testUser).item(testItem).startDate(new Date()).endDate(new Date()).reservedPrice(85.8).status(AuctionStatus.LIVE).build();
-    private final Auction testAuction1 = Auction.builder().id(1L).auctioner(testUser1).item(testItem).startDate(new Date()).endDate(new Date()).reservedPrice(85.8).status(AuctionStatus.LIVE).build();
+    public  final long id1 = 1L;
+    private final User bidder = User.builder().username("aiks").email("test@gmail.com").fullName("Aikins Akenten Dwamena").officeLocation(OfficeLocation.SONNIDOM_HOUSE).build();
+    private final User auctioneer = User.builder().username("aikscode").email("aikins.dwamena@turntabl.io").fullName("Aikins Akenten Dwamena").officeLocation(OfficeLocation.SONNIDOM_HOUSE).build();
+    private final Item auctioneerItem = Item.builder().name("Harry Potter").user(bidder).onAuction(true).isSold(true).build();
+    private final Auction biddersAuction = Auction.builder().id(id1).auctioner(bidder).item(auctioneerItem).startDate(new Date()).endDate(new Date()).reservedPrice(85.8).status(AuctionStatus.LIVE).build();
+    private final Auction auctioneersAuction = Auction.builder().id(id1).auctioner(auctioneer).item(auctioneerItem).startDate(new Date()).endDate(new Date()).reservedPrice(85.8).status(AuctionStatus.LIVE).build();
     List<Bid> testBids = List.of(
-            Bid.builder().id(1L).auction(testAuction1).bidAmount(5000.0).build(),
-            Bid.builder().id(2L).auction(testAuction1).bidAmount(2000.0).build(),
-            Bid.builder().id(3L).auction(testAuction1).bidAmount(3000.0).build()
+            Bid.builder().id(id1).auction(auctioneersAuction).bidAmount(5000.0).build(),
+            Bid.builder().id(2L).auction(auctioneersAuction).bidAmount(2000.0).build(),
+            Bid.builder().id(3L).auction(auctioneersAuction).bidAmount(3000.0).build()
     );
     @Autowired
     BidMapperService bidMapperService;
@@ -88,75 +89,75 @@ public class BidServiceImplTest{
 
     @Test
     void makeBid_givenBidDTOAndNewMaxBid_shouldReturnBidHasBeenMadeSuccessfully() throws ResourceNotFoundException, BidException, ForbiddenActionException, MessagingException{
-        BidDTO testBidDTO = new BidDTO(6000.0, 1L);
-        doReturn(Optional.of(testUser)).when(userRepository).findByEmail(any());
-        doReturn(Optional.of(testAuction)).when(auctionRepository).findById(any());
-        doReturn(testBids).when(bidRepository).findByAuction(testAuction);
+        BidDTO testBidDTO = new BidDTO(6000.0, id1);
+        doReturn(Optional.of(bidder)).when(userRepository).findByEmail(any());
+        doReturn(Optional.of(biddersAuction)).when(auctionRepository).findById(any());
+        doReturn(testBids).when(bidRepository).findByAuction(biddersAuction);
         bidService.makeBid(testBidDTO, jwtAuthenticationToken);
         verify(auctionRepository, times(1)).findById(testBidDTO.auctionId());
-        verify(bidRepository, times(1)).findByAuction(testAuction);
+        verify(bidRepository, times(1)).findByAuction(biddersAuction);
         verify(bidRepository, times(1)).save(any());
         Assertions.assertEquals("Bid has been made successfully", bidService.makeBid(testBidDTO, jwtAuthenticationToken));
     }
 
     @Test
     void makeBid_givenBidDTOAndNewNotMaxBid_shouldThrowBidLessThanMaxBidException(){
-        BidDTO testBidDTO = new BidDTO(1000.0, 1L);
-        doReturn(Optional.of(testUser)).when(userRepository).findByEmail(any());
-        doReturn(Optional.of(testAuction)).when(auctionRepository).findById(any());
-        doReturn(testBids).when(bidRepository).findByAuction(testAuction);
+        BidDTO testBidDTO = new BidDTO(1000.0, id1);
+        doReturn(Optional.of(bidder)).when(userRepository).findByEmail(any());
+        doReturn(Optional.of(biddersAuction)).when(auctionRepository).findById(any());
+        doReturn(testBids).when(bidRepository).findByAuction(biddersAuction);
         assertThrows(BidLessThanMaxBidException.class, () -> bidService.makeBid(testBidDTO, jwtAuthenticationToken));
     }
 
     @Test
     void makeBid_givenBidDTOAndOldMaxBid_shouldReturnBidHasBeenMadeSuccessfully() throws BidException, ResourceNotFoundException, ForbiddenActionException, MessagingException{
-        BidDTO testBidDTO = new BidDTO(5000.0, 1L);
-        doReturn(Optional.of(testUser)).when(userRepository).findByEmail(any());
-        doReturn(Optional.of(testAuction)).when(auctionRepository).findById(any());
-        doReturn(testBids).when(bidRepository).findByAuction(testAuction);
+        BidDTO testBidDTO = new BidDTO(5000.0, id1);
+        doReturn(Optional.of(bidder)).when(userRepository).findByEmail(any());
+        doReturn(Optional.of(biddersAuction)).when(auctionRepository).findById(any());
+        doReturn(testBids).when(bidRepository).findByAuction(biddersAuction);
         bidService.makeBid(testBidDTO, jwtAuthenticationToken);
         verify(auctionRepository, times(1)).findById(testBidDTO.auctionId());
-        verify(bidRepository, times(1)).findByAuction(testAuction);
+        verify(bidRepository, times(1)).findByAuction(biddersAuction);
         verify(bidRepository, times(1)).save(any());
         Assertions.assertEquals("Bid has been made successfully", bidService.makeBid(testBidDTO, jwtAuthenticationToken));
     }
 
     @Test
     void makeBid_givenBidDTOInValidAuction_shouldThrowAuctionNotFoundException(){
-        BidDTO testBidDTO = new BidDTO(6000.0, 1L);
-        doReturn(Optional.of(testUser)).when(userRepository).findByEmail(any());
+        BidDTO testBidDTO = new BidDTO(6000.0, id1);
+        doReturn(Optional.of(bidder)).when(userRepository).findByEmail(any());
         doReturn(Optional.empty()).when(auctionRepository).findById(any());
         assertThrows(ResourceNotFoundException.class, () -> bidService.makeBid(testBidDTO,jwtAuthenticationToken));
     }
 
     @Test
     void makeBid_givenBidDTOAndBadToken_shouldThrowUserNotFoundException(){
-        BidDTO testBidDTO = new BidDTO(6000.0, 1L);
+        BidDTO testBidDTO = new BidDTO(6000.0, id1);
         doReturn(Optional.empty()).when(userRepository).findByEmail(any());
         assertThrows(ResourceNotFoundException.class, () -> bidService.makeBid(testBidDTO,jwtAuthenticationToken));
     }
 
     @Test
     void makeBid_givenBidDTOAndBadToken_shouldThrowBidCannotBeZeroException() {
-        BidDTO testBidDTO = new BidDTO(0.0, 1L);
-        doReturn(Optional.of(testUser)).when(userRepository).findByEmail(any());
+        BidDTO testBidDTO = new BidDTO(0.0, id1);
+        doReturn(Optional.of(bidder)).when(userRepository).findByEmail(any());
         assertThrows(BidCannotBeZero.class, () -> bidService.makeBid(testBidDTO,jwtAuthenticationToken));
     }
 
     @Test
     void makeBid_givenBidDTOAndBadToken_shouldThrowUserCannotBidOnTheirItemException() {
-        BidDTO testBidDTO = new BidDTO(6000.0, 1L);
-        doReturn(Optional.of(testUser1)).when(userRepository).findByEmail(testUser1.getEmail());
-        doReturn(Optional.of(testAuction1)).when(auctionRepository).findById(any());
+        BidDTO testBidDTO = new BidDTO(6000.0, id1);
+        doReturn(Optional.of(auctioneer)).when(userRepository).findByEmail(auctioneer.getEmail());
+        doReturn(Optional.of(auctioneersAuction)).when(auctionRepository).findById(any());
         assertThrows(UserCannotBidOnTheirAuction.class, () -> bidService.makeBid(testBidDTO, jwtAuthenticationToken));
     }
 
     @Test
     void makeBid_givenBidDTO_shouldThrowBidLessThanMaxException(){
-        BidDTO testBidDTO = new BidDTO(200.0, 1L);
-        doReturn(Optional.of(testUser)).when(userRepository).findByEmail(any());
-        doReturn(Optional.of(testAuction)).when(auctionRepository).findById(any());
-        doReturn(testBids).when(bidRepository).findByAuction(testAuction);
+        BidDTO testBidDTO = new BidDTO(200.0, id1);
+        doReturn(Optional.of(bidder)).when(userRepository).findByEmail(any());
+        doReturn(Optional.of(biddersAuction)).when(auctionRepository).findById(any());
+        doReturn(testBids).when(bidRepository).findByAuction(biddersAuction);
         assertThrows(BidLessThanMaxBidException.class, () -> bidService.makeBid(testBidDTO, jwtAuthenticationToken));
     }
 
@@ -168,25 +169,25 @@ public class BidServiceImplTest{
 
     @Test
     void returnAllBidsByUser_givenAnExistingUserWithBids_shouldReturnAllTheBids() throws ResourceNotFoundException{
-        doReturn(Optional.of(testUser1)).when(userRepository).findByEmail(any());
-        doReturn(testBids).when(bidRepository).findByBidder(testUser1);
+        doReturn(Optional.of(auctioneer)).when(userRepository).findByEmail(any());
+        doReturn(testBids).when(bidRepository).findByBidder(auctioneer);
         List<BidResponseDTO> bidsByTestUser1 = bidService.returnAllBidsByUser(jwtAuthenticationToken);
-        verify(bidRepository, times(1)).findByBidder(testUser1);
+        verify(bidRepository, times(1)).findByBidder(auctioneer);
         verify(userRepository, times(1)).findByEmail(any());
         Assertions.assertEquals(testBids.stream().map(bidMapperService::returnBidResponse).toList(), bidsByTestUser1 );
     }
 
     @Test
     void getBidCount_givenAnAuctionId_shouldReturnNumberOfBidsOnTheAuction() throws ResourceNotFoundException{
-        doReturn(3L).when(bidRepository).countByAuction(testAuction);
-        doReturn(Optional.of(testAuction)).when(auctionRepository).findById(testAuction.getId());
-        Long bidCount = bidService.getBidCount(testAuction.getId());
+        doReturn(3L).when(bidRepository).countByAuction(biddersAuction);
+        doReturn(Optional.of(biddersAuction)).when(auctionRepository).findById(biddersAuction.getId());
+        Long bidCount = bidService.getBidCount(biddersAuction.getId());
         Assertions.assertEquals(testBids.size(), bidCount);
     }
 
     @Test
     void getBidCount_givenAuctionDoesNotExist_shouldThrowResourceNotFoundException(){
-        doReturn(Optional.empty()).when(auctionRepository).findById(testAuction.getId());
-        Assertions.assertThrows(ResourceNotFoundException.class, () -> bidService.getBidCount(testAuction.getId()));
+        doReturn(Optional.empty()).when(auctionRepository).findById(biddersAuction.getId());
+        Assertions.assertThrows(ResourceNotFoundException.class, () -> bidService.getBidCount(biddersAuction.getId()));
     }
 }

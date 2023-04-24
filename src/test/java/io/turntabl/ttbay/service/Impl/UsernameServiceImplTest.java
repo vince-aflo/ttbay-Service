@@ -27,9 +27,9 @@ import static org.mockito.Mockito.doReturn;
 
 @ExtendWith(MockitoExtension.class)
 class UsernameServiceImplTest{
-    User testUser1 = new User("Tkayy", "test@gmail.com", "Emmanuel Tweneboah", "pic", OfficeLocation.SONNIDOM_HOUSE);
-    User testUser2 = new User(null, "saeps@gmail.com", "Sarpong Albert", "pic", OfficeLocation.SONNIDOM_HOUSE);
-    User testUser3 = new User("fes", "fes@gmail.com", "Festus Obeng", "pic", OfficeLocation.SONNIDOM_HOUSE);
+    User testUser1 = User.builder().username("Tkayy").email("test@gmail.com").fullName("Emmanuel Tweneboah").officeLocation(OfficeLocation.SONNIDOM_HOUSE).build();
+    User testUser2 = User.builder().email("saeps@gmail.com").fullName("Sarpong Albert").officeLocation(OfficeLocation.SONNIDOM_HOUSE).build();
+    User testUser3 = User.builder().username("fes").email("fes@gmail.com").fullName("Festus Obeng").officeLocation(OfficeLocation.SONNIDOM_HOUSE).build();
     List<User> allUsers = List.of(testUser1, testUser2, testUser3);
     @Mock
     private UserRepository userRepository;
@@ -56,7 +56,7 @@ class UsernameServiceImplTest{
     }
 
     @Test
-    void testThat_findAllUsernamesWithEmails_actualMapValues(){
+    void findAllUsernamesWithEmails_shouldReturnMapOfResults(){
         Map<String, String> expectedUsernamesWithEmail = Stream.of(new String[][]{{testUser1.getEmail(), testUser1.getUsername()}, {testUser3.getEmail(), testUser3.getUsername()}}).collect(Collectors.toMap(data -> data[0], data -> data[1]));
         doReturn(allUsers).when(userRepository).findAll();
         Map<String, String> actualUsernamesWithEmail = classUnderTest.findAllUsernamesWithEmails();
@@ -64,7 +64,7 @@ class UsernameServiceImplTest{
     }
 
     @Test
-    void testThat_UpdatingUnavailableUsername_ThrowsUsernameAlreadyException(){
+    void updateUsername_givenUnavailabelName_shouldThrowUsernameAlreadyException(){
         doReturn(allUsers).when(userRepository).findAll();
         doReturn(testUser1.getEmail()).when(tokenAttributesExtractor).extractEmailFromToken(jwtAuthenticationToken);
         doReturn(Optional.of(testUser1)).when(userRepository).findByEmail(testUser1.getEmail());
@@ -74,7 +74,7 @@ class UsernameServiceImplTest{
     }
 
     @Test
-    void testThat_UpdateUsername_returnsAvailable_whenActiveUserUpdatesWithPreviousUsername() {
+    void updateUsername_givenCurrentUsername_shouldReturnAvailable() {
         doReturn(allUsers).when(userRepository).findAll();
         doReturn(testUser1.getEmail()).when(tokenAttributesExtractor).extractEmailFromToken(jwtAuthenticationToken);
         doReturn(Optional.of(testUser1)).when(userRepository).findByEmail(testUser1.getEmail());
@@ -86,7 +86,7 @@ class UsernameServiceImplTest{
     }
 
     @Test
-    void testThat_UpdateUsername_returnsAvailable_whenActiveUserUpdatesWithAvailableUsername() {
+    void updateUsername_givenAvailableName_shouldReturnAvailable() {
         doReturn(allUsers).when(userRepository).findAll();
         doReturn(testUser1.getEmail()).when(tokenAttributesExtractor).extractEmailFromToken(jwtAuthenticationToken);
         doReturn(Optional.of(testUser1)).when(userRepository).findByEmail(testUser1.getEmail());

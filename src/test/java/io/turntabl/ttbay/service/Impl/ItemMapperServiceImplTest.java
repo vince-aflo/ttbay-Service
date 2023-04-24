@@ -9,19 +9,17 @@ import io.turntabl.ttbay.model.User;
 import io.turntabl.ttbay.service.ItemMapperService;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.List;
 
-@SpringBootTest
+@ExtendWith(MockitoExtension.class)
 class ItemMapperServiceImplTest{
-    private final User testUser = new User(
-            "aikscode",
-            "aikins.dwamena@turntabl.io",
-            "Aikins Akenten Dwamena",
-            "",
-            OfficeLocation.SONNIDOM_HOUSE);
+    private final User testUser = User.builder().username("aiks").email("test@gmail.com").fullName("Aikins Akenten Dwamena").officeLocation(OfficeLocation.SONNIDOM_HOUSE).build();
     private final Item item = Item.builder()
             .user(testUser)
             .auction(null)
@@ -35,11 +33,11 @@ class ItemMapperServiceImplTest{
             .description("test")
             .build();
     private final ItemResponseDTO itemResponseDTO = ItemResponseDTO.builder().auctions(null).description(item.getDescription()).itemId(item.getId()).userEmail(item.getUser().getEmail()).itemName(item.getName()).onAuction(item.getOnAuction()).isSold(item.getIsSold()).condition(item.getCondition()).category(item.getCategory()).imageList(item.getImageList()).auctions(item.getAuction()).build();
-    @Autowired
-    private ItemMapperService itemMapperService;
+    @InjectMocks
+    private ItemMapperServiceImpl itemMapperService;
 
     @Test
-    void returnItemResponse(){
+    void returnItemResponse_givenItem_shouldReturnItemResponseDto(){
         ItemResponseDTO actualDTO = itemMapperService.returnItemResponse(item);
         Assertions.assertEquals(itemResponseDTO, actualDTO);
     }

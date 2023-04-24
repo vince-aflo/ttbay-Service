@@ -30,7 +30,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 
 
 @WebMvcTest(AuctionController.class)
-@ExtendWith(MockitoExtension.class)
 @AutoConfigureMockMvc()
 class AuctionControllerTest{
     @Autowired
@@ -42,7 +41,7 @@ class AuctionControllerTest{
     private AuctionService auctionService;
 
     @Test
-    void testThat_givenAValidToken_createAuction_shouldReturnAStatus200() throws Exception{
+    void createAuction_givenAValidToken_shouldReturnAStatus200() throws Exception{
         ResultActions response = mockMvc.perform(post("/api/v1/auctions/add")
                 .with(jwt())
                 .contentType(MediaType.APPLICATION_JSON)
@@ -51,7 +50,7 @@ class AuctionControllerTest{
     }
 
     @Test
-    void testThat_givenAValidToken_createAuction_shouldReturnAStatus403() throws Exception{
+    void createAuction_givenAValidToken_shouldReturnAStatus403() throws Exception{
         given(auctionService.createAuction(any(), any())).willAnswer(invocation -> {
             throw new ItemAlreadyOnAuctionException("This is item is already on auction");
         });
@@ -63,7 +62,7 @@ class AuctionControllerTest{
     }
 
     @Test
-    void testThat_givenAValidToken_returnAllAuctionByUser_shouldReturnAStatus200() throws Exception{
+    void returnAllAuctionByUser_givenAValidToken_shouldReturnAStatus200() throws Exception{
         ResultActions response = mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/auctions/all-by-user")
                 .with(jwt())
                 .contentType(MediaType.APPLICATION_JSON));
@@ -71,7 +70,7 @@ class AuctionControllerTest{
     }
 
     @Test
-    void testThat_givenNoToken_returnAllAuctionByUser_shouldReturnAStatus401() throws Exception {
+    void returnAllAuctionByUser_givenNoToken_shouldReturnAStatus401() throws Exception {
         ResultActions response = mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/auctions/all-by-user")
                 .contentType(MediaType.APPLICATION_JSON));
 
@@ -79,7 +78,7 @@ class AuctionControllerTest{
     }
 
     @Test
-    void testThat_givenAValidToken_returnAllAuctionByUser_shouldReturnAStatus404() throws Exception {
+    void returnAllAuctionByUser_givenAValidToken_shouldReturnAStatus404() throws Exception {
         when(auctionService.returnAllAuctionByUser(any())).thenThrow(new ResourceNotFoundException("empty auctions"));
         ResultActions response = mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/auctions/all-by-user")
                 .with(jwt())
@@ -89,7 +88,7 @@ class AuctionControllerTest{
     }
 
     @Test
-    void testThat_givenAnIValidToken_returnAllAuctionByUser_shouldReturnAStatus404() throws Exception {
+    void returnAllAuctionByUser_givenAnIValidToken_shouldReturnAStatus404() throws Exception {
         when(auctionService.returnAllAuctionByUser(any())).thenThrow(new ResourceNotFoundException("User not found"));
         ResultActions response = mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/auctions/all-by-user")
                 .with(jwt())
@@ -99,7 +98,7 @@ class AuctionControllerTest{
     }
 
     @Test
-    void testThat_givenAValidToken_returnOneAuctionOfUser_shouldReturnAStatus200() throws Exception{
+    void returnOneAuctionOfUser_givenAValidToken_shouldReturnAStatus200() throws Exception{
         long auctionId = 1L;
         ResultActions response = mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/auctions/" + auctionId)
                 .with(jwt())
@@ -108,7 +107,7 @@ class AuctionControllerTest{
     }
 
     @Test
-    void testThat_accessingADifferentUsersAuction_returnOneAuctionOfUser_shouldReturnAStatus403() throws Exception{
+    void returnOneAuctionOfUser_accessingADifferentUsersAuction_shouldReturnAStatus403() throws Exception{
         long auctionId = 1L;
         when(auctionService.returnOneAuctionOfUser(any())).thenThrow(new MismatchedEmailException("You don't have access to this resource"));
         ResultActions response = mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/auctions/" + auctionId)
@@ -119,7 +118,7 @@ class AuctionControllerTest{
     }
 
     @Test
-    void testThat_accessingUserWithoutAnyAuctions_returnOneAuctionOfUser_shouldReturnAStatus404() throws Exception{
+    void returnOneAuctionOfUser_accessingUserWithoutAnyAuctions_shouldReturnAStatus404() throws Exception{
         long auctionId = 1L;
         when(auctionService.returnOneAuctionOfUser(any())).thenThrow(new ResourceNotFoundException("Item not found"));
         ResultActions response = mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/auctions/" + auctionId)
