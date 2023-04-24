@@ -88,12 +88,13 @@ public class AuctionServiceImpl implements AuctionService{
         //check for available bids
         List<Bid> availableBids = bidRepository.findByAuction(targetAuction);
         if (!availableBids.isEmpty()) {
-            return "Auction has bid(s), cannot be deleted";
+            return "Auction has bid(s), cannot be cancelled";
         }
         //set item to draft
         targetAuction.getItem().setOnAuction(Boolean.FALSE);
-        //delete auction
-        auctionRepository.delete(targetAuction);
+        //set auction to cancelled
+        targetAuction.setStatus(CANCELLED);
+        auctionRepository.save(targetAuction);
         return "Auction cancelled successfully";
     }
 
@@ -115,8 +116,9 @@ public class AuctionServiceImpl implements AuctionService{
         }
         //set item to draft
         targetAuction.getItem().setOnAuction(Boolean.FALSE);
-        //delete auction
-        auctionRepository.delete(targetAuction);
+        //set auction to cancelled
+        targetAuction.setStatus(CANCELLED);
+        auctionRepository.save(targetAuction);
         return  "Auction cancelled successfully";
     }
 

@@ -232,8 +232,8 @@ class AuctionServiceImplTest {
         //verify methods called and result
         verify(auctionRepository, times(1)).findById(any());
         verify(bidRepository, times(1)).findByAuction(any());
-        verify(auctionRepository, never()).delete(auction);
-        Assertions.assertEquals("Auction has bid(s), cannot be deleted", result);
+        Assertions.assertEquals(AuctionStatus.LIVE, auction.getStatus());
+        Assertions.assertEquals("Auction has bid(s), cannot be cancelled", result);
     }
 
     @Test
@@ -245,8 +245,8 @@ class AuctionServiceImplTest {
         //verify methods called and result
         verify(auctionRepository, times(1)).findById(any());
         verify(bidRepository, times(1)).findByAuction(auction);
-        verify(auctionRepository, times(1)).delete(any());
         Assertions.assertEquals(false, auction.getItem().getOnAuction());
+        Assertions.assertEquals(AuctionStatus.CANCELLED, auction.getStatus());
         Assertions.assertEquals("Auction cancelled successfully", result);
     }
 }
