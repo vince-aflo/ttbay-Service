@@ -95,7 +95,7 @@ class AuctionServiceImplTest {
     void setUp(){
         String tokenValue = "token";
         String email = "test@gmail.com";
-        String picture = "xxxxxx";
+        String picture = "testPicture";
         String given_name = "Emma";
         String family_name = "tk";
         Instant issuedAt = Instant.now();
@@ -167,7 +167,7 @@ class AuctionServiceImplTest {
     }
 
     @Test
-    public void updateDraftAuctionStatusToLive_givenDraftAuctionsWithPastDates_shouldSetAuctionStatusToLive() throws ResourceNotFoundException, ExecutionException, InterruptedException{
+    void updateDraftAuctionStatusToLive_givenDraftAuctionsWithPastDates_shouldSetAuctionStatusToLive() throws ResourceNotFoundException, ExecutionException, InterruptedException{
         doReturn(draftAuctions).when(auctionRepository).findAll();
         CompletableFuture<Void> future= serviceUnderTest.updateDraftAuctionToLiveAndPersistInDatabase();
         future.get();
@@ -176,13 +176,13 @@ class AuctionServiceImplTest {
     }
 
     @Test
-    public void updateDraftAuctionStatusToLive_givenEmptyAuctions_shouldThrow404(){
+    void updateDraftAuctionStatusToLive_givenEmptyAuctions_shouldThrow404(){
         doReturn(List.of()).when(auctionRepository).findAll();
         Assertions.assertThrows(ExecutionException.class, () -> serviceUnderTest.updateDraftAuctionToLiveAndPersistInDatabase().get());
     }
 
     @Test
-    public void updateLiveAuctionStatusToEnd_givenLiveAuctionsWithPastDates_shouldSetAuctionStatusToLive() throws ResourceNotFoundException, ExecutionException, InterruptedException {
+    void updateLiveAuctionStatusToEnd_givenLiveAuctionsWithPastDates_shouldSetAuctionStatusToLive() throws ResourceNotFoundException, ExecutionException, InterruptedException {
         doReturn(liveAuctions).when(auctionRepository).findAll();
         CompletableFuture<Void> future= serviceUnderTest.updateLiveAuctionToEndAndPersistInDatabase();
         future.get();
@@ -191,13 +191,13 @@ class AuctionServiceImplTest {
     }
 
     @Test
-    public void updateLiveAuctionStatusToEnd_givenEmptyAuctions_shouldThrow404(){
+    void updateLiveAuctionStatusToEnd_givenEmptyAuctions_shouldThrow404(){
         doReturn(List.of()).when(auctionRepository).findAll();
         Assertions.assertThrows(ExecutionException.class, () -> serviceUnderTest.updateLiveAuctionToEndAndPersistInDatabase().get());
     }
 
     @Test
-    public void updateEndedAuctionWithWinners_givenEndedAuctionsWithoutWinners_shouldSetRespectiveHighestBiddersAsWinners() throws ResourceNotFoundException, ExecutionException, InterruptedException{
+    void updateEndedAuctionWithWinners_givenEndedAuctionsWithoutWinners_shouldSetRespectiveHighestBiddersAsWinners() throws ResourceNotFoundException, ExecutionException, InterruptedException{
         doReturn(endedAuctions).when(auctionRepository).findAll();
         doReturn(bidsOnEndedAuction).when(bidRepository).findByAuction(endedAuction1);
         doReturn(bidsOnEndedAuction).when(bidRepository).findByAuction(endedAuction2);
@@ -207,7 +207,7 @@ class AuctionServiceImplTest {
     }
 
     @Test
-    public void updateAuctionStatus_givenEmptyAuctionsWithPastDates_shouldSetAuctionStatusToLive() throws ResourceNotFoundException{
+    void updateAuctionStatus_givenEmptyAuctionsWithPastDates_shouldSetAuctionStatusToLive() throws ResourceNotFoundException{
         doReturn(List.of(auction1, auction)).when(auctionRepository).findAll();
         serviceUnderTest.updateDraftAuctionToLiveAndPersistInDatabase();
         Assertions.assertEquals(auction.getStatus(), LIVE);
@@ -215,13 +215,13 @@ class AuctionServiceImplTest {
     }
 
     @Test
-    public void updateEndedAuctionWithWinners_givenEmptyAuctions_shouldThrow404(){
+    void updateEndedAuctionWithWinners_givenEmptyAuctions_shouldThrow404(){
         doReturn(List.of()).when(auctionRepository).findAll();
         Assertions.assertThrows(ExecutionException.class, () -> serviceUnderTest.updateAuctionWithWinnerAndBidAmount().get());
     }
 
     @Test
-    public void cancelAuctionWithBidChecking_givenAppropriateAuctionIdButBidsAvailable_shouldReturnErrorMessage() throws MismatchedEmailException, ResourceNotFoundException{
+    void cancelAuctionWithBidChecking_givenAppropriateAuctionIdButBidsAvailable_shouldReturnErrorMessage() throws MismatchedEmailException, ResourceNotFoundException{
         doReturn(Optional.of(auction)).when(auctionRepository).findById(any());
         doReturn(testBidList).when(bidRepository).findByAuction(any());
         //execute cancelAuctionWithBidChecking
@@ -234,7 +234,7 @@ class AuctionServiceImplTest {
     }
 
     @Test
-    public void cancelAuctionWithBidChecking_givenAppropriateAuctionIdAndMatchingEmailAndNoBidAvailable_shouldCancelAuction() throws MismatchedEmailException, ResourceNotFoundException{
+    void cancelAuctionWithBidChecking_givenAppropriateAuctionIdAndMatchingEmailAndNoBidAvailable_shouldCancelAuction() throws MismatchedEmailException, ResourceNotFoundException{
         doReturn(Optional.of(auction)).when(auctionRepository).findById(any());
         doReturn(List.of()).when(bidRepository).findByAuction(any());
         //execute cancelAuctionWithBidChecking
