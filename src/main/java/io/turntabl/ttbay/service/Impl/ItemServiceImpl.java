@@ -116,6 +116,8 @@ public class ItemServiceImpl implements ItemService{
         }
         return item.get();
     }
+
+    //run every five(5) minutes
     @Scheduled(cron = "0 */5 * * * *")
     @Async
     public CompletableFuture<Void> persistExchangedItemsInDb() throws ResourceNotFoundException{

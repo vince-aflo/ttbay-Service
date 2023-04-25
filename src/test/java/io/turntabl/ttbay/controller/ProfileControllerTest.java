@@ -27,7 +27,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 
 @WebMvcTest(ProfileController.class)
-@ExtendWith(MockitoExtension.class)
 @AutoConfigureMockMvc(addFilters = false)
 class ProfileControllerTest {
     @Autowired
@@ -58,19 +57,11 @@ class ProfileControllerTest {
                 SONNIDOM_HOUSE,
                 List.of(MONDAY, TUESDAY)
         );
-        validUser = new User(
-                "testing@testing.com",
-                "Mick",
-                "Michael Jackson",
-                "testingImage.com/image.png",
-                Role.USER,
-                SONNIDOM_HOUSE,
-                List.of()
-        );
+        validUser = User.builder().email("testing@testing.com").username("Mick").fullName("Michael Jackson").profileUrl("testingImage.com/image.png").role(Role.USER).officeLocation(SONNIDOM_HOUSE).build();
     }
 
     @Test
-    void givenValidExistingEmail_whenGettingUserWithThatEmail_shouldRespondStatus200() throws Exception{
+    void whenGettingUserWithEmail_givenValidExistingEmail_shouldReturnStatus200() throws Exception{
         String validEmail = "testing@testing.com";
         ResultActions response = mockMvc.perform(get("/api/v1/profile/"+validEmail)
                 .contentType(MediaType.APPLICATION_JSON)
@@ -79,7 +70,7 @@ class ProfileControllerTest {
     }
 
     @Test
-    void givenValidProfileDTO_whenUpdatingProfile_thenResponseStatus200() throws Exception{
+    void whenUpdatingProfile_givenValidProfileDTO_shouldReturnStatus200() throws Exception{
         ResultActions response = mockMvc.perform(put("/api/v1/profile")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(validProfileDTO)));
@@ -87,7 +78,7 @@ class ProfileControllerTest {
     }
 
     @Test
-    void givenInvalidProfileDTO_whenUpdatingProfile_thenResponseStatus400() throws Exception{
+    void whenUpdatingProfile_givenInvalidProfileDTO_shouldReturnStatus400() throws Exception{
         ResultActions response = mockMvc.perform(put("/api/v1/profile")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(invalidProfileDTO)));

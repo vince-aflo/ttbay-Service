@@ -213,6 +213,7 @@ public class AuctionServiceImpl implements AuctionService{
         itemRepository.save(item);
         return "item marked as received";
     }
+
     public String auctioneerMarkAuctionedItemAsDelivered(Long auctionId, Authentication authentication) throws ResourceNotFoundException, MismatchedEmailException{
         String email = tokenAttributesExtractor.extractEmailFromToken(authentication);
         Auction auction =  auctionRepository.findById(auctionId).orElse(null);
@@ -237,7 +238,7 @@ public class AuctionServiceImpl implements AuctionService{
         return allAuctions.parallelStream().filter(auction -> auction.getWinner() == null && auction.getStatus() == END).collect(Collectors.toList());
     }
 
-    // Run every five minute
+    //run every five(5) minutes
     @Scheduled(cron = "0 */5  * * * *")
     @Async
     public CompletableFuture<Void> updateDraftAuctionToLiveAndPersistInDatabase() throws ResourceNotFoundException {
@@ -249,6 +250,7 @@ public class AuctionServiceImpl implements AuctionService{
         return CompletableFuture.completedFuture(null);
     }
 
+    //run every four(4) minutes
     @Scheduled(cron = "0 */4 * * * *")
     @Async
     public CompletableFuture<Void> updateLiveAuctionToEndAndPersistInDatabase() throws ResourceNotFoundException {
@@ -261,6 +263,7 @@ public class AuctionServiceImpl implements AuctionService{
         return CompletableFuture.completedFuture(null);
     }
 
+    //run every six(6) minutes
     @Scheduled(cron = "0 */6 * * * *")
     @Transactional
     @Async

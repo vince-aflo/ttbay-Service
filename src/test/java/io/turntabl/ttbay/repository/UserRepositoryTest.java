@@ -24,15 +24,7 @@ class UserRepositoryTest{
 
     @BeforeEach
     void beforeEach(){
-        userRepository.save(new User(
-                "emma@gmail.com",
-                "tkayy",
-                "Michael Jackson",
-                "testingImage.com/image.png",
-                Role.USER,
-                SONNIDOM_HOUSE,
-                List.of()
-        ));
+        userRepository.save(User.builder().email("emma@gmail.com").username("Mick").fullName("Michael Jackson").profileUrl("testingImage.com/image.png").role(Role.USER).officeLocation(SONNIDOM_HOUSE).build());
     }
     @AfterEach
     void tearDown(){
@@ -40,14 +32,14 @@ class UserRepositoryTest{
     }
 
     @Test
-    void testToCheckThatUserSavedWIthAParticularEmailIsPresent(){
+    void saveUser_shouldSavedUserWithGivenEmail(){
         String email = "emma@gmail.com";
         boolean expected = userRepository.findByEmail(email).isPresent();
         assertThat(expected).isTrue();
     }
 
     @Test
-    void testThatVerifiesThatASavedUserHasAUserRole(){
+    void saveUser_shouldSaveUserWithGivenRole(){
         Role expectedRole = Role.USER;
         User user = userRepository.findByEmail("emma@gmail.com").orElseThrow();
         Assertions.assertEquals(user.getRole(), expectedRole);
