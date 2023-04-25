@@ -34,6 +34,7 @@ import java.util.Optional;
 
 import static io.turntabl.ttbay.enums.AuctionStatus.SCHEDULED;
 import static io.turntabl.ttbay.enums.AuctionStatus.LIVE;
+import static java.lang.Boolean.FALSE;
 
 @AllArgsConstructor
 @Service
@@ -88,12 +89,13 @@ public class AuctionServiceImpl implements AuctionService{
         //check for available bids
         List<Bid> availableBids = bidRepository.findByAuction(targetAuction);
         if (!availableBids.isEmpty()) {
-            return "Auction has bid(s), cannot be deleted";
+            return "Auction has bid(s), cannot be cancelled";
         }
         //set item to draft
-        targetAuction.getItem().setOnAuction(Boolean.FALSE);
-        //delete auction
-        auctionRepository.delete(targetAuction);
+        targetAuction.getItem().setOnAuction(FALSE);
+        //set auction to cancelled
+        targetAuction.setStatus(CANCELLED);
+        auctionRepository.save(targetAuction);
         return "Auction cancelled successfully";
     }
 
@@ -114,9 +116,10 @@ public class AuctionServiceImpl implements AuctionService{
             throw new MismatchedEmailException("You don't have access to this action");
         }
         //set item to draft
-        targetAuction.getItem().setOnAuction(Boolean.FALSE);
-        //delete auction
-        auctionRepository.delete(targetAuction);
+        targetAuction.getItem().setOnAuction(FALSE);
+        //set auction to cancelled
+        targetAuction.setStatus(CANCELLED);
+        auctionRepository.save(targetAuction);
         return  "Auction cancelled successfully";
     }
 

@@ -14,7 +14,7 @@ public record ProfileDTO(
         @NotBlank(message = "username has to be set") String username,
         @Email(message = "A valid email has to be set") String email,
         @NotBlank(message = "fullName has to be set") String fullName,
-        @NotBlank(message = "profileUrl has to be set") String profileUrl,
+         String profileUrl,
         @NotNull(message = "officeLocation has to be set") OfficeLocation officeLocation,
         @Size(max = 5, message = "Only 5 office days can be set") List<Weekday> officeDays
 ){}
