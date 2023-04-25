@@ -17,7 +17,7 @@ import java.util.List;
 @RestController
 @AllArgsConstructor
 @RequestMapping("api/v1/items")
-public class ItemController{
+public class    ItemController{
     private final ItemService itemService;
 
     @GetMapping("/on-auction")
