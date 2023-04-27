@@ -1,0 +1,91 @@
+# Default values for ttbay service.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+replicaCount: 1
+
+image:
+  repository: ""
+  pullPolicy: Always
+  # Overrides the image tag whose default is the chart appVersion.
+  tag: ""
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: false
+  # Annotations to add to the service account
+  annotations: {}
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: ""
+
+podAnnotations: {}
+
+podSecurityContext: {}
+  # fsGroup: 2000
+
+securityContext: {}
+  # capabilities:
+  #   drop:
+  #   - ALL
+  # readOnlyRootFilesystem: true
+  # runAsNonRoot: true
+  # runAsUser: 1000
+
+service:
+  type: ClusterIP
+  port: 80
+
+ingress:
+  enabled: true
+  className: "nginx"
+  annotations: {}
+#     kubernetes.io/ingress.class: nginx
+    # kubernetes.io/tls-acme: "true"
+  hosts:
+    - host: chart-example.local
+      paths:
+        - path: /
+          pathType: ImplementationSpecific
+
+  tlsName: turntabl-net-certs
+  tlsCrt: LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSUQrakNDQXVLZ0F3SUJBZ0lSQU0zM2NuQnVaam5BUUZVR2F5VFZRcEF3RFFZSktvWklodmNOQVFFTEJRQXcKTlRFUk1BOEdBMVVFQ2d3SWRIVnliblJoWW13eElEQWVCZ05WQkFNTUYzUjFjbTUwWVdKc1gybHVkSEpoYm1WMApjRzl5ZEdGc01CNFhEVEl5TURRd05qRTNNemd4TUZvWERUSXpNRFV3TmpFNE16Z3hNRm93SGpFY01Cb0dBMVVFCkF3d1RLaTVoY0hCekxuUjFjbTUwWVdKc0xtNWxkRENDQVNJd0RRWUpLb1pJaHZjTkFRRUJCUUFEZ2dFUEFEQ0MKQVFvQ2dnRUJBTWtDUXA3dityU29kU3huSzJTZ3pNUERTbGdHdnlTN0Z6N0tOeWx4Z0hTUFJlSkZ1eis3Q091dgpodmV4dmtuTGlISjZTZURTdGw4WW1PVVkrZTRGOHdPQnNlaW9JTEwvMHcwZXlTV1dpdTNFeE1OVktkZjZjSVo0CnMzMVN2QWh1WVJHUjc3WS9OT05PWFlIM2ZrSVFOZGV0SDdhZXJWbzBxVWwrTlJndkFpeS9oTmZ1TjAvQWkycjMKTzY0Q3BUSzk0dDNnd2w0UXRNeVhEWERIcGg0YjZWL0dpakcwbGluSFBTQldQajdOVWtZeG4xU09tcmExMHBuYQpmL0xvWTVRdTl4QTFiVFZMNVJiR3VLWjd1NGN5THVYcGNpSmdsM2xudUdJRFhJb091T2NaZW53MVVlbVdKb25LCmNCd0VvZ3VIbnIxQUJnSndGVjliSGhoaDF3b1ZFWEVDQXdFQUFhT0NBUm93Z2dFV01CNEdBMVVkRVFRWE1CV0MKRXlvdVlYQndjeTUwZFhKdWRHRmliQzV1WlhRd0NRWURWUjBUQkFJd0FEQWZCZ05WSFNNRUdEQVdnQlFPSEllOQoxSGR1SmozRTBWSEdBSGl5Mm5RVjFUQWRCZ05WSFE0RUZnUVViK1NOdm5RUG5adjNXMHh0OGlyZmJLK1dKTFF3CkRnWURWUjBQQVFIL0JBUURBZ1dnTUIwR0ExVWRKUVFXTUJRR0NDc0dBUVVGQndNQkJnZ3JCZ0VGQlFjREFqQjYKQmdOVkhSOEVjekJ4TUcrZ2JhQnJobWxvZEhSd09pOHZaR1YyWld4dmNHMWxiblJ3Y205cVpXTjBkSFZ5Ym5SaApZbXd1Y3pNdWRYTXRaV0Z6ZEMweUxtRnRZWHB2Ym1GM2N5NWpiMjB2WTNKc0x6RTRNV016TkRNM0xXTmpNVEl0Ck5HWXdNUzFpWkRZM0xUSmxOR1l3TURreVlXTTBOeTVqY213d0RRWUpLb1pJaHZjTkFRRUxCUUFEZ2dFQkFJN0kKaW1QM2ZLenZ6Y3A4VzROTGtCOGJ3b3ZKSTFCcjBPUHhKL2QrR0lRcDRZa2tpMS9jL1paUDJYQ2NRYWtNYVZmSApyVS9Uc1hOa0U4bWpjWnVwSnhpOGRzQWxUb2JURWFGa1BwVHF2N0xUNlp4NDhsV2tScDBCaXNiRzhZeVp4RkRYCjVvZitJTldyYWNKQ0piRUc4SzBkZkI2UHNpMFhvSENrWmptUTNHSGMwWnJtU3N1WWhXKzAxZWlEZis5MnF0cHcKVkhlTlF0ZmpnQWFmeHpMeEt5MzhHaTdJWHcrM0JvdWxnRkNmQll0ZlVWanQ1OTRUMEVvRGNKRHNCRGlmLzRBdApLWlRrcXFjbzBRdnNacUowSTVQcExMTmxuaWVSQzlndWZjTXdBRjA2MjZ5OVFlSnF5cFBMSGsvSjBjRG1DN01UCjFIczJEenpQZkVWdC9YR0NmQzA9Ci0tLS0tRU5EIENFUlRJRklDQVRFLS0tLS0KCg==
+  tlsKey: LS0tLS1CRUdJTiBSU0EgUFJJVkFURSBLRVktLS0tLQpNSUlFb3dJQkFBS0NBUUVBeVFKQ251LzZ0S2gxTEdjclpLRE13OE5LV0FhL0pMc1hQc28zS1hHQWRJOUY0a1c3ClA3c0k2NitHOTdHK1NjdUljbnBKNE5LMlh4aVk1Umo1N2dYekE0R3g2S2dnc3YvVERSN0pKWmFLN2NURXcxVXAKMS9wd2huaXpmVks4Q0c1aEVaSHZ0ajgwNDA1ZGdmZCtRaEExMTYwZnRwNnRXalNwU1g0MUdDOENMTCtFMSs0MwpUOENMYXZjN3JnS2xNcjNpM2VEQ1hoQzB6SmNOY01lbUhodnBYOGFLTWJTV0tjYzlJRlkrUHMxU1JqR2ZWSTZhCnRyWFNtZHAvOHVoamxDNzNFRFZ0TlV2bEZzYTRwbnU3aHpJdTVlbHlJbUNYZVdlNFlnTmNpZzY0NXhsNmZEVlIKNlpZbWljcHdIQVNpQzRlZXZVQUdBbkFWWDFzZUdHSFhDaFVSY1FJREFRQUJBb0lCQUFGYTgydktxcTR4NWhOWgo4VG9WRnZoWmJseUVWQ0RaWlpWWjYvQUt1TDdnY2V4T0E4NlEwbVV6YW1Xc1pEL3ZZRURFV0EvczM4ZXBuT3RMCmhURGdoNlJPQ1M3c1JrY3FzQ2U2SGNsVDkrVVZRdTNkdXNIZTZZZ1FrNFk4YXZIa0c2R3draFVRblVqTWtCY1cKbmZwd1RVcWlXMURDQm1GeHNqUUJoclplWjhWNU5JZTl3VytnUC9kKzU2MWpNc1VrZ09qb016NHRPWjZDN0N0Sgp5KzZPdVJKY2Ewdk5tUFBjcnVBRWE4MkJRS1AzNUlqQTNqbHVldWxBeGwzWERhVElCRXZ5Qml0K1pjWWNQdzVqCitmOWFNQlpLMHJLanpzQmZkYmVwU3IvSndmbWxvODB2ZG5SV05zbERnbjBuekNmenU0Y1hNNGxRTmtNeTNqdjkKOE1PR3RGa0NnWUVBK09rbWlKSzhkdWtVZllNZVhVTm84S1hnL2dscTdaN2RyNFpvcitJRGJSVlRhd3FRYUhoaAowdVYwVzNwaWkzaXpFcmxpUmVPMlJCYkZmeUI1WStOaWU4eFBKWUxrMWIwb2ZNZGhRRFVLMEVsb1g4c2hKMWJhCk1VSFFQRHRhSUZPV2loUkwwUzdhZ0FKOG9YODVrRTgwM1YyVkgxY1N1YjR3MmVaVVBkUWxGeWtDZ1lFQXpydloKVW91cDNYakRTUXE4eXovcmkvRm1UQjFXbVE1RkxOYWUyamlIcFUyMnZmdXQ2bDMyc2J4cG9WZjViZlkvTG5NYwpIMW01THpnRlhTbGg1b01uaWZ6MTdaa0VWOVlxb1Myb29jMU5rY0FkSTc0bXptUlUyQmVUa1R2eDdVbnduRnROCms2eW9td2JoQ0dFWlpBRGxWNnduWXppVkFRTmNrRkR5Y0NzcVdRa0NnWUExRk1ONjdJLzBhOUJLMCtOdDBDcFkKNTRjTHBjWi8xaGxBalZGVjhNVDZSa243MGN6cCtvSWlEM3k0NVdpT2hiYnFqMDQ5eVVuZFMxM2l0bklzc3hrVgpmWVNEWTE2WmxqVkVKdUMrYUpGZHljblFZK2syRW5lRmVadUd2TUdEazAvUE1uVFlyejA1ZjA1RXduVHNLWGdFCm5TaG4vcEdudXIrQU9IWk9tU2N2d1FLQmdIeG1OU09pdnhoeDdyRXBNT250RU1RcEFyR1NoZVdiM0t4YWlVUXUKK0JEVWJyNXJqLytUZ3pyNGNXZVJGSnJDcnNvNG9oZUxXZys3Mmg1eEpHUWRUOUdNMGoraThDWWF6WlFuY1czTApxSDJuNk9EMUwwekt1dk05WEtMc08ydmFMbHNuNWNxUy92SXFkWWNoUnJJU2grNzF2TTNMNG4yMWxDR1RWQStECktmeGhBb0dCQU8rd2k2Yy9YckpnZ3A4RXI5N0kxSjRoMElXdHQvWG5jK2V4aUgwRzFmRmtQUVlFem9PdlNJSlUKWEpPck92WXh2NVovb0xORm42K2trbWJKRlRSa1VRcDBERUd0akh2cXJXWjhkSFVmYVhzNi8zTnVybGM0V3FsTgo4QnpZOFluNHFIRUI2Z2hYcGF3VnB2ZnQyanViQmRKdUJqVXFwMXNlQ0Jmd0wwMDdXMmIzCi0tLS0tRU5EIFJTQSBQUklWQVRFIEtFWS0tLS0tCg==
+
+  tls:
+    - secretName: turntabl-net-certs
+      hosts:
+        - ttbay-service.apps.turntabl.net
+
+resources: {}
+  # We usually recommend not to specify default resources and to leave this as a conscious
+  # choice for the user. This also increases chances charts run on environments with little
+  # resources, such as Minikube. If you do want to specify resources, uncomment the following
+  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+  # limits:
+  #   cpu: 100m
+  #   memory: 128Mi
+  # requests:
+  #   cpu: 100m
+  #   memory: 128Mi
+
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 2
+  targetCPUUtilizationPercentage: 80
+  # targetMemoryUtilizationPercentage: 80
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
+
+healthCheck: api/v1/auctions/all
+
+env: {}

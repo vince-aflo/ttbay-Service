@@ -1,0 +1,142 @@
+variables:
+  DOCKER_REGISTRY: 926377470665.dkr.ecr.us-east-2.amazonaws.com
+  DEVOPS_IMAGE: devops-pipeline
+  DEVOPS_IMAGE_VERSION: 0.0.6
+  APP_NAME: ttbay-service
+  APP_VERSION: $CI_COMMIT_BRANCH-$CI_COMMIT_SHORT_SHA
+  IMAGE_TAG: $DOCKER_REGISTRY/$APP_NAME:$CI_COMMIT_BRANCH-$CI_COMMIT_SHORT_SHA
+  PROJECT_DIR: $CI_PROJECT_DIR
+
+  MAVEN_OPTS: >-
+    -Dhttps.protocols=TLSv1.2
+    -Dmaven.repo.local=.m2/repository
+    -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=WARN
+    -Dorg.slf4j.simpleLogger.showDateTime=true
+    -Djava.awt.headless=true
+    
+  MAVEN_CLI_OPTS: >-
+    --batch-mode
+    --errors
+    --fail-at-end
+    --show-version
+    -DinstallAtEnd=true
+    -DdeployAtEnd=true  
+    
+
+stages:
+  - build
+  - test
+  - publish
+  - deploy-dev
+  - deploy-prd
+
+build:
+  stage: build
+  image:
+    name: maven:3.9.1-amazoncorretto-17
+  script:
+    - mvn $MAVEN_CLI_OPTS package -DskipTests=true
+  artifacts:
+    name: "ttbay service Jar"
+    paths:
+      - ./target/ttbay-*.jar
+    reports:
+      dotenv: app_version.env
+
+test:
+  stage: test
+  image:
+    name: maven:3.9.1-amazoncorretto-17
+  script: mvn $MAVEN_CLI_OPTS verify
+  artifacts:
+    reports:
+      junit: build/test-results/test/**/TEST-*.xml
+
+publish:
+  stage: publish
+  only:
+      - dev
+      - qa
+      - main
+  variables:
+    CONTEXT: $PROJECT_DIR
+    DESTINATION: $IMAGE_TAG
+    PROJECT_NAME: $CI_PROJECT_NAMESPACE
+    PARENT_PIPELINE_ID: $CI_PIPELINE_ID
+  
+  trigger: 
+    include:
+      - project: 'devops-team/image-publisher'
+        ref: 'main'
+        file: '/.gitlab-ci.yml'
+    strategy: depend 
+
+
+
+deploy-dev:
+  dependencies:
+    - build
+  stage: deploy-dev
+  only:
+    - develop
+  when: manual
+  allow_failure: false
+  image:
+    name:  $DOCKER_REGISTRY/$DEVOPS_IMAGE:$DEVOPS_IMAGE_VERSION
+  variables:
+    NAMESPACE: ${APP_NAME}-dev
+    RELEASE_NAME: ${APP_NAME}-dev
+  script:
+    - aws eks update-kubeconfig --name tt_k8s_cluster
+    - helm upgrade --install -f helm/values-dev.yaml
+      --set image.repository=${DOCKER_REGISTRY}/${APP_NAME}
+      --set image.tag=${APP_VERSION}
+      --set "ingress.hosts[0].host=${APP_NAME}.dev.turntabl.net"
+      --set "ingress.hosts[0].paths[0].path=/"
+      --set "ingress.hosts[0].paths[0].pathType=ImplementationSpecific"
+      --set env.frontendUrl=${FRONTEND_URL}
+      --set env.dbUsername=${DATABASE_DEV_USERNAME}
+      --set env.dbPassword=${DATABASE_DEV_PASSWORD}
+      --set env.dbUrl=${DATABASE_DEV_URL}
+      --set env.accessKey=${AWS_ACCESS_KEY}
+      --set env.secretKey=${AWS_SECRET_KEY}
+      --set env.smtpUser=${SMTP_USER}
+      --set env.smtpPassword=${SMTP_PASSWORD}
+      --set env.smtpHost=${SMTP_HOST}
+      --set env.smtpPort=${SMTP_PORT}
+      --create-namespace -n ${RELEASE_NAME} ${RELEASE_NAME} ./helm
+    - echo "Application URL=https://${APP_NAME}.dev.turntabl.net"
+
+
+deploy-prd:
+  dependencies:
+    - build
+  stage: deploy-prd
+  when: manual
+  image:
+    name:  $DOCKER_REGISTRY/$DEVOPS_IMAGE:$DEVOPS_IMAGE_VERSION
+  only:
+    - main
+  variables:
+    NAMESPACE: ${APP_NAME}-prd
+    RELEASE_NAME: ${APP_NAME}-prd
+  script:
+    - aws eks update-kubeconfig --name tt_k8s_cluster
+    - helm upgrade --install -f helm/values-prd.yaml
+      --set image.repository=${DOCKER_REGISTRY}/${APP_NAME}
+      --set image.tag=${APP_VERSION}
+      --set "ingress.hosts[0].host=${APP_NAME}.apps.turntabl.net"
+      --set "ingress.hosts[0].paths[0].path=/"
+      --set env.dbUsername=${DATABASE_PRD_USERNAME}
+      --set env.dbPassword=${DATABASE_PRD_PASSWORD}
+      --set env.frontendUrl=${FRONTEND_URL}
+      --set env.dbUrl=${DATABASE_PRD_URL}
+      --set env.accessKey=${AWS_ACCESS_KEY}
+      --set env.secretKey=${AWS_SECRET_KEY}
+      --set env.smtpUser=${SMTP_USER}
+      --set env.smtpPassword=${SMTP_PASSWORD}
+      --set env.smtpHost=${SMTP_HOST}
+      --set env.smtpPort=${SMTP_PORT}
+      --set "ingress.hosts[0].paths[0].pathType=ImplementationSpecific"
+      ${APP_CONFIG} --create-namespace -n ${RELEASE_NAME} ${RELEASE_NAME} ./helm
+    - echo "Application URL=https://${APP_NAME}.apps.turntabl.net"

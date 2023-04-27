@@ -3,11 +3,11 @@ server:
 
 spring:
   cors:
-    origin: "http://localhost:4200"
+    origin: ${FRONTEND_URL}
   datasource:
-    url: jdbc:postgresql://localhost:5432/ttbay
-    username: postgres
-    password: postgres
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
   jpa:
     properties:
       show-sql: true
@@ -23,4 +23,7 @@ spring:
       include-message: true
 
 jwt-set-url: https://www.googleapis.com/oauth2/v2/certs
+awsaccesskey: ${AWS_ACCESS_KEY}
+awssecretkey: ${AWS_SECRET_KEY}
+
 
