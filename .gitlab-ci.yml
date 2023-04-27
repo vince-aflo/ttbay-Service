@@ -55,9 +55,10 @@ test:
 publish:
   stage: publish
   only:
-      - dev
+      - develop
       - qa
       - main
+      - add-devops-files
   variables:
     CONTEXT: $PROJECT_DIR
     DESTINATION: $IMAGE_TAG
@@ -78,6 +79,7 @@ deploy-dev:
     - build
   stage: deploy-dev
   only:
+    - add-devops-files
     - develop
   when: manual
   allow_failure: false
