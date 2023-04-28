@@ -4,9 +4,11 @@ import io.turntabl.ttbay.enums.Category;
 import io.turntabl.ttbay.enums.ItemCondition;
 import io.turntabl.ttbay.model.Auction;
 import io.turntabl.ttbay.model.ItemImage;
+import io.turntabl.ttbay.model.Tag;
 import lombok.Builder;
 
 import java.util.List;
+import java.util.Set;
 
 @Builder
 public record ItemResponseDTO(
@@ -20,7 +22,8 @@ public record ItemResponseDTO(
         Category category,
         List<ItemImage> imageList,
         List<Auction> auctions,
-        boolean isItemExchanged,
+        boolean itemExchanged,
         boolean highestBidderReceivedItem,
-        boolean auctioneerHandItemToHighestBidder
-){}
+        boolean auctioneerHandItemToHighestBidder,
+        List<Tag> tags
+) {}

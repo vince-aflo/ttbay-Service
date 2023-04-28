@@ -8,6 +8,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Getter
@@ -49,13 +50,17 @@ public class Item{
     @Enumerated(EnumType.STRING)
     private Category category;
 
-    private boolean isItemExchanged;
+    private boolean itemExchanged;
 
     private boolean highestBidderReceivedItem;
 
     private boolean auctioneerHandItemToHighestBidder;
 
-    public Item(String name, String description, User user, List<ItemImage> imageList, Boolean onAuction, Boolean isSold){
+    @OneToMany(mappedBy = "item", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JsonManagedReference
+    private List<Tag> Tags;
+
+    public Item(String name, String description,  User user, List<ItemImage> imageList, Boolean onAuction, Boolean isSold) {
         this.name = name;
         this.imageList = imageList;
         this.description = description;
