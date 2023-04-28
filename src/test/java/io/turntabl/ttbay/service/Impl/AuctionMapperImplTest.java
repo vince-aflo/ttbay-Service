@@ -26,7 +26,7 @@ import static org.mockito.ArgumentMatchers.any;
 class AuctionMapperImplTest{
     private final User testUser = User.builder().username("aikscode").email("aikins.dwamena@turntabl.io").fullName("Aikins Akenten Dwamena").officeLocation(OfficeLocation.SONNIDOM_HOUSE).build();
     private final ItemResponseDTO itemResponseDTO = new ItemResponseDTO(1L, testUser.getEmail(), "Book1",
-            "This is a good read", false, false, ItemCondition.USED, Category.FASHION, List.of(), List.of(),false,false,false);
+            "This is a good read", false, false, ItemCondition.USED, Category.FASHION, List.of(), List.of(),false,false,false,List.of());
     private final Auction auction = Auction.builder().id(1L).auctioner(testUser).startDate(new Date()).endDate(new Date()).reservedPrice(20.5).currentHighestBid(21.5).status(AuctionStatus.LIVE).build();
     private final AuctionResponseDTO auctionResponseDTO = AuctionResponseDTO.builder().auctionId(auction.getId()).auctioneerEmail(auction.getAuctioner().getEmail()).item(itemResponseDTO).startDate(auction.getStartDate()).endDate(auction.getEndDate()).reservedPrice(auction.getReservedPrice()).currentHighestBid(auction.getCurrentHighestBid()).winner(auction.getWinner()).status(auction.getStatus()).build();
     @Mock

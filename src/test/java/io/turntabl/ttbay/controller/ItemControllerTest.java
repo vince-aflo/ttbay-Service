@@ -30,7 +30,7 @@ import static org.springframework.security.test.web.servlet.request.SecurityMock
 class ItemControllerTest{
     @Autowired
     ObjectMapper objectMapper;
-    ItemRequest itemRequest = new ItemRequest("iPhone Xs", "slightly used 64g", ItemCondition.USED, Category.ELECTRONICS, List.of());
+    ItemRequest itemRequest = new ItemRequest("iPhone Xs", "slightly used 64g", ItemCondition.USED, Category.ELECTRONICS, List.of(),List.of());
     @Autowired
     private MockMvc mockMvc;
     @MockBean

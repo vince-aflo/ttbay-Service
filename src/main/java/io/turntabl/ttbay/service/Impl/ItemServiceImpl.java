@@ -46,6 +46,7 @@ public class ItemServiceImpl implements ItemService{
         User currentUser = userRepository.findByEmail(email).orElseThrow(() -> new ResourceNotFoundException("User not found"));
         Item newItem = Item.builder().user(currentUser).isSold(false).onAuction(false).condition(itemRequest.condition()).category(itemRequest.category()).name(itemRequest.name()).description(itemRequest.description()).build();
         newItem.setImageList(itemRequest.imageList().parallelStream().map(itemImage -> new ItemImage(newItem, itemImage.getImageUrl())).toList());
+        newItem.setTags(itemRequest.tags().parallelStream().map(tag -> new Tag(newItem,tag.getName())).toList());
         try {
             Item item = itemRepository.save(newItem);
             return itemMapperService.returnItemResponse(item);

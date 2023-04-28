@@ -58,7 +58,7 @@ class ItemServiceImplTest{
             Auction.builder().id(id).auctioner(testUser).item(testItem3).startDate(new Date()).endDate(new Date()).reservedPrice(5000.0).currentHighestBid(6000.0).status(AuctionStatus.SCHEDULED).build()
 
     );
-    private final ItemResponseDTO responseDTO = new ItemResponseDTO(id, "aikins.dwamena@turntabl.io", "BOok", "This is a good book", false, false, USED, BOOKS, List.of(), List.of(), false, false, false);
+    private final ItemResponseDTO responseDTO = new ItemResponseDTO(id, "aikins.dwamena@turntabl.io", "BOok", "This is a good book", false, false, USED, BOOKS, List.of(), List.of(), false, false, false,List.of());
     private final List<Auction> testAuctionList1 = List.of(
             Auction.builder().id(id).auctioner(imposterUser).item(testItem3).startDate(new Date()).endDate(new Date()).reservedPrice(5000.0).currentHighestBid(6000.0).status(AuctionStatus.LIVE).build()
     );
@@ -129,7 +129,7 @@ class ItemServiceImplTest{
     void addItem_givenAValidToken_shouldReturnStringItemAddedSuccessfully() throws ResourceNotFoundException{
         doReturn(Optional.of(testUser)).when(userRepository).findByEmail("aikins.dwamena@turntabl.io");
         doReturn(responseDTO).when(itemMapperService).returnItemResponse(any());
-        itemService.addItem(new ItemRequest("name", "test", NEW, BOOKS, List.of()), jwtAuthenticationToken);
+        itemService.addItem(new ItemRequest("name", "test", NEW, BOOKS, List.of(),List.of()), jwtAuthenticationToken);
         verify(userRepository, times(1)).findByEmail("aikins.dwamena@turntabl.io");
         verify(itemRepository, times(1)).save(any());
     }
@@ -140,7 +140,7 @@ class ItemServiceImplTest{
         doNothing().when(itemImageRepository).deleteByItem(testItem);
         doReturn(new Item()).when(itemMapper).itemDTOtoItem(any(), any());
         String expected = "item updated successfully";
-        String actualResponse = itemService.updateItem(any(), new ItemRequest("aiks", "ss", USED, BOOKS, List.of()), jwtAuthenticationToken);
+        String actualResponse = itemService.updateItem(any(), new ItemRequest("aiks", "ss", USED, BOOKS, List.of(),List.of()), jwtAuthenticationToken);
         verify(itemImageRepository, times(1)).deleteByItem(any());
         verify(itemRepository, times(1)).save(any());
         Assertions.assertEquals(expected, actualResponse);
